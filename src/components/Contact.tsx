@@ -58,7 +58,7 @@ const Contact = () => {
     { 
       name: "YouTube", 
       icon: Youtube, 
-      url: "https://youtube.com/your-channel",
+      url: "https://www.youtube.com/@D4dirtyGaming",
       color: "hover:text-[#FF0000]"
     },
   ];
