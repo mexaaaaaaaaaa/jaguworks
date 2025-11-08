@@ -40,19 +40,19 @@ const Contact = () => {
     { 
       name: "Discord", 
       icon: MessageCircle, 
-      url: "https://discord.gg/your-discord",
+      url: "https://discord.gg/6CdCgjsVua",
       color: "hover:text-[#5865F2]"
     },
     { 
       name: "GitHub", 
       icon: Github, 
-      url: "https://github.com/your-github",
+      url: "https://github.com/theghoxt69-creator/FIRECRAFTX",
       color: "hover:text-white"
     },
     { 
       name: "Instagram", 
       icon: Instagram, 
-      url: "https://instagram.com/your-instagram",
+      url: "https://www.instagram.com/dkd_jagmohan_?igsh=aWJlejgyOWNvd3Fo",
       color: "hover:text-[#E4405F]"
     },
     { 
