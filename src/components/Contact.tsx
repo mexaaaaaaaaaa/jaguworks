@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Github, Instagram, MessageCircle, Youtube, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import emailjs from "@emailjs/browser";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -12,10 +13,27 @@ const Contact = () => {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Message sent! I'll get back to you soon 🚀");
-    setFormData({ name: "", email: "", message: "" });
+    
+    try {
+      await emailjs.send(
+        'service_z9tpweb',
+        'template_tcx82vr',
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          message: formData.message,
+        },
+        'kvWIKwv_Y8XNUAiK2'
+      );
+      
+      toast.success("Message sent! I'll get back to you soon 🚀");
+      setFormData({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error('EmailJS error:', error);
+      toast.error("Failed to send message. Please try again.");
+    }
   };
 
   const socials = [
