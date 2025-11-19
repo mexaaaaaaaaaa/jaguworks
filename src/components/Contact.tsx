@@ -5,6 +5,7 @@ import { Github, Instagram, MessageCircle, Youtube, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import emailjs from "@emailjs/browser";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -12,9 +13,15 @@ const Contact = () => {
     email: "",
     message: "",
   });
+  const [captchaToken, setCaptchaToken] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!captchaToken) {
+      toast.error("Please complete the captcha verification");
+      return;
+    }
     
     try {
       await emailjs.send(
@@ -30,6 +37,7 @@ const Contact = () => {
       
       toast.success("Message sent! I'll get back to you soon 🚀");
       setFormData({ name: "", email: "", message: "" });
+      setCaptchaToken("");
     } catch (error) {
       console.error('EmailJS error:', error);
       toast.error("Failed to send message. Please try again.");
@@ -115,7 +123,16 @@ const Contact = () => {
                 />
               </div>
               
-              <Button 
+              <div className="flex justify-center">
+                <Turnstile
+                  siteKey="1x00000000000000000000AA"
+                  onSuccess={(token) => setCaptchaToken(token)}
+                  onError={() => setCaptchaToken("")}
+                  onExpire={() => setCaptchaToken("")}
+                />
+              </div>
+              
+              <Button
                 type="submit" 
                 variant="hero" 
                 size="lg"
