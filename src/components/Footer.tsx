@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm text-center md:text-left">
-            © 2025 <span className="text-primary font-semibold">LADUU</span> — Crafting the Future
+            © 2025 <span className="text-primary font-semibold">JAGMOHAN</span> — Crafting the Future
           </p>
           
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

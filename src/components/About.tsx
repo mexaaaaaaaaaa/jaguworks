@@ -26,7 +26,7 @@ const About = () => {
           <div className="animate-slide-in-left">
             <div className="bg-card/50 backdrop-blur-sm border border-primary/20 rounded-2xl p-8 glow-primary">
               <p className="text-lg text-foreground/90 leading-relaxed mb-6">
-                Hey, I'm <span className="text-primary font-semibold">Laduu</span> — a developer who builds virtual worlds and digital experiences. From Minecraft servers to Discord systems, and from web apps to AI tools, I create everything that connects technology with creativity.
+                Hey, I'm <span className="text-primary font-semibold">Jagmohan</span> — a developer who builds virtual worlds and digital experiences. From Minecraft servers to Discord systems, and from web apps to AI tools, I create everything that connects technology with creativity.
               </p>
               
               <div className="border-l-4 border-primary pl-4 bg-muted/30 p-4 rounded-r-lg">
