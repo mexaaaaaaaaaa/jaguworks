@@ -1,3 +1,4 @@
+// Contact.tsx
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,6 +7,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import emailjs from "@emailjs/browser";
 import ReCAPTCHA from "react-google-recaptcha";
+
+const RECAPTCHA_SITE_KEY = "6LemHRIsAAAAAIFuXQxYdXuLT08w8JN-sXsKQwmr"; // tumhara v2 sitekey
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -17,13 +20,30 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!captchaToken) {
       toast.error("Please complete the captcha verification");
       return;
     }
-    
+
     try {
+      // 1) Send captcha token to serverless function to verify with Google
+      const verifyResp = await fetch("/.netlify/functions/verify-captcha", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: captchaToken })
+      });
+
+      const verifyData = await verifyResp.json();
+
+      // For reCAPTCHA v2, Google returns { success: true/false, challenge_ts, hostname, ... }
+      if (!verifyData || !verifyData.success) {
+        toast.error("Captcha verification failed. Please try again.");
+        setCaptchaToken("");
+        return;
+      }
+
+      // 2) If verify ok, send EmailJS
       await emailjs.send(
         'service_z9tpweb',
         'template_tcx82vr',
@@ -32,62 +52,38 @@ const Contact = () => {
           from_email: formData.email,
           message: formData.message,
         },
-        'kvWIKwv_Y8XNUAiK2'
+        'kvWIKwv_Y8XNUAiK2' // EmailJS public key OK in frontend
       );
-      
+
       toast.success("Message sent! I'll get back to you soon 🚀");
       setFormData({ name: "", email: "", message: "" });
       setCaptchaToken("");
     } catch (error) {
-      console.error('EmailJS error:', error);
+      console.error('Error:', error);
       toast.error("Failed to send message. Please try again.");
     }
   };
 
   const socials = [
-    { 
-      name: "Discord", 
-      icon: MessageCircle, 
-      url: "https://discord.gg/6CdCgjsVua",
-      color: "hover:text-[#5865F2]"
-    },
-    { 
-      name: "GitHub", 
-      icon: Github, 
-      url: "https://github.com/theghoxt69-creator/FIRECRAFTX",
-      color: "hover:text-white"
-    },
-    { 
-      name: "Instagram", 
-      icon: Instagram, 
-      url: "https://www.instagram.com/dkd_jagmohan_?igsh=aWJlejgyOWNvd3Fo",
-      color: "hover:text-[#E4405F]"
-    },
-    { 
-      name: "YouTube", 
-      icon: Youtube, 
-      url: "https://www.youtube.com/@D4dirtyGaming",
-      color: "hover:text-[#FF0000]"
-    },
+    { name: "Discord", icon: MessageCircle, url: "https://discord.gg/6CdCgjsVua", color: "hover:text-[#5865F2]" },
+    { name: "GitHub", icon: Github, url: "https://github.com/theghoxt69-creator/FIRECRAFTX", color: "hover:text-white" },
+    { name: "Instagram", icon: Instagram, url: "https://www.instagram.com/dkd_jagmohan_?igsh=aWJlejgyOWNvd3Fo", color: "hover:text-[#E4405F]" },
+    { name: "YouTube", icon: Youtube, url: "https://www.youtube.com/@D4dirtyGaming", color: "hover:text-[#FF0000]" },
   ];
 
   return (
     <section id="contact" className="py-20 px-4 relative overflow-hidden bg-card/20">
       <div className="absolute inset-0 grid-background opacity-20"></div>
-      
       <div className="container mx-auto relative z-10 max-w-4xl">
         <div className="text-center mb-16 animate-slide-in-up">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="gradient-text">Let's Connect</span>
           </h2>
           <div className="h-1 w-20 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full mb-4"></div>
-          <p className="text-xl text-primary font-medium">
-            Let's Build Something Incredible ✨
-          </p>
+          <p className="text-xl text-primary font-medium">Let's Build Something Incredible ✨</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
-          {/* Contact Form */}
           <div className="animate-slide-in-left">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
@@ -100,7 +96,7 @@ const Contact = () => {
                   className="bg-card/50 border-primary/30 focus:border-primary text-foreground placeholder:text-muted-foreground"
                 />
               </div>
-              
+
               <div>
                 <Input
                   type="email"
@@ -111,7 +107,7 @@ const Contact = () => {
                   className="bg-card/50 border-primary/30 focus:border-primary text-foreground placeholder:text-muted-foreground"
                 />
               </div>
-              
+
               <div>
                 <Textarea
                   placeholder="Your Message"
@@ -122,33 +118,26 @@ const Contact = () => {
                   className="bg-card/50 border-primary/30 focus:border-primary text-foreground placeholder:text-muted-foreground resize-none"
                 />
               </div>
-              
+
               <div className="flex justify-center">
                 <ReCAPTCHA
-                  sitekey="6LemHRIsAAAAAIFuXQxYdXuLT08w8JN-sXsKQwmr"
+                  sitekey={RECAPTCHA_SITE_KEY}
                   onChange={(token) => setCaptchaToken(token || "")}
                   onExpired={() => setCaptchaToken("")}
                   theme="dark"
                 />
               </div>
-              
-              <Button
-                type="submit" 
-                variant="hero" 
-                size="lg"
-                className="w-full group"
-              >
+
+              <Button type="submit" variant="hero" size="lg" className="w-full group">
                 Send Message
                 <Send className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </form>
           </div>
 
-          {/* Social Links */}
           <div className="animate-slide-in-right">
             <div className="bg-card/50 backdrop-blur-sm border border-primary/20 rounded-2xl p-8 glow-primary">
               <h3 className="text-2xl font-bold mb-6 text-foreground">Connect on Social</h3>
-              
               <div className="space-y-4">
                 {socials.map((social, index) => {
                   const Icon = social.icon;
@@ -170,9 +159,7 @@ const Contact = () => {
               </div>
 
               <div className="mt-8 pt-8 border-t border-primary/20">
-                <p className="text-muted-foreground text-sm text-center">
-                  Available for freelance projects and collaborations
-                </p>
+                <p className="text-muted-foreground text-sm text-center">Available for freelance projects and collaborations</p>
               </div>
             </div>
           </div>
