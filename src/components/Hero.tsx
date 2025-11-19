@@ -30,7 +30,7 @@ const Hero = () => {
           </div>
           
           <h1 className="text-6xl md:text-8xl font-bold mb-6 tracking-tight">
-            <span className="gradient-text text-glow-primary">LADUU</span>
+            <span className="gradient-text text-glow-primary">JAGMOHAN</span>
           </h1>
           
           <p className="text-xl md:text-3xl mb-4 text-foreground/90 font-light">
