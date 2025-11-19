@@ -5,7 +5,7 @@ import { Github, Instagram, MessageCircle, Youtube, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import emailjs from "@emailjs/browser";
-import { Turnstile } from "@marsidev/react-turnstile";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -124,11 +124,11 @@ const Contact = () => {
               </div>
               
               <div className="flex justify-center">
-                <Turnstile
-                  siteKey="0x4AAAAAACBv8TM0fiYKp-H6"
-                  onSuccess={(token) => setCaptchaToken(token)}
-                  onError={() => setCaptchaToken("")}
-                  onExpire={() => setCaptchaToken("")}
+                <ReCAPTCHA
+                  sitekey="YOUR_RECAPTCHA_SITE_KEY"
+                  onChange={(token) => setCaptchaToken(token || "")}
+                  onExpired={() => setCaptchaToken("")}
+                  theme="dark"
                 />
               </div>
               
