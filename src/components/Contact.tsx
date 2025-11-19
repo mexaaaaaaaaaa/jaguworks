@@ -125,7 +125,7 @@ const Contact = () => {
               
               <div className="flex justify-center">
                 <ReCAPTCHA
-                  sitekey="6LemHRIsAAAAAJRThVVlHprp2bc54fN9InO9D5-c"
+                  sitekey="6LemHRIsAAAAAIFuXQxYdXuLT08w8JN-sXsKQwmr"
                   onChange={(token) => setCaptchaToken(token || "")}
                   onExpired={() => setCaptchaToken("")}
                   theme="dark"
