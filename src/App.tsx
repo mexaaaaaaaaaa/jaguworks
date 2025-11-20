@@ -8,6 +8,7 @@ import TelegramBots from "./pages/TelegramBots";
 import CinematicReel from "./pages/CinematicReel";
 import DiscordAutomation from "./pages/DiscordAutomation";
 import MinecraftPlans from "./pages/MinecraftPlans";
+import DiscordPlans from "./pages/DiscordPlans";
 import Cart from "./pages/Cart";
 import CheckoutRedirect from "./pages/CheckoutRedirect";
 import PaymentDetails from "./pages/PaymentDetails";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/cinematic-reel" element={<CinematicReel />} />
           <Route path="/discord-automation" element={<DiscordAutomation />} />
         <Route path="/minecraft-plans" element={<MinecraftPlans />} />
+        <Route path="/discord-plans" element={<DiscordPlans />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
         <Route path="/payment-details" element={<PaymentDetails />} />
