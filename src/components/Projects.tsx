@@ -47,6 +47,7 @@ const Projects = () => {
       description: "Complete automation systems with auto-roles, tickets, and event management",
       icon: Bot,
       color: "from-cyan-500 to-purple-500",
+      link: "/discord-automation",
     },
     {
       title: "Business Tools",
