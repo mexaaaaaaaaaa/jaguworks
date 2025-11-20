@@ -22,9 +22,9 @@ const PaymentReturn = () => {
   
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
-    contact: '',
+    contact: '', // Will be used for Transaction ID
     hostingType: 'panel',
     serverFilesProvided: 'yes',
     additionalNotes: '',
@@ -165,12 +165,12 @@ const PaymentReturn = () => {
             <h2 className="text-2xl font-bold mb-6">Complete Your Order Details</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name *</Label>
+                <Label htmlFor="name">Full Name *</Label>
                 <Input
-                  id="fullName"
+                  id="name"
                   required
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Your full name"
                 />
               </div>
@@ -188,14 +188,15 @@ const PaymentReturn = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="contact">Telegram / Discord / Phone *</Label>
+                <Label htmlFor="contact">Transaction ID / UPI Reference *</Label>
                 <Input
                   id="contact"
                   required
                   value={formData.contact}
                   onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                  placeholder="@username or phone number"
+                  placeholder="Enter your payment transaction ID"
                 />
+                <p className="text-xs text-muted-foreground">This helps us verify your payment</p>
               </div>
 
               <div className="space-y-3">
