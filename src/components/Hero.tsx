@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import heroBg from "@/assets/hero-bg-new.jpg";
 import profileImg from "@/assets/profile.jpg";
+import ParticleBackground from "./ParticleBackground";
 
 const Hero = () => {
   return (
@@ -15,6 +16,7 @@ const Hero = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background"></div>
         <div className="absolute inset-0 grid-background"></div>
+        <ParticleBackground />
       </div>
 
       {/* Floating Elements */}
