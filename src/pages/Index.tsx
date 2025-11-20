@@ -3,8 +3,6 @@ import Hero from "@/components/Hero";
 import StatsCounter from "@/components/StatsCounter";
 import Testimonials from "@/components/Testimonials";
 import ActivityFeed from "@/components/ActivityFeed";
-import Resume from "@/components/Resume";
-import Gallery from "@/components/Gallery";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -21,8 +19,6 @@ const Index = () => {
           <Hero />
           <StatsCounter />
           <ActivityFeed />
-          <Resume />
-          <Gallery />
           <Testimonials />
           <Footer />
           <BackToTop />
