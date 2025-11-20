@@ -31,6 +31,7 @@ interface ServerData {
   role: string;
   badges: string[];
   automations: string[];
+  iconUrl: string | null;
 }
 
 const DiscordAutomation = () => {
@@ -150,6 +151,7 @@ const DiscordAutomation = () => {
       onlineCount: null,
       loading: true,
       error: false,
+      iconUrl: null,
     }))
   );
 
@@ -172,6 +174,10 @@ const DiscordAutomation = () => {
             }
 
             const data: DiscordInvite = await response.json();
+            
+            const iconUrl = data.guild?.icon 
+              ? `https://cdn.discordapp.com/icons/${data.guild.id}/${data.guild.icon}.png?size=512`
+              : null;
 
             return {
               ...config,
@@ -181,6 +187,7 @@ const DiscordAutomation = () => {
               onlineCount: data.approximate_presence_count || null,
               loading: false,
               error: false,
+              iconUrl,
             };
           } catch (error) {
             console.error(`Failed to fetch data for ${config.code}:`, error);
@@ -192,6 +199,7 @@ const DiscordAutomation = () => {
               onlineCount: null,
               loading: false,
               error: true,
+              iconUrl: null,
             };
           }
         })
@@ -287,7 +295,24 @@ const DiscordAutomation = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 <CardHeader className="relative">
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-start justify-between mb-4">
+                    {server.iconUrl && (
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20 bg-card animate-fade-in mr-4 flex-shrink-0">
+                        <img 
+                          src={server.iconUrl} 
+                          alt={`${server.name} icon`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                    {!server.iconUrl && (
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/20 flex items-center justify-center mr-4 flex-shrink-0 animate-fade-in">
+                        <Shield className="w-8 h-8 text-primary" />
+                      </div>
+                    )}
                     <div className="flex-1">
                       <CardTitle className="text-xl mb-2 group-hover:text-primary transition-colors flex items-center gap-2">
                         {server.name}
