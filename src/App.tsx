@@ -10,6 +10,7 @@ import DiscordAutomation from "./pages/DiscordAutomation";
 import MinecraftPlans from "./pages/MinecraftPlans";
 import Cart from "./pages/Cart";
 import CheckoutRedirect from "./pages/CheckoutRedirect";
+import PaymentDetails from "./pages/PaymentDetails";
 import PaymentReturn from "./pages/PaymentReturn";
 import NotFound from "./pages/NotFound";
 
@@ -26,10 +27,11 @@ const App = () => (
           <Route path="/ai-telegram-bots" element={<TelegramBots />} />
           <Route path="/cinematic-reel" element={<CinematicReel />} />
           <Route path="/discord-automation" element={<DiscordAutomation />} />
-          <Route path="/minecraft-plans" element={<MinecraftPlans />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
-          <Route path="/payment-return" element={<PaymentReturn />} />
+        <Route path="/minecraft-plans" element={<MinecraftPlans />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
+        <Route path="/payment-details" element={<PaymentDetails />} />
+        <Route path="/payment-return" element={<PaymentReturn />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
