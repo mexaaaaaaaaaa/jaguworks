@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import emailjs from '@emailjs/browser';
 
 const PaymentReturn = () => {
   const navigate = useNavigate();
@@ -40,50 +42,55 @@ const PaymentReturn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // PLACEHOLDER: Replace ⟪ORDER_NOTIFICATION_ENDPOINT⟫ with your actual endpoint
-    // Example: https://your-api.com/api/order-notification
-    const notificationEndpoint = '⟪ORDER_NOTIFICATION_ENDPOINT⟫';
-    
-    const orderData = {
-      order_id: orderId,
-      items: items,
-      total: getTotal(),
-      customer: formData,
-      timestamp: new Date().toISOString(),
-    };
-
     try {
-      // Send order notification
-      console.log('Sending order notification:', orderData);
-      console.log('Notification endpoint:', notificationEndpoint);
-      
-      // In production, uncomment this to send actual request:
-      /*
-      const response = await fetch(notificationEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
+      // Save to Supabase orders table
+      const { error: dbError } = await supabase.from('orders').insert({
+        order_id: orderId || `ORD_${Date.now()}`,
+        buyer_name: formData.name,
+        buyer_email: formData.email,
+        buyer_phone: formData.contact,
+        plan_name: items.length > 0 ? items[0].name : 'Manual Payment',
+        plan_price: getTotal(),
+        total_amount: getTotal(),
+        payment_txn_id: formData.contact, // Transaction ID stored in contact field
+        status: 'pending',
+        server_access_details: `Hosting: ${formData.hostingType}, Server Files: ${formData.serverFilesProvided}. Notes: ${formData.additionalNotes}`,
+        paid_at: new Date().toISOString(),
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to send notification');
+
+      if (dbError) {
+        console.error("Database error:", dbError);
+        toast.error("Failed to save order. Please contact support.");
+        return;
       }
-      */
-      
-      // PLACEHOLDER: Email notification to ⟪YOUR_EMAIL_PLACEHOLDER⟫
-      console.log('Email would be sent to: ⟪YOUR_EMAIL_PLACEHOLDER⟫');
-      
-      // PLACEHOLDER: Telegram notification to ⟪YOUR_TELEGRAM_BOT_ENDPOINT⟫
-      console.log('Telegram message would be sent to: ⟪YOUR_TELEGRAM_BOT_ENDPOINT⟫');
-      
+
+      // Send EmailJS notification
+      const emailParams = {
+        order_id: orderId || `ORD_${Date.now()}`,
+        buyer_name: formData.name,
+        buyer_email: formData.email,
+        transaction_id: formData.contact,
+        plan_name: items.length > 0 ? items[0].name : 'Manual Payment',
+        total_amount: `₹${getTotal()}`,
+        hosting_type: formData.hostingType,
+        server_files: formData.serverFilesProvided,
+        additional_notes: formData.additionalNotes || 'None',
+        timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      };
+
+      await emailjs.send(
+        'service_z9tpweb',
+        'template_tcx82vr',
+        emailParams,
+        'kvWIKwv_Y8XNUAiK2'
+      );
+
       setSubmitted(true);
-      toast.success("Order details submitted successfully!");
+      toast.success("Order saved and notification sent!");
       
     } catch (error) {
       console.error('Error submitting order:', error);
-      toast.error("Failed to submit order details. Please contact support.");
+      toast.error("Failed to submit order details. Please try again.");
     }
   };
 
