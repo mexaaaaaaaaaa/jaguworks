@@ -1,14 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ExternalLink, Copy, MessageSquare, ChevronDown, Shield, Bot, Users, Calendar, Settings, AlertTriangle } from "lucide-react";
+import { ArrowLeft, ExternalLink, Copy, MessageSquare, Shield, Bot, Users, Settings, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "sonner";
 
+interface DiscordInvite {
+  code: string;
+  guild: {
+    id: string;
+    name: string;
+    icon: string | null;
+    description: string | null;
+  };
+  approximate_member_count?: number;
+  approximate_presence_count?: number;
+}
+
+interface ServerData {
+  invite: string;
+  code: string;
+  name: string;
+  description: string;
+  memberCount: number | null;
+  onlineCount: number | null;
+  loading: boolean;
+  error: boolean;
+  role: string;
+  badges: string[];
+  automations: string[];
+}
+
 const DiscordAutomation = () => {
-  const [expandedServer, setExpandedServer] = useState<string | null>(null);
 
   const experiences = [
     { server: "FleetMC", role: "Moderator", color: "from-blue-500 to-cyan-500" },
@@ -17,13 +42,13 @@ const DiscordAutomation = () => {
     { server: "Creator", role: "10+ Discord Servers", color: "from-green-500 to-emerald-500" },
   ];
 
-  const servers = [
+  const serverConfigs = [
     {
-      id: "server-1",
+      code: "6GtfRUG7f8",
       invite: "https://discord.gg/6GtfRUG7f8",
-      name: "Gaming Community Hub",
-      description: "Large active gaming community with 1000+ members. Focus on competitive gaming, events, and community engagement.",
       role: "Server Creator & Lead Moderator",
+      defaultName: "Gaming Community Hub",
+      defaultDesc: "Active gaming community with competitive events and engagement systems",
       badges: ["Automated Moderation", "Custom Bots", "Event Scheduler"],
       automations: [
         "Auto-moderation system with configurable word filters and spam detection",
@@ -35,11 +60,11 @@ const DiscordAutomation = () => {
       ],
     },
     {
-      id: "server-2",
+      code: "N7GSGYdhvg",
       invite: "https://discord.gg/N7GSGYdhvg",
-      name: "Community & Events Server",
-      description: "Event-driven community server with automated scheduling and role management systems.",
       role: "Moderator & Automation Developer",
+      defaultName: "Community & Events Server",
+      defaultDesc: "Event-driven community server with automated scheduling and role management",
       badges: ["Reaction Roles", "Event Scheduler", "Custom Commands"],
       automations: [
         "Reaction role system for self-assignment",
@@ -51,11 +76,11 @@ const DiscordAutomation = () => {
       ],
     },
     {
-      id: "server-3",
+      code: "fQ9WuSQcYF",
       invite: "https://discord.gg/fQ9WuSQcYF",
-      name: "Utility & Staff Systems",
-      description: "Staff-focused server with advanced moderation tools and automation systems.",
       role: "Staff Member & System Architect",
+      defaultName: "Utility & Staff Systems",
+      defaultDesc: "Staff-focused server with advanced moderation tools and automation",
       badges: ["Automated Moderation", "Channel Syncs", "Custom Bots"],
       automations: [
         "Staff notification system with priority levels",
@@ -67,11 +92,11 @@ const DiscordAutomation = () => {
       ],
     },
     {
-      id: "server-4",
+      code: "Vnu47bq4",
       invite: "https://discord.gg/Vnu47bq4",
-      name: "Active Gaming Community",
-      description: "Dynamic gaming community with focus on player engagement and competitive events.",
       role: "Moderator",
+      defaultName: "Active Gaming Community",
+      defaultDesc: "Dynamic gaming community with player engagement and competitive events",
       badges: ["Custom Bots", "Reaction Roles", "Automated Moderation"],
       automations: [
         "Tournament bracket automation",
@@ -83,11 +108,11 @@ const DiscordAutomation = () => {
       ],
     },
     {
-      id: "server-5",
+      code: "yessmartypie",
       invite: "https://discord.gg/yessmartypie",
-      name: "SmartPie Community",
-      description: "Tech-focused community server with educational resources and collaborative projects.",
       role: "Server Creator",
+      defaultName: "SmartPie Community",
+      defaultDesc: "Tech-focused community with educational resources and collaborative projects",
       badges: ["Event Scheduler", "Custom Commands", "Channel Syncs"],
       automations: [
         "Resource categorization and auto-tagging",
@@ -99,11 +124,11 @@ const DiscordAutomation = () => {
       ],
     },
     {
-      id: "server-6",
+      code: "SKz5Qc3r",
       invite: "https://discord.gg/SKz5Qc3r",
-      name: "Community Server",
-      description: "General purpose community server with comprehensive moderation and engagement systems.",
       role: "Moderator & Bot Developer",
+      defaultName: "Community Server",
+      defaultDesc: "General purpose community with comprehensive moderation and engagement",
       badges: ["Automated Moderation", "Reaction Roles", "Event Scheduler"],
       automations: [
         "Multi-level moderation system",
@@ -116,6 +141,68 @@ const DiscordAutomation = () => {
     },
   ];
 
+  const [servers, setServers] = useState<ServerData[]>(
+    serverConfigs.map((config) => ({
+      ...config,
+      name: config.defaultName,
+      description: config.defaultDesc,
+      memberCount: null,
+      onlineCount: null,
+      loading: true,
+      error: false,
+    }))
+  );
+
+  useEffect(() => {
+    const fetchServerData = async () => {
+      const updatedServers = await Promise.all(
+        serverConfigs.map(async (config) => {
+          try {
+            const response = await fetch(
+              `https://discord.com/api/v10/invites/${config.code}?with_counts=true`,
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error('Failed to fetch');
+            }
+
+            const data: DiscordInvite = await response.json();
+
+            return {
+              ...config,
+              name: data.guild?.name || config.defaultName,
+              description: data.guild?.description || config.defaultDesc,
+              memberCount: data.approximate_member_count || null,
+              onlineCount: data.approximate_presence_count || null,
+              loading: false,
+              error: false,
+            };
+          } catch (error) {
+            console.error(`Failed to fetch data for ${config.code}:`, error);
+            return {
+              ...config,
+              name: config.defaultName,
+              description: config.defaultDesc,
+              memberCount: null,
+              onlineCount: null,
+              loading: false,
+              error: true,
+            };
+          }
+        })
+      );
+
+      setServers(updatedServers);
+    };
+
+    fetchServerData();
+  }, []);
+
   const copyInvite = (invite: string, serverName: string) => {
     navigator.clipboard.writeText(invite);
     toast.success(`${serverName} invite copied!`);
@@ -126,7 +213,7 @@ const DiscordAutomation = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-card">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-card animate-fade-in">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -136,10 +223,10 @@ const DiscordAutomation = () => {
               Back to Portfolio
             </Button>
           </Link>
-          <a href="mailto:your@email.com">
+          <a href="https://discord.gg/6CdCgjsVua" target="_blank" rel="noopener noreferrer">
             <Button variant="neon" size="sm" className="gap-2">
               <MessageSquare className="w-4 h-4" />
-              Hire Me
+              Contact Me
             </Button>
           </a>
         </div>
@@ -148,30 +235,30 @@ const DiscordAutomation = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent"></div>
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-[100px]"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-[120px]"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-[100px] animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }}></div>
 
         <div className="container mx-auto relative z-10">
-          <div className="text-center max-w-4xl mx-auto mb-12 animate-fade-in">
+          <div className="text-center max-w-4xl mx-auto mb-12 animate-slide-in-up">
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               <span className="gradient-text">Discord Automation</span>
               <br />
               <span className="text-foreground">& Server Work</span>
             </h1>
             <p className="text-xl text-muted-foreground mb-4">
-              Moderation, automation bots, invites, and community systems
+              Moderation, automation, and server systems built & managed by <span className="text-primary font-semibold">Jagmohan</span>
             </p>
             <p className="text-sm text-muted-foreground">
-              Built and managed by <span className="text-primary font-semibold">Jagmohan</span>
+              FleetMC (Moderator) • FireMC (Staff) • BattelPai (Moderator) • Creator of 10+ servers
             </p>
           </div>
 
           {/* Experience Strip */}
-          <div className="flex flex-wrap justify-center gap-3 mb-16 animate-slide-in-up">
+          <div className="flex flex-wrap justify-center gap-3 mb-16">
             {experiences.map((exp, index) => (
               <div
                 key={index}
-                className="group relative bg-card/50 backdrop-blur-sm border border-border rounded-full px-6 py-3 hover:border-primary transition-all duration-300"
+                className="group relative bg-card/50 backdrop-blur-sm border border-border rounded-full px-6 py-3 hover:border-primary transition-all duration-300 animate-scale-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className={`absolute inset-0 bg-gradient-to-r ${exp.color} opacity-0 group-hover:opacity-10 rounded-full transition-opacity duration-300`}></div>
@@ -193,7 +280,7 @@ const DiscordAutomation = () => {
           <div className="grid md:grid-cols-2 gap-6">
             {servers.map((server, index) => (
               <Card
-                key={server.id}
+                key={server.code}
                 className="group relative bg-card/50 backdrop-blur-sm border border-border hover:border-primary transition-all duration-500 overflow-hidden animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
@@ -202,14 +289,39 @@ const DiscordAutomation = () => {
                 <CardHeader className="relative">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <CardTitle className="text-xl mb-2 group-hover:text-primary transition-colors">
+                      <CardTitle className="text-xl mb-2 group-hover:text-primary transition-colors flex items-center gap-2">
                         {server.name}
+                        {server.loading && <Loader2 className="w-4 h-4 animate-spin" />}
                       </CardTitle>
                       <CardDescription className="text-sm mb-3">
                         {server.description}
                       </CardDescription>
+                      
+                      {/* Member Count */}
+                      <div className="flex items-center gap-4 mb-3">
+                        <div className="flex items-center gap-2 text-xs">
+                          <Users className="w-3 h-3 text-primary" />
+                          <span className="font-medium text-foreground">
+                            {server.loading ? (
+                              "Loading..."
+                            ) : server.error || server.memberCount === null ? (
+                              "Members: Private"
+                            ) : (
+                              <>
+                                {server.memberCount.toLocaleString()} members
+                                {server.onlineCount && (
+                                  <span className="text-muted-foreground">
+                                    {" "}• {server.onlineCount.toLocaleString()} online
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-                        <Users className="w-3 h-3" />
+                        <Shield className="w-3 h-3" />
                         <span className="font-medium text-primary">{server.role}</span>
                       </div>
                     </div>
@@ -270,6 +382,15 @@ const DiscordAutomation = () => {
                               </li>
                             ))}
                           </ul>
+                          
+                          <div className="mt-4 pt-4 border-t border-border/50">
+                            <p className="text-xs font-semibold text-muted-foreground mb-2">Sample Commands:</p>
+                            <div className="space-y-1">
+                              <code className="text-xs bg-muted/50 px-2 py-1 rounded block">!warn @user [reason]</code>
+                              <code className="text-xs bg-muted/50 px-2 py-1 rounded block">!event create [name] [date]</code>
+                              <code className="text-xs bg-muted/50 px-2 py-1 rounded block">!autorole add @role [condition]</code>
+                            </div>
+                          </div>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -290,21 +411,21 @@ const DiscordAutomation = () => {
                 Need Discord Automation?
               </h3>
               <p className="text-muted-foreground mb-6">
-                I build custom moderation systems, automation bots, and community management tools.
+                I build custom moderation systems, automation bots, and community management tools for Discord servers.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <a href="mailto:your@email.com">
+                <a href="https://discord.gg/6CdCgjsVua" target="_blank" rel="noopener noreferrer">
                   <Button variant="neon" size="lg" className="gap-2">
                     <MessageSquare className="w-5 h-5" />
-                    Contact Me
+                    Contact on Discord
                   </Button>
                 </a>
-                <a href="https://discord.gg/6CdCgjsVua" target="_blank" rel="noopener noreferrer">
+                <Link to="/">
                   <Button variant="outline" size="lg" className="gap-2">
-                    <ExternalLink className="w-5 h-5" />
-                    Join My Discord
+                    <ArrowLeft className="w-5 h-5" />
+                    Back to Portfolio
                   </Button>
-                </a>
+                </Link>
               </div>
             </CardContent>
           </Card>
