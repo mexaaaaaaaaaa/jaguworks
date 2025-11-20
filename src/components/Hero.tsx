@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroBg from "@/assets/hero-bg-new.jpg";
 import profileImg from "@/assets/profile.jpg";
 import ParticleBackground from "./ParticleBackground";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Animated Background */}
@@ -63,13 +66,7 @@ const Hero = () => {
               variant="hero" 
               size="lg"
               className="group"
-              onClick={() => {
-                const activitySection = document.querySelector('section');
-                if (activitySection) {
-                  const nextSection = activitySection.nextElementSibling;
-                  nextSection?.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
+              onClick={() => navigate('/projects')}
             >
               Explore My Universe
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
