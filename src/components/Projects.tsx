@@ -5,10 +5,11 @@ import { Link } from "react-router-dom";
 const Projects = () => {
   const projects = [
     {
-      title: "DarkMC Network",
-      description: "Full-featured Minecraft network with Lifesteal, SMP, Bedwars, and Headsteal game modes",
+      title: "Minecraft Server Plans",
+      description: "Professional SMP setup services with custom features and optimization",
       icon: Code2,
       color: "from-purple-500 to-pink-500",
+      link: "/minecraft-plans",
     },
     {
       title: "DARKBOT",

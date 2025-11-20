@@ -1,0 +1,94 @@
+{
+  "plans": [
+    {
+      "id": "starter",
+      "name": "Starter",
+      "price": 49,
+      "delivery": "1–2 days",
+      "features": [
+        "Basic SMP setup",
+        "Default world",
+        "Essentials kit",
+        "1 custom rank slot"
+      ],
+      "description": "Fast & Professional Delivery — Our team will set up your Minecraft server and deliver console-ready files."
+    },
+    {
+      "id": "standard",
+      "name": "Standard",
+      "price": 199,
+      "delivery": "2–4 days",
+      "features": [
+        "All Starter features",
+        "Custom ranks (VIP)",
+        "Spawn build",
+        "Basic GUI menus",
+        "Crate setup"
+      ],
+      "description": "Fast & Professional Delivery — Our team will set up your Minecraft server and deliver console-ready files."
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "price": 499,
+      "delivery": "3–6 days",
+      "features": [
+        "All Standard features",
+        "Advanced GUI",
+        "Anti-cheat tweaks",
+        "Economy setup",
+        "2 custom ranks"
+      ],
+      "description": "Fast & Professional Delivery — Our team will set up your Minecraft server and deliver console-ready files."
+    },
+    {
+      "id": "premium",
+      "name": "Premium",
+      "price": 999,
+      "delivery": "5–8 days",
+      "features": [
+        "All Pro features",
+        "Custom commands",
+        "Holograms",
+        "Vote crate",
+        "Vote rewards",
+        "Priority support"
+      ],
+      "description": "Fast & Professional Delivery — Our team will set up your Minecraft server and deliver console-ready files."
+    }
+  ],
+  "addons": [
+    {
+      "id": "custom-plugin",
+      "name": "Custom plugin dev",
+      "price": 50000
+    },
+    {
+      "id": "premium-spawn",
+      "name": "Premium spawn build",
+      "price": 50000
+    },
+    {
+      "id": "staff-hiring",
+      "name": "Dedicated staff hiring",
+      "price": 50000
+    },
+    {
+      "id": "headsteal-lifesteal",
+      "name": "Headsteal/Lifesteal modes",
+      "price": 50000
+    }
+  ],
+  "coupons": {
+    "WELCOME10": {
+      "type": "percentage",
+      "value": 10,
+      "description": "10% off"
+    },
+    "FLAT50": {
+      "type": "fixed",
+      "value": 50,
+      "description": "₹50 off"
+    }
+  }
+}
