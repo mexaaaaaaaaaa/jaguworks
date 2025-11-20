@@ -88,56 +88,84 @@ const Projects = () => {
 };
 
 const ProjectCard = ({ project, index, Icon }: any) => {
-  const { ref } = use3DTilt({ maxTilt: 10, scale: 1.03 });
+  const { ref: tiltRef, isHovered } = use3DTilt({ maxTilt: 8, scale: 1.05, speed: 300 });
   const { ref: scrollRef, isVisible } = useScrollAnimation({
     threshold: 0.2,
-    animationType: 'scale',
-    stagger: 100,
+    animationType: 'fade',
+    stagger: 150,
     index,
   });
 
   return (
-    <div ref={scrollRef as any}>
+    <div ref={scrollRef as any} className={`transition-all duration-700 ${
+      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+    }`}>
       <div 
-        ref={ref as any}
-        className={`group relative glass-frost rounded-xl p-6 hover:border-primary transition-all duration-500 animated-border hover-lift transform-3d ${
-          isVisible ? 'opacity-100 animate-bounce-in' : 'opacity-0'
+        ref={tiltRef as any}
+        className={`group relative glass-heavy rounded-2xl p-6 border border-border/50 hover:border-primary/50 transition-all duration-500 overflow-hidden ${
+          isHovered ? 'shadow-2xl shadow-primary/20' : ''
         }`}
-        style={{ animationDelay: `${index * 100}ms` }}
+        style={{ 
+          transitionDelay: `${index * 100}ms`,
+          willChange: 'transform'
+        }}
       >
-        <div className={`w-12 h-12 bg-gradient-to-br ${project.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-500 animate-glow-pulse`}>
-          <Icon className="w-6 h-6 text-white" />
-        </div>
+        {/* Animated gradient background on hover */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
-        <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary group-hover:scale-105 transform transition-all duration-300">
-          {project.title}
-        </h3>
+        {/* Glow effect */}
+        <div className={`absolute -inset-1 bg-gradient-to-br ${project.color} rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-all duration-500`} />
         
-        <p className="text-muted-foreground text-sm mb-4 group-hover:text-foreground transition-colors duration-300">
-          {project.description}
-        </p>
-        
-        {project.link ? (
-          <Link to={project.link}>
+        <div className="relative z-10">
+          {/* Icon with enhanced animation */}
+          <div className={`w-14 h-14 bg-gradient-to-br ${project.color} rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg`}>
+            <Icon className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
+          </div>
+          
+          {/* Title with gradient on hover */}
+          <h3 className="text-xl font-bold mb-3 text-foreground group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-accent group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+            {project.title}
+          </h3>
+          
+          {/* Description */}
+          <p className="text-muted-foreground text-sm mb-5 leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
+            {project.description}
+          </p>
+          
+          {/* Button with enhanced effects */}
+          {project.link ? (
+            <Link to={project.link}>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="relative overflow-hidden group/btn bg-primary/5 hover:bg-primary/10 border border-primary/20 hover:border-primary/40 transition-all duration-300"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  View Project
+                  <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform duration-300" />
+                </span>
+                {/* Shine effect on hover */}
+                <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+              </Button>
+            </Link>
+          ) : (
             <Button 
               variant="ghost" 
               size="sm"
-              className="group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300 ripple"
+              className="relative overflow-hidden group/btn bg-primary/5 hover:bg-primary/10 border border-primary/20 hover:border-primary/40 transition-all duration-300"
             >
-              View Project
-              <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+              <span className="relative z-10 flex items-center gap-2">
+                View Project
+                <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform duration-300" />
+              </span>
+              {/* Shine effect on hover */}
+              <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             </Button>
-          </Link>
-        ) : (
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300 ripple"
-          >
-            View Project
-            <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
-          </Button>
-        )}
+          )}
+        </div>
+        
+        {/* Corner accent */}
+        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-primary/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
     </div>
   );
