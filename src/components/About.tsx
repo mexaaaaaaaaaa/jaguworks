@@ -15,10 +15,16 @@ const About = () => {
       
       <div className="container mx-auto relative z-10">
         <div className="text-center mb-16 animate-slide-in-up">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <div className="inline-block mb-4">
+            <span className="text-sm font-mono text-primary tracking-widest uppercase">Who I Am</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 font-display">
             <span className="gradient-text">About Me</span>
           </h2>
-          <div className="h-1 w-20 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
+          <div className="h-1 w-20 bg-gradient-to-r from-primary via-accent to-secondary mx-auto rounded-full mb-4"></div>
+          <p className="text-muted-foreground max-w-2xl mx-auto font-mono text-sm">
+            Transforming ideas into digital reality
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
