@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 const CinematicReel = () => {
   const projects = [
     {
-      title: "Cinematic Edit – Manish Waah",
+      title: "Cinematic Edit - jagmohan",
       video: "/videos/manishwaah-cinematic.mp4",
       description: "A professionally crafted cinematic edit featuring smooth transitions, expert color grading, and perfectly synced beats that bring the visual narrative to life.",
       tags: ["Transitions", "Color Grade", "Beat Sync"],
@@ -14,7 +14,7 @@ const CinematicReel = () => {
       glowColor: "rgba(219, 39, 119, 0.3)",
     },
     {
-      title: "Cinematic Slow-Mo – DKD Jagmohan",
+      title: "Cinematic Slow-Mo – Jagmohan",
       video: "/videos/dkd-jagmohan-slowmo.mp4",
       description: "An atmospheric masterpiece utilizing slow-motion techniques to create depth, emotion, and dramatic cinematic effects that captivate viewers.",
       tags: ["Slow Motion", "Atmosphere", "Cinematic Effects"],
@@ -22,7 +22,7 @@ const CinematicReel = () => {
       glowColor: "rgba(37, 99, 235, 0.3)",
     },
     {
-      title: "Action Edit – Dynamic Export Reel",
+      title: "Action Edit – srvna fonk",
       video: "/videos/action-export-reel.mp4",
       description: "A high-energy action-packed edit with dynamic effects, precise timing, and beat-driven transitions that showcase advanced editing mastery.",
       tags: ["Action Timing", "Dynamic Effects", "Beat Driven"],
