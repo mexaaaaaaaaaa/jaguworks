@@ -80,42 +80,42 @@ const Contact = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
-          <div className="animate-slide-in-left">
+          <div className="animate-fade-in-left opacity-0">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
+              <div className="animate-fade-in-up opacity-0 stagger-1">
                 <Input
                   type="text"
                   placeholder="Your Name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="bg-card/50 border-primary/30 focus:border-primary text-foreground placeholder:text-muted-foreground"
+                  className="bg-card/50 border-primary/30 focus:border-primary text-foreground placeholder:text-muted-foreground hover:border-primary/50 transition-all duration-300"
                 />
               </div>
 
-              <div>
+              <div className="animate-fade-in-up opacity-0 stagger-2">
                 <Input
                   type="email"
                   placeholder="Your Email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className="bg-card/50 border-primary/30 focus:border-primary text-foreground placeholder:text-muted-foreground"
+                  className="bg-card/50 border-primary/30 focus:border-primary text-foreground placeholder:text-muted-foreground hover:border-primary/50 transition-all duration-300"
                 />
               </div>
 
-              <div>
+              <div className="animate-fade-in-up opacity-0 stagger-3">
                 <Textarea
                   placeholder="Your Message"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   required
                   rows={5}
-                  className="bg-card/50 border-primary/30 focus:border-primary text-foreground placeholder:text-muted-foreground resize-none"
+                  className="bg-card/50 border-primary/30 focus:border-primary text-foreground placeholder:text-muted-foreground resize-none hover:border-primary/50 transition-all duration-300"
                 />
               </div>
 
-              <div className="flex justify-center">
+              <div className="flex justify-center animate-fade-in-up opacity-0 stagger-4">
                 <ReCAPTCHA
                   sitekey={RECAPTCHA_SITE_KEY}
                   onChange={(token) => setCaptchaToken(token || "")}
@@ -124,16 +124,16 @@ const Contact = () => {
                 />
               </div>
 
-              <Button type="submit" variant="hero" size="lg" className="w-full group">
+              <Button type="submit" variant="hero" size="lg" className="w-full group animate-scale-in opacity-0 stagger-5">
                 Send Message
-                <Send className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <Send className="w-5 h-5 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
               </Button>
             </form>
           </div>
 
-          <div className="animate-slide-in-right">
-            <div className="bg-card/50 backdrop-blur-sm border border-primary/20 rounded-2xl p-8 glow-primary">
-              <h3 className="text-2xl font-bold mb-6 text-foreground">Connect on Social</h3>
+          <div className="animate-fade-in-right opacity-0">
+            <div className="bg-card/50 backdrop-blur-sm border border-primary/20 rounded-2xl p-8 glow-primary hover-lift">
+              <h3 className="text-2xl font-bold mb-6 text-foreground animate-fade-in-down opacity-0">Connect on Social</h3>
               <div className="space-y-4">
                 {socials.map((social, index) => {
                   const Icon = social.icon;
@@ -143,19 +143,19 @@ const Contact = () => {
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-4 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-all duration-300 group border border-transparent hover:border-primary ${social.color}`}
+                      className={`flex items-center gap-4 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-all duration-300 group border border-transparent hover:border-primary ${social.color} hover-scale animate-fade-in-left opacity-0 stagger-${index + 1}`}
                     >
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 animate-pulse-glow">
                         <Icon className="w-6 h-6 text-white" />
                       </div>
-                      <span className="text-lg font-medium">{social.name}</span>
+                      <span className="text-lg font-medium group-hover:text-primary transition-colors duration-300">{social.name}</span>
                     </a>
                   );
                 })}
               </div>
 
-              <div className="mt-8 pt-8 border-t border-primary/20">
-                <p className="text-muted-foreground text-sm text-center">Available for freelance projects and collaborations</p>
+              <div className="mt-8 pt-8 border-t border-primary/20 animate-fade-in-up opacity-0 stagger-5">
+                <p className="text-muted-foreground text-sm text-center hover:text-foreground transition-colors duration-300">Available for freelance projects and collaborations</p>
               </div>
             </div>
           </div>

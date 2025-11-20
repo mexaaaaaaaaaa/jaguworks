@@ -80,18 +80,17 @@ const Projects = () => {
             return (
               <div 
                 key={index}
-                className="group relative bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className={`group relative bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border hover-lift animate-scale-in opacity-0 stagger-${index + 1}`}
               >
-                <div className={`w-12 h-12 bg-gradient-to-br ${project.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`w-12 h-12 bg-gradient-to-br ${project.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 animate-pulse-glow`}>
                   <Icon className="w-6 h-6 text-white" />
                 </div>
                 
-                <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors">
+                <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary group-hover:scale-105 transform transition-all duration-300">
                   {project.title}
                 </h3>
                 
-                <p className="text-muted-foreground text-sm mb-4">
+                <p className="text-muted-foreground text-sm mb-4 group-hover:text-foreground transition-colors duration-300">
                   {project.description}
                 </p>
                 
@@ -100,20 +99,20 @@ const Projects = () => {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      className="group-hover:text-primary transition-colors"
+                      className="group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300"
                     >
                       View Project
-                      <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
                     </Button>
                   </Link>
                 ) : (
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="group-hover:text-primary transition-colors"
+                    className="group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300"
                   >
                     View Project
-                    <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
                   </Button>
                 )}
               </div>

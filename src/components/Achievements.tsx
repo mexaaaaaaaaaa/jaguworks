@@ -58,18 +58,17 @@ const Achievements = () => {
             return (
               <div 
                 key={index}
-                className="group relative bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className={`group relative bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border hover-lift animate-scale-in opacity-0 stagger-${index + 1}`}
               >
-                <div className={`w-16 h-16 bg-gradient-to-br ${achievement.color} rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 mx-auto`}>
+                <div className={`w-16 h-16 bg-gradient-to-br ${achievement.color} rounded-full flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 mx-auto animate-pulse-glow`}>
                   <Icon className="w-8 h-8 text-white" />
                 </div>
                 
-                <h3 className="text-xl font-bold text-center mb-2 text-foreground group-hover:text-primary transition-colors">
+                <h3 className="text-xl font-bold text-center mb-2 text-foreground group-hover:text-primary transition-colors group-hover:scale-105 transform duration-300">
                   {achievement.title}
                 </h3>
                 
-                <p className="text-muted-foreground text-sm text-center">
+                <p className="text-muted-foreground text-sm text-center group-hover:text-foreground transition-colors duration-300">
                   {achievement.description}
                 </p>
               </div>

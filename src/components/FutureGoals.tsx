@@ -58,22 +58,21 @@ const FutureGoals = () => {
                 return (
                   <div 
                     key={index}
-                    className="relative"
-                    style={{ animationDelay: `${index * 0.2}s` }}
+                    className={`relative animate-fade-in-right opacity-0 stagger-${index + 1}`}
                   >
                     <div className="flex items-start gap-6">
                       {/* Icon */}
-                      <div className={`relative z-10 flex-shrink-0 w-16 h-16 bg-gradient-to-br ${goal.color} rounded-full flex items-center justify-center glow-primary`}>
+                      <div className={`relative z-10 flex-shrink-0 w-16 h-16 bg-gradient-to-br ${goal.color} rounded-full flex items-center justify-center glow-primary hover:scale-110 hover:rotate-12 transition-all duration-300 animate-pulse-glow`}>
                         <Icon className="w-8 h-8 text-white" />
                       </div>
                       
                       {/* Content */}
-                      <div className="flex-1 bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border">
+                      <div className="flex-1 bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border hover-lift group">
                         <div className="flex items-center gap-4 mb-2">
-                          <span className="text-3xl font-bold text-primary">{goal.year}</span>
-                          <h3 className="text-xl font-bold text-foreground">{goal.title}</h3>
+                          <span className="text-3xl font-bold text-primary group-hover:scale-110 transition-transform duration-300">{goal.year}</span>
+                          <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">{goal.title}</h3>
                         </div>
-                        <p className="text-muted-foreground">{goal.description}</p>
+                        <p className="text-muted-foreground group-hover:text-foreground transition-colors duration-300">{goal.description}</p>
                       </div>
                     </div>
                   </div>
