@@ -23,6 +23,7 @@ import PaymentDetails from "./pages/PaymentDetails";
 import PaymentReturn from "./pages/PaymentReturn";
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
+import PromoNotifications from "./components/PromoNotifications";
 import { useConsoleMessage, useKonamiCode } from "./hooks/useEasterEggs";
 import { toast } from "sonner";
 
@@ -84,6 +85,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Navigation />
+            <PromoNotifications />
             <div className="pt-16">
               <Suspense fallback={
                 <div className="min-h-screen flex items-center justify-center">
