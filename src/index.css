@@ -213,7 +213,7 @@ All colors MUST be HSL.
     inset: 0;
     background: inherit;
     border-radius: inherit;
-    z-index: 0;
+    z-index: -1;
   }
   
   .animated-border:hover::before {
