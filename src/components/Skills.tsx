@@ -57,24 +57,23 @@ const Skills = () => {
             return (
               <div 
                 key={index}
-                className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className={`bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border hover-lift animate-rotate-in opacity-0 stagger-${index + 1}`}
               >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className={`w-14 h-14 bg-gradient-to-br ${category.color} rounded-lg flex items-center justify-center`}>
+                <div className="flex items-center gap-4 mb-4 group">
+                  <div className={`w-14 h-14 bg-gradient-to-br ${category.color} rounded-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 animate-pulse-glow`}>
                     <Icon className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-foreground">{category.title}</h3>
+                  <h3 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">{category.title}</h3>
                 </div>
                 
                 <div className="space-y-2 mb-4">
                   {category.skills.map((skill, idx) => (
                     <div 
                       key={idx}
-                      className="flex items-center gap-2 text-muted-foreground"
+                      className={`flex items-center gap-2 text-muted-foreground hover:text-foreground transition-all duration-300 animate-fade-in-left opacity-0 stagger-${idx + 1}`}
                     >
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
-                      <span>{skill}</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+                      <span className="hover:translate-x-1 transition-transform duration-200">{skill}</span>
                     </div>
                   ))}
                 </div>
@@ -83,12 +82,12 @@ const Skills = () => {
                 <div className="mt-4">
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-muted-foreground">Proficiency</span>
-                    <span className="text-primary font-bold">{category.progress}%</span>
+                    <span className="text-primary font-bold animate-fade-in-up">{category.progress}%</span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div 
-                      className={`h-full bg-gradient-to-r ${category.color} rounded-full transition-all duration-1000`}
-                      style={{ width: `${category.progress}%` }}
+                      className={`h-full bg-gradient-to-r ${category.color} rounded-full transition-all duration-1000 ease-out hover:brightness-125 animate-[width_1.5s_ease-out_forwards]`}
+                      style={{ width: `${category.progress}%`, animationDelay: `${index * 0.2}s` }}
                     ></div>
                   </div>
                 </div>
