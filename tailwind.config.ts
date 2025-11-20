@@ -150,6 +150,14 @@ export default {
             transform: "rotate(360deg)",
           },
         },
+        "width": {
+          "0%": {
+            width: "0%",
+          },
+          "100%": {
+            width: "100%",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",

@@ -3,7 +3,6 @@ import About from "@/components/About";
 import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
 import Achievements from "@/components/Achievements";
-import MinecraftPlans from "@/components/MinecraftPlans";
 import FutureGoals from "@/components/FutureGoals";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
@@ -16,7 +15,6 @@ const Index = () => {
       <Projects />
       <Skills />
       <Achievements />
-      <MinecraftPlans />
       <FutureGoals />
       <Contact />
       <Footer />

@@ -14,7 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          addons: Json | null
+          buyer_discord: string | null
+          buyer_email: string
+          buyer_name: string
+          buyer_phone: string | null
+          cloudflare_enabled: boolean | null
+          cloudflare_txn_id: string | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          invoice_url: string | null
+          order_id: string
+          paid_at: string | null
+          payment_txn_id: string | null
+          plan_name: string
+          plan_price: number
+          server_access_details: string | null
+          status: string | null
+          total_amount: number
+          updated_at: string | null
+        }
+        Insert: {
+          addons?: Json | null
+          buyer_discord?: string | null
+          buyer_email: string
+          buyer_name: string
+          buyer_phone?: string | null
+          cloudflare_enabled?: boolean | null
+          cloudflare_txn_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          invoice_url?: string | null
+          order_id: string
+          paid_at?: string | null
+          payment_txn_id?: string | null
+          plan_name: string
+          plan_price: number
+          server_access_details?: string | null
+          status?: string | null
+          total_amount: number
+          updated_at?: string | null
+        }
+        Update: {
+          addons?: Json | null
+          buyer_discord?: string | null
+          buyer_email?: string
+          buyer_name?: string
+          buyer_phone?: string | null
+          cloudflare_enabled?: boolean | null
+          cloudflare_txn_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          invoice_url?: string | null
+          order_id?: string
+          paid_at?: string | null
+          payment_txn_id?: string | null
+          plan_name?: string
+          plan_price?: number
+          server_access_details?: string | null
+          status?: string | null
+          total_amount?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
