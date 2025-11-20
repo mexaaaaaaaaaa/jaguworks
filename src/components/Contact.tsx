@@ -9,7 +9,7 @@ import emailjs from "@emailjs/browser";
 import ReCAPTCHA from "react-google-recaptcha";
 import { supabase } from "@/integrations/supabase/client";
 
-const RECAPTCHA_SITE_KEY = "6LemHRIsAAAAAIFuXQxYdXuLT08w8JN-sXsKQwmr"; // tumhara v2 sitekey
+const RECAPTCHA_SITE_KEY = "6Le2cBIsAAAAAI6HKsBSH6nH8rijvcT9juIVnyGU";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
