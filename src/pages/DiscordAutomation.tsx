@@ -43,6 +43,30 @@ const DiscordAutomation = () => {
     { server: "Creator", role: "10+ Discord Servers", color: "from-green-500 to-emerald-500" },
   ];
 
+  // TODO: Populate with actual team member data
+  const teamMembers = [
+    // Example structure - replace with real data:
+    // {
+    //   name: "Username#1234",
+    //   role: "Lead Moderator",
+    //   server: "FleetMC",
+    //   avatarUrl: "https://...",
+    //   bio: "Specializes in anti-raid systems"
+    // }
+  ];
+
+  // TODO: Populate with actual collaborator data
+  const collaborators = [
+    // Example structure - replace with real data:
+    // {
+    //   name: "Username#5678",
+    //   role: "Bot Developer",
+    //   servers: ["FireMC", "BattelPai"],
+    //   avatarUrl: "https://...",
+    //   contributions: "Custom moderation bots"
+    // }
+  ];
+
   const serverConfigs = [
     {
       code: "6GtfRUG7f8",
@@ -426,6 +450,152 @@ const DiscordAutomation = () => {
           </div>
         </div>
       </section>
+
+      {/* Server Statistics */}
+      <section className="py-16 px-4 bg-gradient-to-b from-background to-card/50">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4 gradient-text">Server Statistics</h2>
+            <p className="text-muted-foreground">Combined metrics across all managed servers</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            <Card className="bg-card/50 backdrop-blur-sm border-border hover:border-primary transition-all duration-300">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold gradient-text mb-2">
+                  {servers.reduce((sum, s) => sum + (s.memberCount || 0), 0).toLocaleString()}
+                </div>
+                <div className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                  <Users className="w-4 h-4" />
+                  Total Members
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/50 backdrop-blur-sm border-border hover:border-primary transition-all duration-300">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold gradient-text mb-2">
+                  {servers.reduce((sum, s) => sum + (s.onlineCount || 0), 0).toLocaleString()}
+                </div>
+                <div className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                  <Shield className="w-4 h-4 text-green-500" />
+                  Online Now
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/50 backdrop-blur-sm border-border hover:border-primary transition-all duration-300">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold gradient-text mb-2">
+                  {servers.length}
+                </div>
+                <div className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                  <Bot className="w-4 h-4" />
+                  Servers Managed
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/50 backdrop-blur-sm border-border hover:border-primary transition-all duration-300">
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold gradient-text mb-2">
+                  10+
+                </div>
+                <div className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                  <Settings className="w-4 h-4" />
+                  Servers Created
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Team Credits Section */}
+      {teamMembers.length > 0 && (
+        <section className="py-16 px-4">
+          <div className="container mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4 gradient-text">Team & Moderators</h2>
+              <p className="text-muted-foreground">Key staff members across our Discord communities</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {teamMembers.map((member, index) => (
+                <Card
+                  key={index}
+                  className="group bg-card/50 backdrop-blur-sm border border-border hover:border-primary transition-all duration-300 animate-fade-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
+                        {member.avatarUrl ? (
+                          <img src={member.avatarUrl} alt={member.name} className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          <Users className="w-6 h-6 text-primary" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-foreground">{member.name}</div>
+                        <div className="text-sm text-muted-foreground">{member.server}</div>
+                      </div>
+                    </div>
+                    <Badge variant="secondary" className="mb-3">{member.role}</Badge>
+                    {member.bio && (
+                      <p className="text-xs text-muted-foreground">{member.bio}</p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Collaborators Showcase */}
+      {collaborators.length > 0 && (
+        <section className="py-16 px-4 bg-gradient-to-b from-card/50 to-background">
+          <div className="container mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4 gradient-text">Key Collaborators</h2>
+              <p className="text-muted-foreground">Developers and contributors who made these systems possible</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {collaborators.map((collab, index) => (
+                <Card
+                  key={index}
+                  className="group bg-card/50 backdrop-blur-sm border border-border hover:border-primary transition-all duration-300 animate-fade-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
+                        {collab.avatarUrl ? (
+                          <img src={collab.avatarUrl} alt={collab.name} className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          <Bot className="w-8 h-8 text-primary" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg mb-2">{collab.name}</h3>
+                        <Badge variant="secondary" className="mb-3">{collab.role}</Badge>
+                        <div className="text-sm text-muted-foreground mb-2">
+                          <span className="font-semibold">Servers:</span> {collab.servers.join(", ")}
+                        </div>
+                        {collab.contributions && (
+                          <p className="text-xs text-muted-foreground">{collab.contributions}</p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Footer CTA */}
       <section className="py-16 px-4">
