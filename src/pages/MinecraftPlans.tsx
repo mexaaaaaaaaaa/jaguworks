@@ -121,7 +121,7 @@ const MinecraftPlans = () => {
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold mb-4 gradient-text">Extra Features & Custom Add-ons</h3>
               <p className="text-muted-foreground mb-6">
-                Add-on Charge: <span className="text-accent font-bold text-xl">₹50,000 per extra feature</span>
+                Add-on Charge: <span className="text-accent font-bold text-xl">₹5 per extra feature</span>
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {plansData.addons.map((addon) => (
