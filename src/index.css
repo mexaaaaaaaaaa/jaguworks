@@ -249,6 +249,15 @@ All colors MUST be HSL.
       background-position: 50px 50px;
     }
   }
+
+  @keyframes progress {
+    from {
+      width: 0%;
+    }
+    to {
+      width: 100%;
+    }
+  }
   
   /* Premium animated border */
   .animated-border {
@@ -567,6 +576,10 @@ All colors MUST be HSL.
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     opacity: 0.5;
+  }
+
+  .animate-progress {
+    animation: progress 4s linear;
   }
   
   /* Ripple Effect */
