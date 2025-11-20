@@ -161,6 +161,19 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+  /* Accessibility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
   /* Neon glow text effects */
   .text-glow-primary {
     text-shadow: var(--glow-primary);
