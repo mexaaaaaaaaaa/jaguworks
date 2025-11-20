@@ -63,7 +63,13 @@ const Hero = () => {
               variant="hero" 
               size="lg"
               className="group"
-              onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => {
+                const activitySection = document.querySelector('section');
+                if (activitySection) {
+                  const nextSection = activitySection.nextElementSibling;
+                  nextSection?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
             >
               Explore My Universe
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
