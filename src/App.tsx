@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
-import { lazy, Suspense, useState, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import Index from "./pages/Index";
 import AboutPage from "./pages/About";
 import FeaturedProjects from "./pages/FeaturedProjects";
@@ -23,7 +23,8 @@ import PaymentDetails from "./pages/PaymentDetails";
 import PaymentReturn from "./pages/PaymentReturn";
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
-import { useConsoleMessage } from "./hooks/useEasterEggs";
+import { useConsoleMessage, useKonamiCode } from "./hooks/useEasterEggs";
+import { toast } from "sonner";
 
 // Lazy load blog pages
 const Blog = lazy(() => import("./pages/Blog"));
@@ -35,34 +36,30 @@ const App = () => {
   useConsoleMessage();
 
   // Konami Code Easter Egg
-  const [, setKonamiActivated] = useState(false);
-  
-  useEffect(() => {
-    const { useKonamiCode } = require('./hooks/useEasterEggs');
-    useKonamiCode(() => {
-      setKonamiActivated(true);
-      const confetti = () => {
-        const colors = ['#ff006e', '#00ff9d', '#00d9ff', '#ff9f1c'];
-        for (let i = 0; i < 100; i++) {
-          const confetti = document.createElement('div');
-          confetti.style.cssText = `
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: ${colors[Math.floor(Math.random() * colors.length)]};
-            left: ${Math.random() * 100}%;
-            top: -10px;
-            z-index: 9999;
-            animation: confettiFall ${2 + Math.random() * 3}s linear forwards;
-            transform: rotate(${Math.random() * 360}deg);
-          `;
-          document.body.appendChild(confetti);
-          setTimeout(() => confetti.remove(), 5000);
-        }
-      };
-      
-      // Add confetti animation
+  useKonamiCode(() => {
+    // Create confetti effect
+    const colors = ['#ff006e', '#00ff9d', '#00d9ff', '#ff9f1c'];
+    for (let i = 0; i < 100; i++) {
+      const confetti = document.createElement('div');
+      confetti.style.cssText = `
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        left: ${Math.random() * 100}%;
+        top: -10px;
+        z-index: 9999;
+        animation: confettiFall ${2 + Math.random() * 3}s linear forwards;
+        transform: rotate(${Math.random() * 360}deg);
+      `;
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 5000);
+    }
+    
+    // Add confetti animation style
+    if (!document.getElementById('confetti-style')) {
       const style = document.createElement('style');
+      style.id = 'confetti-style';
       style.textContent = `
         @keyframes confettiFall {
           to {
@@ -72,15 +69,12 @@ const App = () => {
         }
       `;
       document.head.appendChild(style);
-      
-      confetti();
-      import('sonner').then(({ toast }) => {
-        toast.success('🎮 Konami Code Activated! You found the secret!', {
-          duration: 5000,
-        });
-      });
+    }
+    
+    toast.success('🎮 Konami Code Activated! You found the secret!', {
+      duration: 5000,
     });
-  }, []);
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
