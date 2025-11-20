@@ -80,7 +80,7 @@ const Projects = () => {
             return (
               <div 
                 key={index}
-                className={`group relative bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border hover-lift animate-scale-in opacity-0 stagger-${index + 1}`}
+                className={`group relative bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border hover-lift animate-scale-in stagger-${index + 1}`}
               >
                 <div className={`w-12 h-12 bg-gradient-to-br ${project.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 animate-pulse-glow`}>
                   <Icon className="w-6 h-6 text-white" />
