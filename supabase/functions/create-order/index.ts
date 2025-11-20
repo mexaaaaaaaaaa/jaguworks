@@ -94,7 +94,7 @@ serve(async (req) => {
     const razorpayKeyId = Deno.env.get('RAZORPAY_KEY_ID') || '⟪RAZORPAY_KEY_ID⟫';
     const razorpayKeySecret = Deno.env.get('RAZORPAY_KEY_SECRET') || '⟪RAZORPAY_KEY_SECRET⟫';
 
-    // Create Razorpay order
+    // Create Razorpay order data
     const razorpayOrderData = {
       amount: Math.round(calculatedTotal * 100), // Amount in paise (smallest currency unit)
       currency: 'INR',
@@ -107,15 +107,29 @@ serve(async (req) => {
 
     console.log('Creating Razorpay order:', razorpayOrderData);
 
-    // Call Razorpay API to create order
+    // If using placeholder/mock keys, return mock data immediately
+    if (razorpayKeyId.includes('⟪') || razorpayKeySecret.includes('⟪')) {
+      console.log('Using placeholder keys - returning mock order for testing');
+      return new Response(
+        JSON.stringify({
+          success: true,
+          orderId: orderId,
+          razorpayOrderId: 'order_mock_' + Date.now(),
+          amount: calculatedTotal,
+          currency: 'INR',
+          razorpayKeyId: razorpayKeyId,
+          isMockOrder: true, // Flag to indicate this is a test order
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Call Razorpay API to create order (only if real keys are present)
     // Docs: https://razorpay.com/docs/api/orders/
-    // Use proper UTF-8 encoding for credentials
     const credentials = `${razorpayKeyId}:${razorpayKeySecret}`;
-    const encodedCredentials = btoa(
-      Array.from(new TextEncoder().encode(credentials))
-        .map(byte => String.fromCharCode(byte))
-        .join('')
-    );
+    const encodedCredentials = btoa(credentials); // Safe now since no Unicode placeholders
     
     const razorpayResponse = await fetch('https://api.razorpay.com/v1/orders', {
       method: 'POST',
@@ -129,26 +143,6 @@ serve(async (req) => {
     if (!razorpayResponse.ok) {
       const errorText = await razorpayResponse.text();
       console.error('Razorpay API error:', errorText);
-      
-      // If using placeholder keys, return mock data for testing
-      if (razorpayKeyId.includes('⟪') || razorpayKeySecret.includes('⟪')) {
-        console.log('Using placeholder keys - returning mock order for testing');
-        return new Response(
-          JSON.stringify({
-            success: true,
-            orderId: orderId,
-            razorpayOrderId: 'order_mock_' + Date.now(),
-            amount: calculatedTotal,
-            currency: 'INR',
-            razorpayKeyId: razorpayKeyId,
-            isMockOrder: true, // Flag to indicate this is a test order
-          }),
-          {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
-      }
-      
       throw new Error(`Razorpay order creation failed: ${errorText}`);
     }
 
