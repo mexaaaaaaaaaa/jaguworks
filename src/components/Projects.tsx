@@ -34,6 +34,7 @@ const Projects = () => {
       description: "Professional 10-scene cinematic Minecraft video production",
       icon: Film,
       color: "from-orange-500 to-red-500",
+      link: "/cinematic-reel",
     },
     {
       title: "Website Templates",
