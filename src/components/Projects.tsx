@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Code2, Bot, Cpu, Film, Layout, Settings, Briefcase } from "lucide-react";
 import { Link } from "react-router-dom";
+import { use3DTilt } from "@/hooks/use3DTilt";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const Projects = () => {
   const projects = [
@@ -77,50 +79,67 @@ const Projects = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {projects.map((project, index) => {
             const Icon = project.icon;
-            return (
-              <div 
-                key={index}
-                className={`group relative bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border hover-lift animate-scale-in stagger-${index + 1}`}
-              >
-                <div className={`w-12 h-12 bg-gradient-to-br ${project.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 animate-pulse-glow`}>
-                  <Icon className="w-6 h-6 text-white" />
-                </div>
-                
-                <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary group-hover:scale-105 transform transition-all duration-300">
-                  {project.title}
-                </h3>
-                
-                <p className="text-muted-foreground text-sm mb-4 group-hover:text-foreground transition-colors duration-300">
-                  {project.description}
-                </p>
-                
-                {project.link ? (
-                  <Link to={project.link}>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300"
-                    >
-                      View Project
-                      <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
-                    </Button>
-                  </Link>
-                ) : (
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300"
-                  >
-                    View Project
-                    <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
-                  </Button>
-                )}
-              </div>
-            );
+            return <ProjectCard key={index} project={project} index={index} Icon={Icon} />;
           })}
         </div>
       </div>
     </section>
+  );
+};
+
+const ProjectCard = ({ project, index, Icon }: any) => {
+  const { ref } = use3DTilt({ maxTilt: 10, scale: 1.03 });
+  const { ref: scrollRef, isVisible } = useScrollAnimation({
+    threshold: 0.2,
+    animationType: 'scale',
+    stagger: 100,
+    index,
+  });
+
+  return (
+    <div ref={scrollRef as any}>
+      <div 
+        ref={ref as any}
+        className={`group relative glass-frost rounded-xl p-6 hover:border-primary transition-all duration-500 animated-border hover-lift transform-3d ${
+          isVisible ? 'opacity-100 animate-bounce-in' : 'opacity-0'
+        }`}
+        style={{ animationDelay: `${index * 100}ms` }}
+      >
+        <div className={`w-12 h-12 bg-gradient-to-br ${project.color} rounded-lg flex items-center justify-center mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-500 animate-glow-pulse`}>
+          <Icon className="w-6 h-6 text-white" />
+        </div>
+        
+        <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary group-hover:scale-105 transform transition-all duration-300">
+          {project.title}
+        </h3>
+        
+        <p className="text-muted-foreground text-sm mb-4 group-hover:text-foreground transition-colors duration-300">
+          {project.description}
+        </p>
+        
+        {project.link ? (
+          <Link to={project.link}>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300 ripple"
+            >
+              View Project
+              <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+            </Button>
+          </Link>
+        ) : (
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="group-hover:text-primary group-hover:bg-primary/10 transition-all duration-300 ripple"
+          >
+            View Project
+            <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+          </Button>
+        )}
+      </div>
+    </div>
   );
 };
 
