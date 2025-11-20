@@ -468,8 +468,12 @@ All colors MUST be HSL.
   }
   
   .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
   
   /* Stagger delays for list items */
   .stagger-1 { animation-delay: 0.1s; }
