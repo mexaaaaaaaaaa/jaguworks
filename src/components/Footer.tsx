@@ -1,7 +1,28 @@
-import { Heart, Github, Instagram, Youtube, Mail } from "lucide-react";
+import { Heart, Github, Instagram, Youtube, Mail, Send } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error("Please enter your email");
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    // Simulate newsletter subscription (replace with actual EmailJS or API call)
+    setTimeout(() => {
+      toast.success("Thanks for subscribing! 🎉");
+      setEmail("");
+      setIsSubmitting(false);
+    }, 1000);
+  };
   
   const socialLinks = [
     { icon: Github, url: "https://github.com/theghoxt69-creator/FIRECRAFTX", label: "GitHub" },
@@ -50,7 +71,7 @@ const Footer = () => {
           <div className="space-y-4 animate-fade-in-up opacity-0 stagger-2">
             <h4 className="text-lg font-display font-semibold text-foreground">Quick Links</h4>
             <nav className="flex flex-col gap-2">
-              {['About', 'Projects', 'Skills', 'Achievements', 'Goals', 'Contact'].map((link, index) => (
+              {['About', 'Projects', 'Skills', 'Blog', 'Achievements', 'Goals', 'Contact'].map((link, index) => (
                 <a
                   key={index}
                   href={`/${link.toLowerCase()}`}
@@ -63,19 +84,33 @@ const Footer = () => {
             </nav>
           </div>
           
-          {/* Newsletter/CTA */}
+          {/* Newsletter */}
           <div className="space-y-4 animate-fade-in-up opacity-0 stagger-3">
-            <h4 className="text-lg font-display font-semibold text-foreground">Let's Connect</h4>
+            <h4 className="text-lg font-display font-semibold text-foreground">Stay Updated</h4>
             <p className="text-muted-foreground text-sm">
-              Available for freelance projects and collaborations.
+              Get notified about new projects, blog posts, and updates.
             </p>
-            <a
-              href="/contact"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-medium hover:scale-105 hover:shadow-lg hover:shadow-primary/50 transition-all duration-300"
-            >
-              Get in Touch
-              <Mail className="w-4 h-4" />
-            </a>
+            <form onSubmit={handleSubscribe} className="flex gap-2">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="flex-1 px-4 py-2 bg-card/50 border border-border rounded-lg focus:outline-none focus:border-primary transition-colors text-sm"
+                disabled={isSubmitting}
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-medium hover:scale-105 hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <Send className="w-5 h-5" />
+                )}
+              </button>
+            </form>
           </div>
         </div>
         

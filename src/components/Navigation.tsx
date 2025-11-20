@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, User, Briefcase, Award, Target, Mail, Code, Menu } from "lucide-react";
+import { Home, User, Briefcase, Award, Target, Mail, Code, Menu, BookOpen } from "lucide-react";
 import { useState } from "react";
 import {
   Sheet,
@@ -17,6 +17,7 @@ const Navigation = () => {
     { path: "/about", label: "About", icon: User },
     { path: "/projects", label: "Projects", icon: Briefcase },
     { path: "/skills", label: "Skills", icon: Code },
+    { path: "/blog", label: "Blog", icon: BookOpen },
     { path: "/achievements", label: "Achievements", icon: Award },
     { path: "/goals", label: "Goals", icon: Target },
     { path: "/contact", label: "Contact", icon: Mail },

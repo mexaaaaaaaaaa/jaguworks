@@ -1,0 +1,67 @@
+[
+  {
+    "slug": "building-minecraft-server",
+    "title": "How I Built a Professional Minecraft Server from Scratch",
+    "excerpt": "A complete guide to setting up a production-ready Minecraft SMP with custom plugins, optimization techniques, and best practices for performance.",
+    "category": "Tutorial",
+    "date": "2024-01-15",
+    "readTime": "8 min",
+    "author": "Jagmohan",
+    "featured": true,
+    "image": "/blog/minecraft-server.jpg",
+    "views": 1250,
+    "content": "# Building a Professional Minecraft Server\n\nIn this comprehensive guide, I'll walk you through the entire process of setting up a production-ready Minecraft server.\n\n## Requirements\n- Dedicated server or VPS\n- Java 17 or higher\n- Basic Linux knowledge\n\n## Step 1: Server Setup\nFirst, we'll configure the base server environment...\n\n## Step 2: Installing Spigot/Paper\nPaper is the recommended server software for performance...\n\n## Step 3: Essential Plugins\n- EssentialsX for basic commands\n- WorldEdit for building\n- CoreProtect for logging\n- LuckPerms for permissions\n\n## Optimization Tips\n1. Configure server.properties correctly\n2. Use aikar's flags for JVM\n3. Implement proper chunk loading\n\n## Conclusion\nWith these steps, you'll have a professional Minecraft server ready for players!"
+  },
+  {
+    "slug": "ai-telegram-bots-guide",
+    "title": "Building AI-Powered Telegram Bots - Complete Guide",
+    "excerpt": "Learn how to create intelligent Telegram bots with ChatGPT integration, natural language processing, and advanced automation features.",
+    "category": "Tutorial",
+    "date": "2024-01-10",
+    "readTime": "12 min",
+    "author": "Jagmohan",
+    "featured": false,
+    "image": "/blog/telegram-bot.jpg",
+    "views": 890,
+    "content": "# AI-Powered Telegram Bots\n\nDiscover how to build intelligent Telegram bots that can understand and respond to users naturally.\n\n## What We'll Build\n- AI chatbot with memory\n- Image generation bot\n- Voice message transcription\n- Auto-moderation features\n\n## Tech Stack\n- Python 3.10+\n- python-telegram-bot library\n- OpenAI API\n- Redis for session management\n\n## Setting Up\n```python\nfrom telegram import Update\nfrom telegram.ext import Application, CommandHandler, MessageHandler\n\n# Initialize bot\nbot = Application.builder().token(BOT_TOKEN).build()\n```\n\n## AI Integration\nWe'll integrate ChatGPT for intelligent responses...\n\n## Deployment\nDeploy on Railway, Heroku, or your own VPS for 24/7 uptime."
+  },
+  {
+    "slug": "discord-automation-mastery",
+    "title": "Discord Automation: From Zero to Hero",
+    "excerpt": "Master Discord bot development with auto-roles, ticket systems, event management, and custom moderation tools.",
+    "category": "Tutorial",
+    "date": "2024-01-05",
+    "readTime": "10 min",
+    "author": "Jagmohan",
+    "featured": true,
+    "image": "/blog/discord-automation.jpg",
+    "views": 2100,
+    "content": "# Discord Automation Guide\n\nLearn how to automate your Discord server like a pro.\n\n## Features We'll Implement\n1. **Welcome System**\n   - Custom welcome messages\n   - Auto-role assignment\n   - Verification system\n\n2. **Moderation Tools**\n   - Auto-moderation for spam\n   - Warning system\n   - Temporary mutes/bans\n\n3. **Ticket System**\n   - User support tickets\n   - Category-based routing\n   - Transcript logging\n\n## Code Example\n```javascript\nclient.on('guildMemberAdd', async member => {\n  const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');\n  channel.send(`Welcome ${member}!`);\n  \n  const role = member.guild.roles.cache.find(r => r.name === 'Member');\n  await member.roles.add(role);\n});\n```\n\n## Best Practices\n- Use environment variables for tokens\n- Implement rate limiting\n- Log all moderation actions\n- Regular backups"
+  },
+  {
+    "slug": "my-developer-journey",
+    "title": "My Journey as a Self-Taught Developer",
+    "excerpt": "How I went from zero coding knowledge to building a successful freelance career, handling 100+ projects and managing Discord communities.",
+    "category": "Story",
+    "date": "2023-12-20",
+    "readTime": "6 min",
+    "author": "Jagmohan",
+    "featured": false,
+    "image": "/blog/developer-journey.jpg",
+    "views": 3400,
+    "content": "# My Developer Journey\n\nStarting from scratch in 2020, I had no idea what programming was.\n\n## The Beginning\nIt all started when I wanted to create a Minecraft server...\n\n## First Project\nMy first website was terrible - broken CSS, no responsive design. But I learned!\n\n## Growth Milestones\n- **2020**: Built first Minecraft server\n- **2021**: Created first Discord bot\n- **2022**: Launched freelance services\n- **2023**: 100+ completed projects\n- **2024**: Building AI-powered solutions\n\n## Lessons Learned\n1. Start with projects you're passionate about\n2. Don't be afraid to break things\n3. Community is everything\n4. Never stop learning\n\n## Advice for Beginners\nDon't wait for the 'perfect' moment. Start building today!\n\n## What's Next?\nI'm focusing on AI integration and Web3 technologies."
+  },
+  {
+    "slug": "cinematic-editing-techniques",
+    "title": "Cinematic Video Editing - Tips & Tricks",
+    "excerpt": "Professional techniques for creating cinematic gaming montages, slow-motion effects, and action-packed sequences.",
+    "category": "Creative",
+    "date": "2023-12-01",
+    "readTime": "7 min",
+    "author": "Jagmohan",
+    "featured": false,
+    "image": "/blog/cinematic-editing.jpg",
+    "views": 1680,
+    "content": "# Cinematic Editing Masterclass\n\nElevate your gaming content with professional editing techniques.\n\n## Essential Tools\n- DaVinci Resolve (Free!)\n- Adobe Premiere Pro\n- After Effects for VFX\n\n## Techniques\n1. **Slow Motion**\n   - Use 60fps or higher footage\n   - Optical flow for smooth playback\n   - Speed ramping for dramatic effect\n\n2. **Color Grading**\n   - Teal & orange look\n   - Film grain for texture\n   - Contrast curves\n\n3. **Transitions**\n   - Match cuts\n   - Whip pans\n   - Sound design sync\n\n## My Workflow\n1. Organize footage\n2. Rough cut\n3. Add music\n4. Fine-tune timing\n5. Color grade\n6. Add effects\n7. Export in 4K\n\n## Result\nProfessional-looking content that stands out!"
+  }
+]
