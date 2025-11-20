@@ -1,28 +1,31 @@
 import { Server, Zap, Shield, Settings, Sparkles, ChevronRight, Check, Plus, Boxes, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 const MinecraftPlans = () => {
+  const navigate = useNavigate();
   const plans = [
     {
       name: "BASIC PLAN",
-      price: "₹199",
+      price: "₹49",
+      priceNum: 49,
       delivery: "1 Day",
       icon: Server,
       features: [
         "Basic SMP Setup",
-        "EssentialsX + Permissions",
+        "EssentialsX Plugin",
         "Spawn Setup",
-        "Optimization",
         "Basic Commands",
-        "Free bug fixes for 24 hours"
+        "Bug fixes for 24 hours"
       ],
       gradient: "from-neon-purple/20 to-neon-blue/20",
       glowColor: "neon-purple"
     },
     {
       name: "ADVANCED PLAN",
-      price: "₹499",
+      price: "₹199",
+      priceNum: 199,
       delivery: "2–3 Days",
       icon: Zap,
       popular: true,
@@ -30,7 +33,7 @@ const MinecraftPlans = () => {
         "Everything in Basic +",
         "Full Rank System",
         "Custom Scoreboards",
-        "Professional GUI Menus",
+        "GUI Menus",
         "Kits Setup",
         "Anti-Lag Tweaks",
         "Security Setup"
@@ -40,17 +43,17 @@ const MinecraftPlans = () => {
     },
     {
       name: "PREMIUM PLAN",
-      price: "₹999",
+      price: "₹499",
+      priceNum: 499,
       delivery: "3–5 Days",
       icon: Crown,
       features: [
         "Everything in Advanced +",
-        "Completely custom ranks & tags",
+        "Custom ranks & tags",
         "Custom GUIs",
         "Crates setup",
         "Events system",
         "Custom worlds",
-        "Cloudflare Security Optional",
         "Full optimization",
         "7 Days Free support"
       ],
@@ -147,6 +150,7 @@ const MinecraftPlans = () => {
                   {/* CTA Button */}
                   <Button 
                     className={`w-full group/btn bg-${plan.glowColor}/20 hover:bg-${plan.glowColor}/30 text-foreground border border-${plan.glowColor} relative overflow-hidden`}
+                    onClick={() => navigate(`/checkout?plan=${encodeURIComponent(plan.name)}&price=${plan.priceNum}&delivery=${encodeURIComponent(plan.delivery)}`)}
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       Order {plan.name.split(' ')[0]} Setup
