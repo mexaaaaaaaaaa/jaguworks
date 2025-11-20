@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Code2, Bot, Cpu, Film, Layout, Settings, Briefcase } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Projects = () => {
   const projects = [
@@ -20,6 +21,7 @@ const Projects = () => {
       description: "Smart assistant with TTS capabilities and referral system integration",
       icon: Cpu,
       color: "from-blue-500 to-purple-500",
+      link: "/ai-telegram-bots",
     },
     {
       title: "Minecraft Launcher",
@@ -89,14 +91,27 @@ const Projects = () => {
                   {project.description}
                 </p>
                 
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="group-hover:text-primary transition-colors"
-                >
-                  View Project
-                  <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                {project.link ? (
+                  <Link to={project.link}>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="group-hover:text-primary transition-colors"
+                    >
+                      View Project
+                      <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="group-hover:text-primary transition-colors"
+                  >
+                    View Project
+                    <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                )}
               </div>
             );
           })}
