@@ -27,49 +27,47 @@ This is a complete Minecraft server setup plans storefront with cart, checkout f
 - Collects customer information
 - Sends order notifications
 
-## Configuration Placeholders
+## Payment Gateway Integration
 
-Replace these placeholders in the code with your actual values:
+This storefront uses **Razorpay** as the payment gateway with Supabase Edge Functions for secure server-side processing.
 
-### Payment Gateway Integration
-**File**: `src/pages/CheckoutRedirect.tsx`
-```typescript
-// Line ~30: Replace this URL
-const paymentUrl = `⟪EXTERNAL_PAYMENT_URL⟫?order_id=${orderId}&amount=${amount}&return_url=${returnUrl}`;
+### Setup Instructions
 
-// Example:
-const paymentUrl = `https://payment-gateway.example.com/checkout?order_id=${orderId}&amount=${amount}&return_url=${returnUrl}`;
-```
+1. **Read the Razorpay Setup Guide**: See `RAZORPAY_SETUP.md` for complete setup instructions
+2. **Get Razorpay Credentials**: Sign up at https://razorpay.com and get API keys
+3. **Add Secrets to Lovable Cloud**:
+   - `RAZORPAY_KEY_ID`: Your Razorpay Key ID
+   - `RAZORPAY_KEY_SECRET`: Your Razorpay Key Secret  
+   - `RAZORPAY_WEBHOOK_SECRET`: Your Webhook Secret
+4. **Configure Webhook**: Point to `https://fpldktahnurxdfnnhubn.supabase.co/functions/v1/razorpay-webhook`
+5. **Test with Test Mode**: Use Razorpay test cards before going live
 
-### Order Notification Endpoint
-**File**: `src/pages/PaymentReturn.tsx`
-```typescript
-// Line ~40: Replace this endpoint
-const notificationEndpoint = '⟪ORDER_NOTIFICATION_ENDPOINT⟫';
+### Edge Functions
 
-// Example:
-const notificationEndpoint = 'https://your-api.com/api/order-notification';
-```
+**`create-order`** (`supabase/functions/create-order/index.ts`)
+- Validates cart items and total server-side
+- Creates order in database
+- Calls Razorpay API to create payment order
+- Returns order details to frontend
 
-### Email Notification
-**File**: `src/pages/PaymentReturn.tsx`
-```typescript
-// Line ~60: Replace email
-console.log('Email would be sent to: ⟪YOUR_EMAIL_PLACEHOLDER⟫');
+**`razorpay-webhook`** (`supabase/functions/razorpay-webhook/index.ts`)
+- Receives payment confirmation from Razorpay
+- Verifies webhook signature for security
+- Updates order status in database
+- Sends notifications (optional)
 
-// Example:
-console.log('Email would be sent to: your@email.com');
-```
+### Optional Notifications
 
-### Telegram Bot Notification
-**File**: `src/pages/PaymentReturn.tsx`
-```typescript
-// Line ~63: Replace Telegram endpoint
-console.log('Telegram message would be sent to: ⟪YOUR_TELEGRAM_BOT_ENDPOINT⟫');
+You can configure additional notifications in the webhook handler:
 
-// Example:
-const telegramUrl = 'https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage';
-```
+**Email Notifications** (Optional)
+- Uncomment notification code in `supabase/functions/razorpay-webhook/index.ts`
+- Add `ORDER_NOTIFICATION_ENDPOINT` secret
+- Add `YOUR_EMAIL_PLACEHOLDER` secret
+
+**Telegram Notifications** (Optional)  
+- Add `YOUR_TELEGRAM_BOT_ENDPOINT` secret
+- Uncomment Telegram notification code in webhook handler
 
 ## Features
 
@@ -123,36 +121,32 @@ npm run dev
 3. Check console for order data
 4. See success message
 
-## Payment Gateway Integration
+## Production Deployment
 
-### For Production Deployment:
+### Going Live with Razorpay
 
-1. **Uncomment redirect in CheckoutRedirect.tsx**:
-```typescript
-// Line ~38
-window.location.href = paymentUrl;
-```
+1. **Complete KYC**: Verify your Razorpay account
+2. **Switch to Live Keys**: 
+   - Generate Live API keys in Razorpay Dashboard
+   - Update secrets in Lovable Cloud with live credentials
+3. **Update Webhook**: Configure live webhook URL
+4. **Test Small Transaction**: Make a small real payment to verify
+5. **Monitor**: Check webhook logs and payment status
 
-2. **Implement webhook endpoint**:
-Create a server endpoint to handle payment confirmations:
-```javascript
-// Example Node.js/Express webhook
-app.post('/api/payment-webhook', async (req, res) => {
-  const { order_id, status, transaction_id } = req.body;
-  
-  // Verify signature from payment gateway
-  // Update order status in database
-  // Send notifications
-  
-  res.json({ success: true });
-});
-```
+### Security in Production
 
-3. **Configure payment gateway return URL**:
-Set your return URL in payment gateway dashboard:
-```
-https://your-domain.com/payment-return?status=success&order_id={ORDER_ID}
-```
+The integration already includes:
+- ✅ Server-side price validation
+- ✅ Webhook signature verification  
+- ✅ Secure secret storage
+- ✅ HTTPS for all communications
+- ✅ Input validation
+
+Additional recommendations:
+- Implement rate limiting
+- Add CSRF protection
+- Set up payment monitoring alerts
+- Configure refund workflow if needed
 
 ## Order Notification Payload
 

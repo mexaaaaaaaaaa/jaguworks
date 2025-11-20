@@ -3,11 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { Shield, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/hooks/useCart";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 const CheckoutRedirect = () => {
   const navigate = useNavigate();
-  const { getTotal, items } = useCart();
-  const [stage, setStage] = useState<'verifying' | 'redirecting'>('verifying');
+  const { getTotal, items, coupon } = useCart();
+  const [stage, setStage] = useState<'verifying' | 'creating-order' | 'redirecting'>('verifying');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (items.length === 0) {
@@ -15,39 +24,124 @@ const CheckoutRedirect = () => {
       return;
     }
 
-    // Simulate Cloudflare verification (2-3 seconds)
-    const verifyTimer = setTimeout(() => {
-      setStage('redirecting');
-    }, 2500);
+    const initiatePayment = async () => {
+      try {
+        // Stage 1: Cloudflare verification simulation (1.5 seconds)
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setStage('creating-order');
 
-    // Simulate redirect to payment gateway (after 4 seconds total)
-    const redirectTimer = setTimeout(() => {
-      const orderId = `ORD_${Date.now()}`;
-      const amount = getTotal();
-      const returnUrl = encodeURIComponent(`${window.location.origin}/payment-return`);
-      
-      // PLACEHOLDER: Replace ⟪EXTERNAL_PAYMENT_URL⟫ with your actual payment gateway URL
-      // Example: https://payment-gateway.example.com/checkout
-      const paymentUrl = `⟪EXTERNAL_PAYMENT_URL⟫?order_id=${orderId}&amount=${amount}&return_url=${returnUrl}`;
-      
-      // For demo purposes, we'll simulate success and redirect to payment-return
-      // In production, this would redirect to the actual payment gateway
-      console.log('Payment URL:', paymentUrl);
-      console.log('Order ID:', orderId);
-      console.log('Amount:', amount);
-      
-      // Simulate payment success (remove this in production)
-      navigate(`/payment-return?status=success&order_id=${orderId}`);
-      
-      // In production, uncomment this line to redirect to actual payment gateway:
-      // window.location.href = paymentUrl;
-    }, 4000);
+        // Stage 2: Create order via Supabase Edge Function
+        console.log('Creating order with items:', items, 'coupon:', coupon, 'total:', getTotal());
+        
+        const { data, error } = await supabase.functions.invoke('create-order', {
+          body: {
+            items: items,
+            coupon: coupon,
+            total: getTotal(),
+          },
+        });
 
-    return () => {
-      clearTimeout(verifyTimer);
-      clearTimeout(redirectTimer);
+        if (error) {
+          console.error('Order creation error:', error);
+          throw new Error(error.message || 'Failed to create order');
+        }
+
+        console.log('Order created:', data);
+
+        const { orderId, razorpayOrderId, amount, razorpayKeyId, isMockOrder } = data;
+
+        // If using placeholder/mock keys, simulate success
+        if (isMockOrder) {
+          console.log('Mock order - simulating payment success');
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          navigate(`/payment-return?status=success&order_id=${orderId}`);
+          return;
+        }
+
+        // Stage 3: Load Razorpay script and open checkout
+        setStage('redirecting');
+        
+        // Load Razorpay script dynamically
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.async = true;
+        script.onload = () => {
+          // Initialize Razorpay checkout
+          const options = {
+            key: razorpayKeyId,
+            amount: Math.round(amount * 100), // Amount in paise
+            currency: 'INR',
+            name: 'Minecraft Server Setup',
+            description: 'Professional SMP Development',
+            order_id: razorpayOrderId,
+            handler: function (response: any) {
+              // Payment successful
+              console.log('Payment successful:', response);
+              navigate(`/payment-return?status=success&order_id=${orderId}&payment_id=${response.razorpay_payment_id}`);
+            },
+            modal: {
+              ondismiss: function () {
+                // User closed the payment modal
+                toast.error('Payment cancelled');
+                navigate('/cart');
+              }
+            },
+            prefill: {
+              name: '',
+              email: '',
+              contact: '',
+            },
+            theme: {
+              color: '#8B5CF6',
+            },
+            notes: {
+              order_id: orderId,
+            },
+          };
+
+          const rzp = new window.Razorpay(options);
+          
+          rzp.on('payment.failed', function (response: any) {
+            console.error('Payment failed:', response);
+            navigate(`/payment-return?status=failed&order_id=${orderId}&reason=${response.error.reason}`);
+          });
+
+          rzp.open();
+        };
+        
+        script.onerror = () => {
+          throw new Error('Failed to load Razorpay checkout');
+        };
+        
+        document.body.appendChild(script);
+
+      } catch (err: any) {
+        console.error('Payment initiation error:', err);
+        setError(err.message || 'Failed to initiate payment');
+        toast.error(err.message || 'Failed to initiate payment');
+        setTimeout(() => navigate('/cart'), 3000);
+      }
     };
-  }, [navigate, getTotal, items]);
+
+    initiatePayment();
+  }, [navigate, getTotal, items, coupon]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
+        <Card className="max-w-md w-full bg-card/50 backdrop-blur-xl border-2 border-destructive animate-fade-in">
+          <CardContent className="p-12 text-center">
+            <div className="w-20 h-20 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-6">
+              <Shield className="w-10 h-10 text-destructive" />
+            </div>
+            <h2 className="text-2xl font-bold mb-3">Payment Error</h2>
+            <p className="text-muted-foreground mb-6">{error}</p>
+            <p className="text-sm text-muted-foreground">Redirecting back to cart...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
@@ -58,7 +152,7 @@ const CheckoutRedirect = () => {
               <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6 animate-pulse">
                 <Shield className="w-10 h-10 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold mb-3">Cloudflare Verification</h2>
+              <h2 className="text-2xl font-bold mb-3">Security Verification</h2>
               <p className="text-muted-foreground mb-6">
                 Verifying your connection security...
               </p>
@@ -67,17 +161,30 @@ const CheckoutRedirect = () => {
                 <span className="text-sm text-muted-foreground">Please wait</span>
               </div>
             </>
+          ) : stage === 'creating-order' ? (
+            <>
+              <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6">
+                <Loader2 className="w-10 h-10 text-primary animate-spin" />
+              </div>
+              <h2 className="text-2xl font-bold mb-3">Creating Order</h2>
+              <p className="text-muted-foreground mb-6">
+                Preparing your secure payment...
+              </p>
+              <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-primary w-0 animate-[width_2s_ease-in-out_forwards]" />
+              </div>
+            </>
           ) : (
             <>
               <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6">
                 <Loader2 className="w-10 h-10 text-primary animate-spin" />
               </div>
-              <h2 className="text-2xl font-bold mb-3">Redirecting to Payment</h2>
+              <h2 className="text-2xl font-bold mb-3">Opening Payment Gateway</h2>
               <p className="text-muted-foreground mb-6">
-                Taking you to the secure payment gateway...
+                Loading Razorpay secure checkout...
               </p>
               <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-primary w-0 animate-[width_2s_ease-in-out_forwards]" />
+                <div className="h-full bg-primary animate-pulse" />
               </div>
             </>
           )}

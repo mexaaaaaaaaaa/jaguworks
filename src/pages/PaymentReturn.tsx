@@ -17,6 +17,8 @@ const PaymentReturn = () => {
   
   const status = searchParams.get('status');
   const orderId = searchParams.get('order_id');
+  const paymentId = searchParams.get('payment_id');
+  const failureReason = searchParams.get('reason');
   
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
@@ -92,9 +94,19 @@ const PaymentReturn = () => {
           <CardContent className="p-12 text-center">
             <XCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-3">Payment Failed</h2>
-            <p className="text-muted-foreground mb-6">
-              There was an issue processing your payment. Please try again or contact support.
+            <p className="text-muted-foreground mb-4">
+              There was an issue processing your payment.
             </p>
+            {failureReason && (
+              <p className="text-sm text-muted-foreground mb-6 font-mono bg-muted/50 p-3 rounded">
+                Reason: {failureReason}
+              </p>
+            )}
+            {orderId && (
+              <p className="text-sm text-muted-foreground mb-6">
+                Order ID: <span className="font-mono text-foreground">{orderId}</span>
+              </p>
+            )}
             <Button onClick={() => navigate('/cart')}>
               Return to Cart
             </Button>
@@ -133,10 +145,15 @@ const PaymentReturn = () => {
             <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-3">✅ Payment Done</h1>
-            <p className="text-muted-foreground mb-4">
+            <h1 className="text-3xl font-bold mb-3">✅ Payment Successful</h1>
+            <p className="text-muted-foreground mb-2">
               Order ID: <span className="font-mono text-primary">{orderId}</span>
             </p>
+            {paymentId && (
+              <p className="text-sm text-muted-foreground mb-4">
+                Payment ID: <span className="font-mono">{paymentId}</span>
+              </p>
+            )}
             <p className="text-muted-foreground">
               Total Paid: <span className="font-bold text-foreground">₹{getTotal().toFixed(2)}</span>
             </p>
