@@ -61,22 +61,22 @@
     {
       "id": "custom-plugin",
       "name": "Custom plugin dev",
-      "price": 50000
+      "price": 5
     },
     {
       "id": "premium-spawn",
       "name": "Premium spawn build",
-      "price": 50000
+      "price": 5
     },
     {
       "id": "staff-hiring",
       "name": "Dedicated staff hiring",
-      "price": 50000
+      "price": 5
     },
     {
       "id": "headsteal-lifesteal",
       "name": "Headsteal/Lifesteal modes",
-      "price": 50000
+      "price": 5
     }
   ],
   "coupons": {
