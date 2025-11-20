@@ -109,11 +109,19 @@ serve(async (req) => {
 
     // Call Razorpay API to create order
     // Docs: https://razorpay.com/docs/api/orders/
+    // Use proper UTF-8 encoding for credentials
+    const credentials = `${razorpayKeyId}:${razorpayKeySecret}`;
+    const encodedCredentials = btoa(
+      Array.from(new TextEncoder().encode(credentials))
+        .map(byte => String.fromCharCode(byte))
+        .join('')
+    );
+    
     const razorpayResponse = await fetch('https://api.razorpay.com/v1/orders', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + btoa(`${razorpayKeyId}:${razorpayKeySecret}`),
+        'Authorization': 'Basic ' + encodedCredentials,
       },
       body: JSON.stringify(razorpayOrderData),
     });
