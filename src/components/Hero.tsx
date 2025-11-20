@@ -42,16 +42,18 @@ const Hero = () => {
             <span className="text-sm text-muted-foreground">Digital Creator & Developer</span>
           </div>
           
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-6 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-6 tracking-tight font-display">
             <span className="gradient-text text-glow-primary">JAGMOHAN</span>
           </h1>
           
-          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-4 text-foreground/90 font-light">
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-4 text-foreground/90 font-light font-mono tracking-wide">
             Building Digital Worlds
           </p>
           
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-8 max-w-2xl mx-auto px-4">
-            Minecraft Developer • Discord Dev • App & Website Builder • Entrepreneur
+          <div className="h-1 w-32 bg-gradient-to-r from-primary via-accent to-secondary mx-auto rounded-full mb-6 animate-pulse-glow"></div>
+          
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-8 max-w-2xl mx-auto px-4 font-mono">
+            Minecraft Developer <span className="text-primary">•</span> Discord Dev <span className="text-secondary">•</span> App & Website Builder <span className="text-accent">•</span> Entrepreneur
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
