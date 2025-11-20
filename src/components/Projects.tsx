@@ -12,10 +12,11 @@ const Projects = () => {
       link: "/minecraft-plans",
     },
     {
-      title: "DARKBOT",
-      description: "Advanced Discord bot with automation, moderation, and custom commands",
+      title: "Discord Server Plans",
+      description: "Professional Discord server setup with bots, roles, and automation",
       icon: Bot,
       color: "from-cyan-500 to-blue-500",
+      link: "/discord-plans",
     },
     {
       title: "AI Telegram Bot",
