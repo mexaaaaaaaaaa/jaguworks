@@ -1,4 +1,5 @@
 import { Code2, Gamepad2, Bot, Palette, TrendingUp } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 const Skills = () => {
   const skillCategories = [
@@ -39,8 +40,47 @@ const Skills = () => {
     },
   ];
 
+  const [isVisible, setIsVisible] = useState(false);
+  const [animatedProgress, setAnimatedProgress] = useState<{ [key: number]: number }>({});
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          
+          // Animate progress bars
+          skillCategories.forEach((_, index) => {
+            setTimeout(() => {
+              const targetProgress = skillCategories[index].progress;
+              let currentProgress = 0;
+              const increment = targetProgress / 50;
+              
+              const interval = setInterval(() => {
+                currentProgress += increment;
+                if (currentProgress >= targetProgress) {
+                  currentProgress = targetProgress;
+                  clearInterval(interval);
+                }
+                setAnimatedProgress(prev => ({ ...prev, [index]: currentProgress }));
+              }, 30);
+            }, index * 150);
+          });
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section id="skills" className="py-20 px-4 relative overflow-hidden">
+    <section ref={sectionRef} id="skills" className="py-20 px-4 relative overflow-hidden">
       <div className="absolute inset-0 grid-background opacity-30"></div>
       
       <div className="container mx-auto relative z-10">
@@ -57,10 +97,13 @@ const Skills = () => {
             return (
               <div 
                 key={index}
-                className={`bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-300 animated-border hover-lift animate-rotate-in opacity-0 stagger-${index + 1}`}
+                className={`bg-card/50 backdrop-blur-sm border border-border rounded-xl p-6 hover:border-primary transition-all duration-500 hover-lift group ${
+                  isVisible ? "animate-fade-in-up opacity-100" : "opacity-0"
+                }`}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="flex items-center gap-4 mb-4 group">
-                  <div className={`w-14 h-14 bg-gradient-to-br ${category.color} rounded-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 animate-pulse-glow`}>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className={`w-14 h-14 bg-gradient-to-br ${category.color} rounded-lg flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}>
                     <Icon className="w-7 h-7 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">{category.title}</h3>
@@ -70,10 +113,10 @@ const Skills = () => {
                   {category.skills.map((skill, idx) => (
                     <div 
                       key={idx}
-                      className={`flex items-center gap-2 text-muted-foreground hover:text-foreground transition-all duration-300 animate-fade-in-left opacity-0 stagger-${idx + 1}`}
+                      className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-all duration-200 hover:translate-x-1"
                     >
                       <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
-                      <span className="hover:translate-x-1 transition-transform duration-200">{skill}</span>
+                      <span>{skill}</span>
                     </div>
                   ))}
                 </div>
@@ -82,12 +125,17 @@ const Skills = () => {
                 <div className="mt-4">
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-muted-foreground">Proficiency</span>
-                    <span className="text-primary font-bold animate-fade-in-up">{category.progress}%</span>
+                    <span className="text-primary font-bold transition-all duration-300">
+                      {Math.round(animatedProgress[index] || 0)}%
+                    </span>
                   </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-2 bg-muted rounded-full overflow-hidden relative">
                     <div 
-                      className={`h-full bg-gradient-to-r ${category.color} rounded-full transition-all duration-1000 ease-out hover:brightness-125 animate-[width_1.5s_ease-out_forwards]`}
-                      style={{ width: `${category.progress}%`, animationDelay: `${index * 0.2}s` }}
+                      className={`h-full bg-gradient-to-r ${category.color} rounded-full transition-all duration-1000 ease-out hover:brightness-125 shadow-lg`}
+                      style={{ 
+                        width: `${animatedProgress[index] || 0}%`,
+                        boxShadow: isVisible ? `0 0 20px ${category.color.includes('purple') ? 'hsl(270 85% 65% / 0.5)' : 'hsl(185 90% 50% / 0.5)'}` : 'none'
+                      }}
                     ></div>
                   </div>
                 </div>
