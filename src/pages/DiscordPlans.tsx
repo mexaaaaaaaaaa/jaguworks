@@ -64,12 +64,12 @@ const DiscordPlans = () => {
   ];
 
   const addons = [
-    { id: "custom-roles", name: "Custom roles & permissions", price: 50000 },
-    { id: "reaction-gui", name: "Reaction role GUI", price: 50000 },
-    { id: "custom-bots", name: "Custom bots / commands", price: 50000 },
-    { id: "auto-birthday", name: "Auto birthday & welcome system", price: 50000 },
-    { id: "dashboard", name: "Server dashboard (webpanel)", price: 50000 },
-    { id: "cloudflare", name: "Cloudflare-protected payment & backups", price: 50000 }
+    { id: "custom-roles", name: "Custom roles & permissions", price: 5 },
+    { id: "reaction-gui", name: "Reaction role GUI", price: 5 },
+    { id: "custom-bots", name: "Custom bots / commands", price: 5 },
+    { id: "auto-birthday", name: "Auto birthday & welcome system", price: 5 },
+    { id: "dashboard", name: "Server dashboard (webpanel)", price: 5 },
+    { id: "cloudflare", name: "Cloudflare-protected payment & backups", price: 5 }
   ];
 
   const handleBuyNow = (plan: any) => {
@@ -107,7 +107,7 @@ const DiscordPlans = () => {
       price: selectedPlan?.price,
       addons: selectedAddons.map(id => addons.find(a => a.id === id)?.name),
       discord_invite: "PLACEHOLDER_INVITE_LINK",
-      admin_email: "YOUR_EMAIL_HERE",
+      admin_email: "jagmohandhaker@gmail.com",
       timestamp: new Date().toISOString()
     };
     navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
@@ -193,7 +193,7 @@ const DiscordPlans = () => {
         <div className="max-w-4xl mx-auto mb-16">
           <h2 className="text-3xl font-bold mb-4 text-center">Extra Features & Add-ons</h2>
           <p className="text-center text-muted-foreground mb-8">
-            Add-on charge: <strong className="text-foreground">₹50,000 per major extra feature</strong>
+            Add-on charge: <strong className="text-foreground">₹5 per extra feature</strong>
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {addons.map((addon) => (
@@ -363,9 +363,9 @@ const DiscordPlans = () => {
               <Button 
                 variant="outline" 
                 className="w-full"
-                onClick={() => window.location.href = 'mailto:YOUR_EMAIL_HERE'}
+                onClick={() => window.location.href = 'mailto:jagmohandhaker@gmail.com'}
               >
-                Email: YOUR_EMAIL_HERE
+                Email: jagmohandhaker@gmail.com
               </Button>
               <p className="text-xs text-muted-foreground text-center">
                 Confirmation URL: CONFIRMATION_URL_HERE
