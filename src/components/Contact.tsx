@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import emailjs from "@emailjs/browser";
 import ReCAPTCHA from "react-google-recaptcha";
+import { supabase } from "@/integrations/supabase/client";
 
 const RECAPTCHA_SITE_KEY = "6LemHRIsAAAAAIFuXQxYdXuLT08w8JN-sXsKQwmr"; // tumhara v2 sitekey
 
@@ -27,17 +28,12 @@ const Contact = () => {
     }
 
     try {
-      // 1) Send captcha token to serverless function to verify with Google
-      const verifyResp = await fetch("/.netlify/functions/verify-captcha", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: captchaToken })
+      // 1) Verify captcha token with Supabase Edge Function
+      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-recaptcha', {
+        body: { token: captchaToken }
       });
 
-      const verifyData = await verifyResp.json();
-
-      // For reCAPTCHA v2, Google returns { success: true/false, challenge_ts, hostname, ... }
-      if (!verifyData || !verifyData.success) {
+      if (verifyError || !verifyData?.success) {
         toast.error("Captcha verification failed. Please try again.");
         setCaptchaToken("");
         return;
