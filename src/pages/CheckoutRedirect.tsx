@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Lock, CreditCard } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 const CheckoutRedirect = () => {
   const navigate = useNavigate();
   const { getTotal, items } = useCart();
   const [stage, setStage] = useState<'cloudflare' | 'redirect' | 'processing'>('cloudflare');
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const total = getTotal();
 
   useEffect(() => {
@@ -19,9 +21,11 @@ const CheckoutRedirect = () => {
 
     const initiatePayment = async () => {
       try {
-        // Stage 1: Cloudflare Protection
-        setStage('cloudflare');
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Wait for Cloudflare verification
+        if (!turnstileToken) {
+          console.log('Waiting for Cloudflare verification...');
+          return;
+        }
 
         // Stage 2: Redirect to Gateway
         setStage('redirect');
@@ -41,8 +45,10 @@ const CheckoutRedirect = () => {
       }
     };
 
-    initiatePayment();
-  }, [items, navigate, total]);
+    if (turnstileToken) {
+      initiatePayment();
+    }
+  }, [items, navigate, total, turnstileToken]);
 
   if (error) {
     return (
@@ -77,7 +83,14 @@ const CheckoutRedirect = () => {
               </div>
               <h2 className="text-2xl font-semibold mb-3 gradient-text">Applying Cloudflare Protection</h2>
               <p className="text-muted-foreground mb-2">Securing your transaction...</p>
-              <p className="text-xs text-muted-foreground/70">Please wait while we verify your connection</p>
+              <p className="text-xs text-muted-foreground/70 mb-4">Please complete the verification below</p>
+              <div className="flex justify-center">
+                <Turnstile
+                  siteKey="1x00000000000000000000AA"
+                  onSuccess={(token) => setTurnstileToken(token)}
+                  onError={() => setError('Cloudflare verification failed')}
+                />
+              </div>
             </>
           )}
           
