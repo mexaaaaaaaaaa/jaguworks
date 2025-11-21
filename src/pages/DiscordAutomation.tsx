@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "sonner";
+import SEO from "@/components/SEO";
 
 interface DiscordInvite {
   code: string;
@@ -245,7 +246,13 @@ const DiscordAutomation = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-card animate-fade-in">
+    <>
+      <SEO 
+        title="Discord Automation & Server Work - Jagmohan | Professional Discord Developer"
+        description="Professional Discord automation services by Jagmohan. Expert in moderation systems, custom bots, reaction roles, and server setup. 10+ servers managed with advanced automation."
+        keywords="discord automation, discord bot developer, discord server setup, discord moderation, custom discord bots, reaction roles, discord developer"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-card animate-fade-in">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -626,7 +633,8 @@ const DiscordAutomation = () => {
           </Card>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 };
 

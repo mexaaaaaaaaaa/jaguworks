@@ -6,6 +6,9 @@ interface SEOProps {
   image?: string;
   url?: string;
   type?: string;
+  keywords?: string;
+  author?: string;
+  structuredData?: object;
 }
 
 const SEO = ({ 
@@ -13,7 +16,10 @@ const SEO = ({
   description = 'Professional Minecraft server developer, Discord automation specialist, and AI bot creator. Building innovative digital solutions.',
   image = 'https://i.postimg.cc/7YVhHKSt/IMG-20251108-205333.jpg',
   url = typeof window !== 'undefined' ? window.location.href : '',
-  type = 'website'
+  type = 'website',
+  keywords = 'jagmohan, full stack developer, minecraft server developer, discord bot developer, telegram bots, gaming server expert, discord automation, AI bots, india developer',
+  author = 'Jagmohan',
+  structuredData
 }: SEOProps) => {
   useEffect(() => {
     // Set document title
@@ -39,6 +45,22 @@ const SEO = ({
 
     // Basic meta tags
     setMetaTag('description', description);
+    setMetaTag('keywords', keywords);
+    setMetaTag('author', author);
+    setMetaTag('robots', 'index, follow, max-image-preview:large');
+    
+    // Set canonical URL
+    let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.rel = 'canonical';
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.href = url;
+
+    // Set language
+    const htmlElement = document.documentElement;
+    htmlElement.setAttribute('lang', 'en');
 
     // Open Graph tags
     setMetaTag('og:title', title);
@@ -53,7 +75,18 @@ const SEO = ({
     setMetaTag('twitter:description', description);
     setMetaTag('twitter:image', image);
 
-  }, [title, description, image, url, type]);
+    // Add structured data (JSON-LD)
+    if (structuredData) {
+      let scriptTag = document.querySelector('script[type="application/ld+json"]');
+      if (!scriptTag) {
+        scriptTag = document.createElement('script');
+        scriptTag.setAttribute('type', 'application/ld+json');
+        document.head.appendChild(scriptTag);
+      }
+      scriptTag.textContent = JSON.stringify(structuredData);
+    }
+
+  }, [title, description, image, url, type, keywords, author, structuredData]);
 
   return null;
 };

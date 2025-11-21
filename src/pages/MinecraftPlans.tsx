@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 import plansData from "@/data/minecraft-plans.json";
+import SEO from "@/components/SEO";
 
 const MinecraftPlans = () => {
   const navigate = useNavigate();
@@ -27,7 +28,13 @@ const MinecraftPlans = () => {
   const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
+      <SEO 
+        title="Minecraft Server Setup Plans - Jagmohan | Professional SMP Developer"
+        description="Professional Minecraft SMP server setup plans by Jagmohan. Choose from Starter (₹49), Standard (₹199), Pro (₹499), or Premium (₹999) plans. Fast delivery with custom features."
+        keywords="minecraft server setup, minecraft smp, minecraft developer, custom minecraft server, minecraft server plans, professional minecraft setup"
+      />
+      <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -222,7 +229,8 @@ const MinecraftPlans = () => {
           </Card>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 };
 
