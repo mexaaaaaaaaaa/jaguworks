@@ -3,14 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Lock, CreditCard } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
-import { Turnstile } from "@marsidev/react-turnstile";
+import ReCAPTCHA from "react-google-recaptcha";
+
+const RECAPTCHA_SITE_KEY = "6Le2cBIsAAAAAI6HKsBSH6nH8rijvcT9juIVnyGU";
 
 const CheckoutRedirect = () => {
   const navigate = useNavigate();
   const { getTotal, items } = useCart();
   const [stage, setStage] = useState<'cloudflare' | 'redirect' | 'processing'>('cloudflare');
   const [error, setError] = useState<string | null>(null);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const total = getTotal();
 
   useEffect(() => {
@@ -21,9 +23,9 @@ const CheckoutRedirect = () => {
 
     const initiatePayment = async () => {
       try {
-        // Wait for Cloudflare verification
-        if (!turnstileToken) {
-          console.log('Waiting for Cloudflare verification...');
+        // Wait for reCAPTCHA verification
+        if (!captchaToken) {
+          console.log('Waiting for reCAPTCHA verification...');
           return;
         }
 
@@ -45,10 +47,10 @@ const CheckoutRedirect = () => {
       }
     };
 
-    if (turnstileToken) {
+    if (captchaToken) {
       initiatePayment();
     }
-  }, [items, navigate, total, turnstileToken]);
+  }, [items, navigate, total, captchaToken]);
 
   if (error) {
     return (
@@ -81,14 +83,16 @@ const CheckoutRedirect = () => {
                   <div className="w-full h-full border-4 border-primary border-t-transparent rounded-full animate-spin" />
                 </div>
               </div>
-              <h2 className="text-2xl font-semibold mb-3 gradient-text">Applying Cloudflare Protection</h2>
-              <p className="text-muted-foreground mb-2">Securing your transaction...</p>
-              <p className="text-xs text-muted-foreground/70 mb-4">Please complete the verification below</p>
+              <h2 className="text-2xl font-semibold mb-3 gradient-text">Securing Your Transaction</h2>
+              <p className="text-muted-foreground mb-2">Please verify you're human...</p>
+              <p className="text-xs text-muted-foreground/70 mb-4">Complete the verification below</p>
               <div className="flex justify-center">
-                <Turnstile
-                  siteKey={import.meta.env.VITE_CLOUDFLARE_SITE_KEY || "1x00000000000000000000AA"}
-                  onSuccess={(token) => setTurnstileToken(token)}
-                  onError={() => setError('Cloudflare verification failed')}
+                <ReCAPTCHA
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  onChange={(token) => setCaptchaToken(token)}
+                  onExpired={() => setCaptchaToken(null)}
+                  onError={() => setError('Verification failed')}
+                  theme="dark"
                 />
               </div>
             </>
