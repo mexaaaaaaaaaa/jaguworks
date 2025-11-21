@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Lock, CreditCard } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import ReCAPTCHA from "react-google-recaptcha";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const RECAPTCHA_SITE_KEY = "6Le2cBIsAAAAAI6HKsBSH6nH8rijvcT9juIVnyGU";
 
@@ -26,6 +28,17 @@ const CheckoutRedirect = () => {
         // Wait for reCAPTCHA verification
         if (!captchaToken) {
           console.log('Waiting for reCAPTCHA verification...');
+          return;
+        }
+
+        // Verify reCAPTCHA token with backend
+        const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-recaptcha', {
+          body: { token: captchaToken }
+        });
+
+        if (verifyError || !verifyData?.success) {
+          toast.error('Security verification failed. Please try again.');
+          setCaptchaToken(null);
           return;
         }
 
