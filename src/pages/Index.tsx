@@ -13,7 +13,7 @@ const Index = () => {
     "name": "Jagmohan",
     "jobTitle": "Full Stack Developer & Gaming Expert",
     "description": "Professional Minecraft server developer, Discord automation specialist, and AI bot creator",
-    "url": "https://yourdomain.com",
+    "url": "https://jaguworks.online",
     "image": "https://i.postimg.cc/7YVhHKSt/IMG-20251108-205333.jpg",
     "sameAs": [
       "https://www.youtube.com/@D4dirtyGaming",

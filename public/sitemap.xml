@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage -->
   <url>
-    <loc>https://yourdomain.com/</loc>
+    <loc>https://jaguworks.online/</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -10,42 +10,42 @@
   
   <!-- Main Pages -->
   <url>
-    <loc>https://yourdomain.com/about</loc>
+    <loc>https://jaguworks.online/about</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/projects</loc>
+    <loc>https://jaguworks.online/projects</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/skills</loc>
+    <loc>https://jaguworks.online/skills</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/achievements</loc>
+    <loc>https://jaguworks.online/achievements</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/future-goals</loc>
+    <loc>https://jaguworks.online/future-goals</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/contact</loc>
+    <loc>https://jaguworks.online/contact</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -53,35 +53,35 @@
   
   <!-- Service Pages -->
   <url>
-    <loc>https://yourdomain.com/ai-telegram-bot</loc>
+    <loc>https://jaguworks.online/ai-telegram-bot</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/cinematic-reel</loc>
+    <loc>https://jaguworks.online/cinematic-reel</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/discord-automation</loc>
+    <loc>https://jaguworks.online/discord-automation</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/minecraft-plans</loc>
+    <loc>https://jaguworks.online/minecraft-plans</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/discord-plans</loc>
+    <loc>https://jaguworks.online/discord-plans</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -89,7 +89,7 @@
   
   <!-- Blog -->
   <url>
-    <loc>https://yourdomain.com/blog</loc>
+    <loc>https://jaguworks.online/blog</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -97,28 +97,28 @@
   
   <!-- Blog Posts -->
   <url>
-    <loc>https://yourdomain.com/blog/minecraft-server-setup-guide</loc>
+    <loc>https://jaguworks.online/blog/minecraft-server-setup-guide</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/blog/ai-telegram-bots-guide</loc>
+    <loc>https://jaguworks.online/blog/ai-telegram-bots-guide</loc>
     <lastmod>2025-01-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/blog/discord-automation-guide</loc>
+    <loc>https://jaguworks.online/blog/discord-automation-guide</loc>
     <lastmod>2025-01-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://yourdomain.com/blog/developer-journey</loc>
+    <loc>https://jaguworks.online/blog/developer-journey</loc>
     <lastmod>2024-12-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
