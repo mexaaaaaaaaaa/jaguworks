@@ -1,0 +1,83 @@
+{
+  "plans": [
+    {
+      "id": "discord-starter",
+      "name": "Starter",
+      "price": 49,
+      "delivery": "2-3 days",
+      "description": "Basic Discord server setup for small communities",
+      "features": [
+        "Channel structure setup",
+        "Basic role configuration",
+        "Welcome message setup",
+        "Server icon & banner",
+        "Basic permissions"
+      ]
+    },
+    {
+      "id": "discord-pro",
+      "name": "Pro",
+      "price": 199,
+      "delivery": "1-2 days",
+      "description": "Advanced server with bots & automation",
+      "features": [
+        "Everything in Starter",
+        "Custom roles & hierarchy",
+        "Reaction role GUI setup",
+        "Bot setup (Carl-bot, MEE6, Dyno)",
+        "Zira & Embed Bot configuration",
+        "Custom emoji pack",
+        "Moderation commands"
+      ]
+    },
+    {
+      "id": "discord-elite",
+      "name": "Elite",
+      "price": 499,
+      "delivery": "24 hours",
+      "description": "Complete professional setup with priority delivery",
+      "features": [
+        "Everything in Pro",
+        "Priority 24h delivery",
+        "Advanced automations",
+        "Full moderation system",
+        "Custom bot commands",
+        "Dashboard integration",
+        "Auto-backup setup",
+        "Dedicated support"
+      ]
+    }
+  ],
+  "addons": [
+    {
+      "id": "custom-roles",
+      "name": "Custom roles & permissions",
+      "price": 5
+    },
+    {
+      "id": "reaction-gui",
+      "name": "Reaction role GUI",
+      "price": 5
+    },
+    {
+      "id": "custom-bots",
+      "name": "Custom bots / commands",
+      "price": 5
+    },
+    {
+      "id": "auto-birthday",
+      "name": "Auto birthday & welcome system",
+      "price": 5
+    },
+    {
+      "id": "dashboard",
+      "name": "Server dashboard (webpanel)",
+      "price": 5
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare-protected payment & backups",
+      "price": 5
+    }
+  ]
+}

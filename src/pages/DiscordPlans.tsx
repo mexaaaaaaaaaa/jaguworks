@@ -1,234 +1,148 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MessageSquare, ShoppingCart, Check, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, ShoppingCart, ArrowLeft, Copy } from "lucide-react";
-import { toast } from "sonner";
 import { useCart } from "@/hooks/useCart";
+import { toast } from "sonner";
+import plansData from "@/data/discord-plans.json";
 
 const DiscordPlans = () => {
   const navigate = useNavigate();
   const { addItem, items } = useCart();
-  const [showCheckout, setShowCheckout] = useState(false);
-  const [checkoutStep, setCheckoutStep] = useState<'protection' | 'redirect' | 'complete'>('protection');
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
-  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [addingPlan, setAddingPlan] = useState<string | null>(null);
 
-  const plans = [
-    {
-      id: "starter",
-      name: "Starter",
-      price: 49,
-      description: "Basic Discord server setup",
-      features: [
-        "Channel structure setup",
-        "Basic role configuration",
-        "Welcome message setup",
-        "Server icon & banner",
-        "Basic permissions"
-      ]
-    },
-    {
-      id: "pro",
-      name: "Pro",
-      price: 199,
-      description: "Advanced server with bots & automation",
-      popular: true,
-      features: [
-        "Everything in Starter",
-        "Custom roles & hierarchy",
-        "Reaction role GUI setup",
-        "Bot setup (Carl-bot, MEE6, Dyno)",
-        "Zira & Embed Bot configuration",
-        "Custom emoji pack",
-        "Moderation commands"
-      ]
-    },
-    {
-      id: "elite",
-      name: "Elite",
-      price: 499,
-      description: "Complete professional setup with priority delivery",
-      features: [
-        "Everything in Pro",
-        "Priority 24h delivery",
-        "Advanced automations",
-        "Full moderation system",
-        "Custom bot commands",
-        "Dashboard integration",
-        "Auto-backup setup",
-        "Dedicated support"
-      ]
-    }
-  ];
-
-  const addons = [
-    { id: "custom-roles", name: "Custom roles & permissions", price: 5 },
-    { id: "reaction-gui", name: "Reaction role GUI", price: 5 },
-    { id: "custom-bots", name: "Custom bots / commands", price: 5 },
-    { id: "auto-birthday", name: "Auto birthday & welcome system", price: 5 },
-    { id: "dashboard", name: "Server dashboard (webpanel)", price: 5 },
-    { id: "cloudflare", name: "Cloudflare-protected payment & backups", price: 5 }
-  ];
-
-  const handleBuyNow = (plan: any) => {
-    setSelectedPlan(plan);
-    setCheckoutStep('protection');
-    setShowCheckout(true);
-
-    // Simulate Cloudflare protection
-    setTimeout(() => {
-      setCheckoutStep('redirect');
-      setTimeout(() => {
-        setCheckoutStep('complete');
-        // Add to cart
-        addItem({
-          id: plan.id,
-          name: `Discord ${plan.name} Plan`,
-          price: plan.price,
-          type: 'plan'
-        });
-      }, 2000);
-    }, 1500);
+  const handleAddToCart = (plan: typeof plansData.plans[0]) => {
+    setAddingPlan(plan.id);
+    addItem({
+      id: plan.id,
+      name: plan.name,
+      price: plan.price,
+      type: 'plan',
+    });
+    toast.success(`${plan.name} added to cart!`);
+    setTimeout(() => setAddingPlan(null), 500);
   };
 
-  const toggleAddon = (addonId: string) => {
-    setSelectedAddons(prev => 
-      prev.includes(addonId) 
-        ? prev.filter(id => id !== addonId)
-        : [...prev, addonId]
-    );
-  };
+  const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const copyOrderPayload = () => {
-    const payload = {
-      plan: selectedPlan?.name,
-      price: selectedPlan?.price,
-      addons: selectedAddons.map(id => addons.find(a => a.id === id)?.name),
-      discord_invite: "PLACEHOLDER_INVITE_LINK",
-      admin_email: "jagmohandhaker@gmail.com",
-      timestamp: new Date().toISOString()
-    };
-    navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-    toast.success("Order payload copied to clipboard!");
-  };
+  const bots = ['Carl-bot', 'MEE6', 'Dyno', 'Zira', 'Embed Bot'];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="container mx-auto px-4 py-8">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/')}
-          className="mb-6"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Portfolio
-        </Button>
-
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Discord Plans — Developer Server Setup
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Professional Discord server setup | Fast delivery | Real-money pricing (India ready)
-          </p>
-          <p className="text-sm text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Developer Discord server setup services — custom roles, bots, automations, moderation, Cloudflare ready.
-          </p>
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold gradient-text">Discord Plans</h1>
+          <Button
+            variant="outline"
+            className="relative"
+            onClick={() => navigate('/cart')}
+          >
+            <ShoppingCart className="w-5 h-5" />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                {cartItemCount}
+              </span>
+            )}
+          </Button>
         </div>
+      </header>
 
-        {/* Important Note */}
-        <div className="bg-card border border-border rounded-lg p-4 mb-8 max-w-4xl mx-auto">
-          <p className="text-sm text-muted-foreground">
-            <strong>Note:</strong> Customers must provide Manage Server / Owner access or invite link with required permissions. 
-            Admin/Manage Server access required for full setup; partial setup is possible via invite with correct permissions.
-          </p>
-        </div>
+      <section className="py-20 px-4 md:px-8">
+        <div className="container mx-auto max-w-7xl">
+          {/* Hero Section */}
+          <div className="text-center mb-16 animate-slide-in-up">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <span className="gradient-text">Discord Plans</span>
+              <br />
+              <span className="text-foreground">Developer Server Setup</span>
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto mb-4">
+              Professional Discord server setup — Fast & Professional Delivery
+            </p>
+            <p className="text-sm text-muted-foreground/80 max-w-2xl mx-auto">
+              Developer Discord server setup services — custom roles, bots, automations, moderation, Cloudflare ready.
+            </p>
+          </div>
 
-        {/* Pricing Plans */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {plans.map((plan) => (
-            <Card 
-              key={plan.id} 
-              className={`relative ${plan.popular ? 'border-primary shadow-lg' : ''}`}
-            >
-              {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary">
-                  Most Popular
-                </Badge>
-              )}
-              <CardHeader>
-                <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                <CardDescription>{plan.description}</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">₹{plan.price}</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {plan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button 
-                  variant="outline" 
-                  className="w-full hover:scale-105 transition-all duration-300"
-                  onClick={() => handleBuyNow(plan)}
-                >
-                  Order Now
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+          {/* Important Note */}
+          <Card className="mb-12 bg-card/50 backdrop-blur-xl border-2 border-border max-w-4xl mx-auto">
+            <CardContent className="p-6">
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">Note:</strong> Customers must provide Manage Server / Owner access or invite link with required permissions. 
+                Admin/Manage Server access required for full setup; partial setup is possible via invite with correct permissions.
+              </p>
+            </CardContent>
+          </Card>
 
-        {/* Add-ons Section */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold mb-4 text-center">Extra Features & Add-ons</h2>
-          <p className="text-center text-muted-foreground mb-8">
-            Add-on charge: <strong className="text-foreground">₹5 per extra feature</strong>
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {addons.map((addon) => (
-              <Card 
-                key={addon.id}
-                className={`cursor-pointer transition-all duration-300 ${
-                  selectedAddons.includes(addon.id) ? 'border-primary bg-primary/5' : ''
-                }`}
-                onClick={() => toggleAddon(addon.id)}
+          {/* Pricing Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {plansData.plans.map((plan, index) => (
+              <Card
+                key={plan.id}
+                className="relative group bg-card/50 backdrop-blur-xl border-2 border-border hover:border-primary transition-all duration-500 animate-slide-in-up overflow-hidden"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold">{addon.name}</h3>
-                    <p className="text-sm text-muted-foreground">₹{addon.price.toLocaleString('en-IN')}</p>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                <CardContent className="p-6 relative z-10">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <MessageSquare className="w-6 h-6 text-primary" />
                   </div>
-                  {selectedAddons.includes(addon.id) && (
-                    <Check className="h-5 w-5 text-primary" />
-                  )}
+
+                  <h3 className="text-2xl font-bold mb-2 text-foreground">{plan.name}</h3>
+                  
+                  <div className="mb-4">
+                    <span className="text-4xl font-bold text-primary">₹{plan.price}</span>
+                  </div>
+
+                  <div className="mb-4 text-sm text-muted-foreground">
+                    Delivery: {plan.delivery}
+                  </div>
+
+                  <ul className="space-y-2 mb-6">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm">
+                        <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                        <span className="text-foreground/90">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p className="text-xs text-muted-foreground mb-4">{plan.description}</p>
+
+                  <Button
+                    className="w-full group/btn transition-all duration-300"
+                    variant="outline"
+                    onClick={() => handleAddToCart(plan)}
+                    disabled={addingPlan === plan.id}
+                  >
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      {addingPlan === plan.id ? "Added!" : "Add to Cart"}
+                      <ShoppingCart className="w-4 h-4" />
+                    </span>
+                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
-        </div>
 
-        {/* Bots Information */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <Card>
-            <CardHeader>
-              <CardTitle>Included Bot Setup</CardTitle>
-              <CardDescription>Professional bot configuration and customization</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {['Carl-bot', 'MEE6', 'Dyno', 'Zira', 'Embed Bot'].map((bot) => (
-                  <Badge key={bot} variant="secondary" className="justify-center py-2">
+          {/* Included Bots Section */}
+          <Card className="mb-16 bg-card/50 backdrop-blur-xl border-2 border-border hover:border-accent transition-all duration-500">
+            <CardContent className="p-8">
+              <h3 className="text-2xl font-bold mb-4 gradient-text">Included Bot Setup</h3>
+              <p className="text-muted-foreground mb-6">
+                Professional bot configuration and customization
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {bots.map((bot) => (
+                  <Badge 
+                    key={bot} 
+                    variant="secondary" 
+                    className="justify-center py-2 text-sm"
+                  >
                     {bot}
                   </Badge>
                 ))}
@@ -238,142 +152,66 @@ const DiscordPlans = () => {
               </p>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Cart Button */}
-        <div className="fixed bottom-6 right-6 z-50">
-          <Button 
-            size="lg"
-            className="rounded-full shadow-lg"
-            onClick={() => navigate('/cart')}
-          >
-            <ShoppingCart className="mr-2 h-5 w-5" />
-            Cart ({items.length})
-          </Button>
-        </div>
-      </div>
-
-      {/* Checkout Modal */}
-      {showCheckout && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle>
-                {checkoutStep === 'protection' && 'Security Check'}
-                {checkoutStep === 'redirect' && 'Processing Payment'}
-                {checkoutStep === 'complete' && 'Order Confirmed!'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              {checkoutStep === 'protection' && (
-                <div className="py-8">
-                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-muted-foreground">Applying Cloudflare protection...</p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Securing your transaction
-                  </p>
-                </div>
-              )}
-              {checkoutStep === 'redirect' && (
-                <div className="py-8">
-                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-muted-foreground">Redirecting to secure payment gateway...</p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Payment handled by external gateway
-                  </p>
-                </div>
-              )}
-              {checkoutStep === 'complete' && (
-                <div className="py-4">
-                  <div className="bg-primary/10 rounded-full h-16 w-16 mx-auto mb-4 flex items-center justify-center">
-                    <Check className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">Added to Cart!</h3>
-                  <p className="text-muted-foreground mb-4">
-                    {selectedPlan?.name} Plan - ₹{selectedPlan?.price}
-                  </p>
-                  <div className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                      Required for setup:
-                    </p>
-                    <ul className="text-sm text-left space-y-2">
-                      <li className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                        Server invite link
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                        Preferred role names
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                        Channel list
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                        Bot token (if custom bot)
-                      </li>
-                    </ul>
-                    <Button 
-                      variant="outline" 
+          {/* Extra Features & Add-ons */}
+          <Card className="mb-16 bg-card/50 backdrop-blur-xl border-2 border-border hover:border-accent transition-all duration-500">
+            <CardContent className="p-8">
+              <h3 className="text-2xl font-bold mb-4 gradient-text">Extra Features & Custom Add-ons</h3>
+              <p className="text-muted-foreground mb-6">
+                Add-on Charge: <span className="text-accent font-bold text-xl">₹5 per extra feature</span>
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {plansData.addons.map((addon) => (
+                  <div
+                    key={addon.id}
+                    className="flex items-center justify-between p-4 rounded-xl bg-muted/50 border border-border"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Plus className="w-5 h-5 text-accent" />
+                      <span className="font-medium">{addon.name}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={copyOrderPayload}
-                      className="w-full"
+                      onClick={() => {
+                        addItem({
+                          id: addon.id,
+                          name: addon.name,
+                          price: addon.price,
+                          type: 'addon',
+                        });
+                        toast.success(`${addon.name} added to cart!`);
+                      }}
                     >
-                      <Copy className="mr-2 h-4 w-4" />
-                      Copy Order Details
+                      <ShoppingCart className="w-4 h-4" />
                     </Button>
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
             </CardContent>
-            {checkoutStep === 'complete' && (
-              <CardFooter className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => setShowCheckout(false)}
-                >
-                  Continue Shopping
-                </Button>
-                <Button 
-                  className="flex-1"
+          </Card>
+
+          {/* View Cart CTA */}
+          <Card className="bg-card/50 backdrop-blur-xl border-2 border-border">
+            <CardContent className="p-8">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold mb-4 gradient-text">Ready to Get Started?</h3>
+                <p className="text-muted-foreground mb-6">
+                  Add plans to your cart and proceed to checkout
+                </p>
+                <Button
+                  size="lg"
                   onClick={() => navigate('/cart')}
+                  className="group"
                 >
-                  View Cart
+                  View Cart & Checkout
+                  <ShoppingCart className="w-5 h-5 ml-2 group-hover:scale-110 transition-transform" />
                 </Button>
-              </CardFooter>
-            )}
+              </div>
+            </CardContent>
           </Card>
         </div>
-      )}
-
-      {/* Contact Section */}
-      <div className="container mx-auto px-4 pb-16">
-        <Card className="max-w-2xl mx-auto">
-          <CardHeader>
-            <CardTitle>Need Custom Setup?</CardTitle>
-            <CardDescription>Contact us for custom requirements</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                For custom Discord server setups, advanced automation, or bulk orders, reach out directly:
-              </p>
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => window.location.href = 'mailto:jagmohandhaker@gmail.com'}
-              >
-                Email: jagmohandhaker@gmail.com
-              </Button>
-              <p className="text-xs text-muted-foreground text-center">
-                Confirmation URL: CONFIRMATION_URL_HERE
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      </section>
     </div>
   );
 };
