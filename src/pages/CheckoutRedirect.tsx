@@ -86,7 +86,7 @@ const CheckoutRedirect = () => {
               <p className="text-xs text-muted-foreground/70 mb-4">Please complete the verification below</p>
               <div className="flex justify-center">
                 <Turnstile
-                  siteKey="1x00000000000000000000AA"
+                  siteKey={import.meta.env.VITE_CLOUDFLARE_SITE_KEY || "1x00000000000000000000AA"}
                   onSuccess={(token) => setTurnstileToken(token)}
                   onError={() => setError('Cloudflare verification failed')}
                 />
