@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 import plansData from "@/data/discord-plans.json";
+import SEO from "@/components/SEO";
 
 const DiscordPlans = () => {
   const navigate = useNavigate();
@@ -30,7 +31,13 @@ const DiscordPlans = () => {
   const bots = ['Carl-bot', 'MEE6', 'Dyno', 'Zira', 'Embed Bot'];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
+      <SEO 
+        title="Discord Server Setup Plans - Jagmohan | Professional Discord Developer"
+        description="Professional Discord server setup services by Jagmohan. Choose from Starter (₹49), Pro (₹199), or Elite (₹499) plans. Custom bots, moderation, and automation included."
+        keywords="discord server setup, discord developer, custom discord server, discord bot setup, discord moderation, professional discord setup"
+      />
+      <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -212,7 +219,8 @@ const DiscordPlans = () => {
           </Card>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 };
 

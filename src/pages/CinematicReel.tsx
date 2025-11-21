@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play, Film } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import SEO from "@/components/SEO";
 
 const CinematicReel = () => {
   const projects = [
@@ -32,7 +33,13 @@ const CinematicReel = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+    <>
+      <SEO 
+        title="Cinematic Reel Project - Jagmohan | Professional Video Editing"
+        description="Professional Minecraft cinematic video editing by Jagmohan. Showcasing expert color grading, smooth transitions, slow-motion effects, and action-packed edits."
+        keywords="cinematic video editing, minecraft cinematic, professional video editing, color grading, slow motion video, action video editing"
+      />
+      <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 -left-20 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
@@ -171,7 +178,8 @@ const CinematicReel = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

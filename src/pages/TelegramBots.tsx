@@ -1,6 +1,7 @@
 import { ArrowLeft, Bot, Sparkles, Zap, Shield, Image, Users, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 
 const bots = [
   {
@@ -43,7 +44,13 @@ const bots = [
 
 const TelegramBots = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+    <>
+      <SEO 
+        title="Custom Telegram Bots - Jagmohan | AI-Powered Bot Developer"
+        description="Explore Jagmohan's collection of custom Telegram bots: foll0wers_bot, BackgroundRemoveErrBot, AllInOneBot, and MyVCardMakerBot. AI-powered, professional bot development."
+        keywords="telegram bots, custom telegram bots, AI telegram bots, background remover bot, vcard maker bot, telegram bot developer"
+      />
+      <div className="min-h-screen bg-background text-foreground overflow-hidden">
       {/* Floating background shapes */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float" />
@@ -165,7 +172,8 @@ const TelegramBots = () => {
           </p>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 };
 
