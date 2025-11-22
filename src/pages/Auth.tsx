@@ -3,53 +3,99 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Lock, User, Chrome } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Loader2, Mail, Lock, User, Chrome, Shield, Zap, CheckCircle2 } from "lucide-react";
 import { SiDiscord } from "react-icons/si";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+const signupSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be less than 20 characters"),
+  fullName: z.string().min(3, "Full name must be at least 3 characters").max(50, "Full name must be less than 50 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+type SignupFormValues = z.infer<typeof signupSchema>;
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [signupEmail, setSignupEmail] = useState("");
-  const [signupPassword, setSignupPassword] = useState("");
-  const [signupUsername, setSignupUsername] = useState("");
-  const [signupFullName, setSignupFullName] = useState("");
+
+  const loginForm = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const signupForm = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      username: "",
+      fullName: "",
+      email: "",
+      password: "",
+    },
+  });
 
   useEffect(() => {
-    // Check if already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/");
-      }
-    });
+    if (user) {
+      toast({
+        title: "You're already logged in",
+        description: "Redirecting to homepage...",
+      });
+      navigate("/");
+    }
+  }, [user, navigate, toast]);
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/");
-      }
-    });
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-primary/10">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (values: LoginFormValues) => {
     setLoading(true);
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
+        email: values.email,
+        password: values.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        // Better error messages
+        let errorMessage = error.message;
+        if (error.message.includes("Invalid login credentials")) {
+          errorMessage = "Email or password is incorrect";
+        } else if (error.message.includes("Email not confirmed")) {
+          errorMessage = "Please verify your email address";
+        }
+        
+        toast({
+          title: "Login failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        return;
+      }
 
       toast({
         title: "Welcome back!",
@@ -58,7 +104,7 @@ const Auth = () => {
     } catch (error: any) {
       toast({
         title: "Login failed",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -66,33 +112,47 @@ const Auth = () => {
     }
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSignup = async (values: SignupFormValues) => {
     setLoading(true);
 
     try {
       const { error } = await supabase.auth.signUp({
-        email: signupEmail,
-        password: signupPassword,
+        email: values.email,
+        password: values.password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
-            username: signupUsername,
-            full_name: signupFullName,
+            username: values.username,
+            full_name: values.fullName,
           },
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Better error messages
+        let errorMessage = error.message;
+        if (error.message.includes("User already registered")) {
+          errorMessage = "This email is already registered. Please login instead.";
+        }
+        
+        toast({
+          title: "Signup failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        return;
+      }
 
       toast({
         title: "Account created!",
         description: "Welcome to JaguWorks. You're now logged in.",
       });
+      
+      setTimeout(() => navigate("/"), 1500);
     } catch (error: any) {
       toast({
         title: "Signup failed",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -110,11 +170,24 @@ const Auth = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Better error handling for provider not enabled
+        let errorMessage = error.message;
+        if (error.message.includes("provider is not enabled") || error.message.includes("not configured")) {
+          errorMessage = "Google login is not configured yet. Please use email & password for now.";
+        }
+        
+        toast({
+          title: "Google login unavailable",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        setLoading(false);
+      }
     } catch (error: any) {
       toast({
         title: "Google login failed",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
       setLoading(false);
@@ -131,11 +204,24 @@ const Auth = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Better error handling for provider not enabled
+        let errorMessage = error.message;
+        if (error.message.includes("provider is not enabled") || error.message.includes("not configured")) {
+          errorMessage = "Discord login is not configured yet. Please use email & password for now.";
+        }
+        
+        toast({
+          title: "Discord login unavailable",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        setLoading(false);
+      }
     } catch (error: any) {
       toast({
         title: "Discord login failed",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
       setLoading(false);
@@ -143,176 +229,258 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5">
-      <Card className="w-full max-w-md glass-card border-primary/20">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            JaguWorks
-          </CardTitle>
-          <CardDescription className="text-center">
-            Sign in to access your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4 mb-6">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={handleGoogleLogin}
-              disabled={loading}
-            >
-              <Chrome className="mr-2 h-4 w-4" />
-              Continue with Google
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={handleDiscordLogin}
-              disabled={loading}
-            >
-              <SiDiscord className="mr-2 h-4 w-4" />
-              Continue with Discord
-            </Button>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-primary/10">
+      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
+        {/* Left side - Brand messaging */}
+        <div className="hidden lg:block space-y-6 px-8">
+          <div className="space-y-4">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient">
+              Welcome to JaguWorks
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Your gateway to premium development services, project management, and exclusive content.
+            </p>
           </div>
-
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
+          
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 glass-card p-4 rounded-lg border border-primary/20">
+              <Shield className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-foreground">Secure & Private</h3>
+                <p className="text-sm text-muted-foreground">Your data is encrypted and protected</p>
+              </div>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with email
-              </span>
+            
+            <div className="flex items-start gap-3 glass-card p-4 rounded-lg border border-accent/20">
+              <Zap className="w-6 h-6 text-accent mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-foreground">Fast Access</h3>
+                <p className="text-sm text-muted-foreground">Instant access to all your projects and orders</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3 glass-card p-4 rounded-lg border border-secondary/20">
+              <CheckCircle2 className="w-6 h-6 text-secondary mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-foreground">Powered by JaguWorks</h3>
+                <p className="text-sm text-muted-foreground">Professional backend infrastructure</p>
+              </div>
             </div>
           </div>
+        </div>
 
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
+        {/* Right side - Auth form */}
+        <Card className="w-full glass-card border-primary/20">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              JaguWorks
+            </CardTitle>
+            <CardDescription className="text-center">
+              Sign in to access your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4 mb-6">
+              <Button
+                variant="outline"
+                className="w-full hover:bg-accent/10 hover:border-accent/50 transition-all"
+                onClick={handleGoogleLogin}
+                disabled={loading}
+              >
+                <Chrome className="mr-2 h-4 w-4" />
+                Continue with Google
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full hover:bg-accent/10 hover:border-accent/50 transition-all"
+                onClick={handleDiscordLogin}
+                disabled={loading}
+              >
+                <SiDiscord className="mr-2 h-4 w-4" />
+                Continue with Discord
+              </Button>
+            </div>
 
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="your@email.com"
-                      className="pl-9"
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
-                      className="pl-9"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={loading}
-                  variant="hero"
-                >
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Sign In
-                </Button>
-              </form>
-            </TabsContent>
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with email
+                </span>
+              </div>
+            </div>
 
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-username">Username</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="signup-username"
-                      type="text"
-                      placeholder="johndoe"
-                      className="pl-9"
-                      value={signupUsername}
-                      onChange={(e) => setSignupUsername(e.target.value)}
-                      required
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="login">
+                <Form {...loginForm}>
+                  <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
+                    <FormField
+                      control={loginForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                placeholder="your@email.com"
+                                className="pl-9"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-fullname">Full Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="signup-fullname"
-                      type="text"
-                      placeholder="John Doe"
-                      className="pl-9"
-                      value={signupFullName}
-                      onChange={(e) => setSignupFullName(e.target.value)}
-                      required
+                    <FormField
+                      control={loginForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                type="password"
+                                placeholder="••••••••"
+                                className="pl-9"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="your@email.com"
-                      className="pl-9"
-                      value={signupEmail}
-                      onChange={(e) => setSignupEmail(e.target.value)}
-                      required
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={loading}
+                      variant="hero"
+                    >
+                      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Sign In
+                    </Button>
+                    <p className="text-xs text-center text-muted-foreground">
+                      Forgot password? <span className="text-primary">(coming soon)</span>
+                    </p>
+                  </form>
+                </Form>
+              </TabsContent>
+
+              <TabsContent value="signup">
+                <Form {...signupForm}>
+                  <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4">
+                    <FormField
+                      control={signupForm.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Username</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                placeholder="johndoe"
+                                className="pl-9"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="••••••••"
-                      className="pl-9"
-                      value={signupPassword}
-                      onChange={(e) => setSignupPassword(e.target.value)}
-                      required
-                      minLength={6}
+                    <FormField
+                      control={signupForm.control}
+                      name="fullName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Full Name</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                placeholder="John Doe"
+                                className="pl-9"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={loading}
-                  variant="hero"
-                >
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Create Account
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+                    <FormField
+                      control={signupForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                placeholder="your@email.com"
+                                className="pl-9"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={signupForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                type="password"
+                                placeholder="••••••••"
+                                className="pl-9"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={loading}
+                      variant="hero"
+                    >
+                      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Create Account
+                    </Button>
+                    <p className="text-xs text-center text-muted-foreground">
+                      By creating an account, you agree to our basic terms of use.
+                    </p>
+                  </form>
+                </Form>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
