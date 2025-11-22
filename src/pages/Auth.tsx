@@ -34,6 +34,9 @@ const Auth = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -54,22 +57,23 @@ const Auth = () => {
   });
 
   useEffect(() => {
-    if (user) {
+    // Check if this is a password recovery flow
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    
+    if (type === 'recovery') {
+      setIsRecoveryMode(true);
+      return;
+    }
+
+    if (user && !isRecoveryMode) {
       toast({
         title: "You're already logged in",
         description: "Redirecting to homepage...",
       });
       navigate("/");
     }
-  }, [user, navigate, toast]);
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-primary/10">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+  }, [user, navigate, toast, isRecoveryMode]);
 
   const handleLogin = async (values: LoginFormValues) => {
     setLoading(true);
@@ -81,12 +85,12 @@ const Auth = () => {
       });
 
       if (error) {
-        // Better error messages
-        let errorMessage = error.message;
+        let errorMessage = "An error occurred during login.";
+        
         if (error.message.includes("Invalid login credentials")) {
-          errorMessage = "Email or password is incorrect";
+          errorMessage = "Email or password is incorrect. Please check your credentials and try again.";
         } else if (error.message.includes("Email not confirmed")) {
-          errorMessage = "Please verify your email address";
+          errorMessage = "Please verify your email before logging in.";
         }
         
         toast({
@@ -98,9 +102,11 @@ const Auth = () => {
       }
 
       toast({
-        title: "Welcome back!",
-        description: "You've successfully logged in.",
+        title: "Login successful! 🎉",
+        description: "Welcome back!",
       });
+      
+      navigate("/");
     } catch (error: any) {
       toast({
         title: "Login failed",
@@ -116,11 +122,11 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${window.location.origin}/#/`,
           data: {
             username: values.username,
             full_name: values.fullName,
@@ -128,11 +134,13 @@ const Auth = () => {
         },
       });
 
-      if (error) {
-        // Better error messages
-        let errorMessage = error.message;
-        if (error.message.includes("User already registered")) {
+      if (signUpError) {
+        let errorMessage = "An error occurred during signup.";
+        
+        if (signUpError.message.includes("User already registered")) {
           errorMessage = "This email is already registered. Please login instead.";
+        } else if (signUpError.message.includes("Password")) {
+          errorMessage = "Password is too weak. Please use a stronger password.";
         }
         
         toast({
@@ -144,8 +152,8 @@ const Auth = () => {
       }
 
       toast({
-        title: "Account created!",
-        description: "Welcome to JaguWorks. You're now logged in.",
+        title: "Account created successfully! 🎉",
+        description: "You can now login with your credentials.",
       });
       
       setTimeout(() => navigate("/"), 1500);
@@ -171,7 +179,6 @@ const Auth = () => {
       });
 
       if (error) {
-        // Better error handling for provider not enabled
         let errorMessage = error.message;
         if (error.message.includes("provider is not enabled") || error.message.includes("not configured")) {
           errorMessage = "Google login is not configured yet. Please use email & password for now.";
@@ -205,7 +212,6 @@ const Auth = () => {
       });
 
       if (error) {
-        // Better error handling for provider not enabled
         let errorMessage = error.message;
         if (error.message.includes("provider is not enabled") || error.message.includes("not configured")) {
           errorMessage = "Discord login is not configured yet. Please use email & password for now.";
@@ -242,7 +248,7 @@ const Auth = () => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth`,
+        redirectTo: `${window.location.origin}/#/auth`,
       });
 
       if (error) {
@@ -255,13 +261,135 @@ const Auth = () => {
       }
 
       toast({
-        title: "Reset link sent",
+        title: "Reset link sent! ✉️",
         description: "Check your email inbox for a password reset link.",
       });
     } finally {
       setLoading(false);
     }
   };
+
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure both passwords are the same.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        toast({
+          title: "Password reset failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Password updated successfully! ✅",
+        description: "You can now login with your new password.",
+      });
+
+      setTimeout(() => {
+        setIsRecoveryMode(false);
+        navigate("/auth");
+        window.location.hash = '';
+      }, 1500);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-primary/10">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Show password reset form if in recovery mode
+  if (isRecoveryMode) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-primary/10 p-4">
+        <Card className="w-full max-w-md glass-card border-primary/20">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Reset Your Password
+            </CardTitle>
+            <CardDescription>Enter your new password below</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handlePasswordReset} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="newPassword" className="text-sm font-medium">
+                  New Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="pl-10"
+                    required
+                    minLength={6}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="text-sm font-medium">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pl-10"
+                    required
+                    minLength={6}
+                  />
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Reset Password
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-primary/10">
