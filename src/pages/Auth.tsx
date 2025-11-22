@@ -228,6 +228,41 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    const email = loginForm.getValues("email");
+    if (!email) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email in the login form first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+
+      if (error) {
+        toast({
+          title: "Reset failed",
+          description: "Could not start password reset. Please check your email and try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Reset link sent",
+        description: "Check your email inbox for a password reset link.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-primary/10">
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
@@ -371,9 +406,14 @@ const Auth = () => {
                       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Sign In
                     </Button>
-                    <p className="text-xs text-center text-muted-foreground">
-                      Forgot password? <span className="text-primary">(coming soon)</span>
-                    </p>
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      className="mt-2 w-full text-xs text-primary hover:underline disabled:opacity-50"
+                      disabled={loading}
+                    >
+                      Forgot password?
+                    </button>
                   </form>
                 </Form>
               </TabsContent>
