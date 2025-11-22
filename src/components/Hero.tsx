@@ -1,13 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import heroBg from "@/assets/hero-bg-new.jpg";
 import profileImg from "@/assets/profile.jpg";
 import FloatingShapes from "./FloatingShapes";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useAuth } from "@/hooks/useAuth";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { ref: profileRef, isVisible: profileVisible } = useScrollAnimation({ threshold: 0.3, animationType: 'scale' });
   const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation({ threshold: 0.3, animationType: 'fade', delay: 200 });
   const { ref: buttonRef, isVisible: buttonVisible } = useScrollAnimation({ threshold: 0.3, animationType: 'slide-up', delay: 400 });
@@ -79,8 +81,20 @@ const Hero = () => {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
             </Button>
             
+            {!user && (
+              <Button 
+                variant="neon" 
+                size="lg"
+                className="ripple hover-brightness group"
+                onClick={() => navigate('/auth')}
+              >
+                <LogIn className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                Sign In / Register
+              </Button>
+            )}
+            
             <Button 
-              variant="neon" 
+              variant="outline" 
               size="lg"
               className="ripple hover-brightness"
               onClick={() => window.open('https://discord.gg/6CdCgjsVua', '_blank')}
