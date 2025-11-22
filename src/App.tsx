@@ -22,6 +22,7 @@ import CheckoutRedirect from "./pages/CheckoutRedirect";
 import PaymentDetails from "./pages/PaymentDetails";
 import PaymentReturn from "./pages/PaymentReturn";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
 import Navigation from "./components/Navigation";
 import PromoNotifications from "./components/PromoNotifications";
 import { useConsoleMessage, useKonamiCode } from "./hooks/useEasterEggs";
@@ -111,6 +112,7 @@ const App = () => {
                   <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
                   <Route path="/payment-details" element={<PaymentDetails />} />
                   <Route path="/payment-return" element={<PaymentReturn />} />
+                  <Route path="/auth" element={<Auth />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

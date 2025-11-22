@@ -1,5 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
-import { Home, User, Briefcase, Award, Target, Mail, Code, Menu, BookOpen } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Home, User, Briefcase, Award, Target, Mail, Code, Menu, BookOpen, LogIn, LogOut } from "lucide-react";
 import { useState } from "react";
 import {
   Sheet,
@@ -8,10 +8,28 @@ import {
 } from "@/components/ui/sheet";
 import ThemeToggle from "./ThemeToggle";
 import ScrollProgress from "./ScrollProgress";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleAuthAction = async () => {
+    if (user) {
+      await signOut();
+      toast({
+        title: "Signed out",
+        description: "You've been successfully signed out.",
+      });
+    } else {
+      navigate("/auth");
+    }
+  };
 
   const navItems = [
     { path: "/", label: "Home", icon: Home },
@@ -57,7 +75,26 @@ const Navigation = () => {
                 );
               })}
             </div>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleAuthAction}
+              >
+                {user ? (
+                  <>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Sign In
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Mobile Navigation - Hamburger Menu */}
@@ -91,6 +128,25 @@ const Navigation = () => {
                       </Link>
                     );
                   })}
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <Button
+                      variant="ghost"
+                      onClick={handleAuthAction}
+                      className="w-full justify-start"
+                    >
+                      {user ? (
+                        <>
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Sign Out
+                        </>
+                      ) : (
+                        <>
+                          <LogIn className="h-4 w-4 mr-2" />
+                          Sign In
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
