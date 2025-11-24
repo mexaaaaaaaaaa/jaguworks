@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import Index from "./pages/Index";
 import AboutPage from "./pages/About";
 import FeaturedProjects from "./pages/FeaturedProjects";
@@ -84,6 +85,7 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <Analytics />
           <HashRouter>
             <Navigation />
             <PromoNotifications />
