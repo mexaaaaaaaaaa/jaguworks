@@ -34,6 +34,20 @@ import { toast } from "sonner";
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 
+// Lazy load admin pages
+import AdminLayout from "./components/admin/AdminLayout";
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
+const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
+const AdminAddons = lazy(() => import("./pages/admin/AdminAddons"));
+const AdminBlog = lazy(() => import("./pages/admin/AdminBlog"));
+const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials"));
+const AdminStats = lazy(() => import("./pages/admin/AdminStats"));
+const AdminAchievements = lazy(() => import("./pages/admin/AdminAchievements"));
+const AdminCoupons = lazy(() => import("./pages/admin/AdminCoupons"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -117,6 +131,20 @@ const App = () => {
                   <Route path="/payment-details" element={<PaymentDetails />} />
                   <Route path="/payment-return" element={<PaymentReturn />} />
                   <Route path="/auth" element={<Auth />} />
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="orders" element={<AdminOrders />} />
+                    <Route path="plans" element={<AdminPlans />} />
+                    <Route path="addons" element={<AdminAddons />} />
+                    <Route path="blog" element={<AdminBlog />} />
+                    <Route path="testimonials" element={<AdminTestimonials />} />
+                    <Route path="stats" element={<AdminStats />} />
+                    <Route path="achievements" element={<AdminAchievements />} />
+                    <Route path="coupons" element={<AdminCoupons />} />
+                    <Route path="settings" element={<AdminSettings />} />
+                    <Route path="users" element={<AdminUsers />} />
+                  </Route>
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

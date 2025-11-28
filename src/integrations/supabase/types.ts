@@ -14,6 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          color: string
+          current_value: number | null
+          description: string | null
+          display_order: number | null
+          icon: string
+          id: string
+          is_active: boolean | null
+          is_progress: boolean | null
+          target_value: number | null
+          title: string
+        }
+        Insert: {
+          color: string
+          current_value?: number | null
+          description?: string | null
+          display_order?: number | null
+          icon: string
+          id?: string
+          is_active?: boolean | null
+          is_progress?: boolean | null
+          target_value?: number | null
+          title: string
+        }
+        Update: {
+          color?: string
+          current_value?: number | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string
+          id?: string
+          is_active?: boolean | null
+          is_progress?: boolean | null
+          target_value?: number | null
+          title?: string
+        }
+        Relationships: []
+      }
+      addons: {
+        Row: {
+          category: string
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+        }
+        Insert: {
+          category: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+        }
+        Update: {
+          category?: string
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+        }
+        Relationships: []
+      }
+      blog_posts: {
+        Row: {
+          author: string | null
+          category: string | null
+          content: string
+          created_at: string | null
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          is_featured: boolean | null
+          is_published: boolean | null
+          read_time: string | null
+          slug: string
+          title: string
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          author?: string | null
+          category?: string | null
+          content: string
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          read_time?: string | null
+          slug: string
+          title: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          author?: string | null
+          category?: string | null
+          content?: string
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          read_time?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: []
+      }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string | null
+          description: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          type: string
+          usage_limit: number | null
+          used_count: number | null
+          value: number
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          type: string
+          usage_limit?: number | null
+          used_count?: number | null
+          value: number
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          type?: string
+          usage_limit?: number | null
+          used_count?: number | null
+          value?: number
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           addons: Json | null
@@ -83,6 +239,48 @@ export type Database = {
         }
         Relationships: []
       }
+      plans: {
+        Row: {
+          category: string
+          created_at: string | null
+          delivery: string | null
+          description: string | null
+          display_order: number | null
+          features: Json | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          delivery?: string | null
+          description?: string | null
+          display_order?: number | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          delivery?: string | null
+          description?: string | null
+          display_order?: number | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -110,6 +308,105 @@ export type Database = {
           id?: string
           updated_at?: string | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string | null
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
+      stats: {
+        Row: {
+          color: string | null
+          display_order: number | null
+          icon: string
+          id: string
+          is_active: boolean | null
+          label: string
+          suffix: string | null
+          value: number
+        }
+        Insert: {
+          color?: string | null
+          display_order?: number | null
+          icon: string
+          id?: string
+          is_active?: boolean | null
+          label: string
+          suffix?: string | null
+          value: number
+        }
+        Update: {
+          color?: string | null
+          display_order?: number | null
+          icon?: string
+          id?: string
+          is_active?: boolean | null
+          label?: string
+          suffix?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          company: string | null
+          content: string
+          created_at: string | null
+          display_order: number | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          rating: number | null
+          role: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company?: string | null
+          content: string
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          rating?: number | null
+          role?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company?: string | null
+          content?: string
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          rating?: number | null
+          role?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
