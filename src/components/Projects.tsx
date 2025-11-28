@@ -28,10 +28,11 @@ const Projects = () => {
       link: "/ai-telegram-bots",
     },
     {
-      title: "Minecraft Launcher",
-      description: "Custom Windows 10 launcher with no-login authentication system",
+      title: "Minecraft Server",
+      description: "Join our lag-free Minecraft server with exciting game modes and a vibrant community",
       icon: Settings,
       color: "from-green-500 to-cyan-500",
+      link: "/minecraft-server",
     },
     {
       title: "Cinematic Reel Project",
