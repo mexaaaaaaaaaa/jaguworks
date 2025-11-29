@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import BackToTop from "@/components/BackToTop";
 import SEO from "@/components/SEO";
+import DynamicSectionsRenderer from "@/components/DynamicSectionsRenderer";
 
 const Index = () => {
   const structuredData = {
@@ -33,6 +34,7 @@ const Index = () => {
       />
       <div className="min-h-screen bg-background text-foreground">
         <Hero />
+        <DynamicSectionsRenderer page="home" />
         <StatsCounter />
         <Testimonials />
         <Footer />
