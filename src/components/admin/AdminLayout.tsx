@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,12 +23,16 @@ import {
   Palette,
   Image,
   User,
+  ToggleRight,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import AdminPinGate from "./AdminPinGate";
 
 const menuItems = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "moderator"] },
+  { path: "/admin/visibility", label: "Section Toggle", icon: ToggleRight, roles: ["admin", "moderator"] },
   { path: "/admin/hero", label: "Hero Editor", icon: Image, roles: ["admin", "moderator"] },
   { path: "/admin/about", label: "About Editor", icon: User, roles: ["admin", "moderator"] },
   { path: "/admin/sections", label: "Section Builder", icon: Layers, roles: ["admin", "moderator"] },
@@ -42,6 +46,7 @@ const menuItems = [
   { path: "/admin/social-links", label: "Social Links", icon: Link2, roles: ["admin", "moderator"] },
   { path: "/admin/theme", label: "Theme", icon: Palette, roles: ["admin"] },
   { path: "/admin/coupons", label: "Coupons", icon: Ticket, roles: ["admin"] },
+  { path: "/admin/pin", label: "PIN Security", icon: Lock, roles: ["admin"] },
   { path: "/admin/settings", label: "Settings", icon: Settings, roles: ["admin"] },
   { path: "/admin/users", label: "Users", icon: Users, roles: ["admin"] },
 ];
@@ -50,6 +55,15 @@ export default function AdminLayout() {
   const { user, loading, signOut } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pinVerified, setPinVerified] = useState(false);
+
+  // Check if already verified this session
+  useEffect(() => {
+    const verified = sessionStorage.getItem("admin_pin_verified");
+    if (verified === "true") {
+      setPinVerified(true);
+    }
+  }, []);
 
   const { data: userRole, isLoading: roleLoading } = useQuery({
     queryKey: ["userRole", user?.id],
@@ -94,6 +108,11 @@ export default function AdminLayout() {
     );
   }
 
+  // Show PIN gate if not verified
+  if (!pinVerified) {
+    return <AdminPinGate onSuccess={() => setPinVerified(true)} />;
+  }
+
   const filteredMenuItems = menuItems.filter((item) =>
     item.roles.includes(userRole)
   );
@@ -117,7 +136,7 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-full w-64 bg-card border-r border-border z-40 transition-transform duration-300",
+          "fixed left-0 top-0 h-full w-64 bg-card border-r border-border z-40 transition-transform duration-300 overflow-y-auto",
           "lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
@@ -156,7 +175,7 @@ export default function AdminLayout() {
           })}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-card">
           <Button
             variant="ghost"
             className="w-full justify-start gap-3"
