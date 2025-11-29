@@ -170,6 +170,75 @@ export type Database = {
         }
         Relationships: []
       }
+      dynamic_sections: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          is_visible: boolean
+          layout_type: string
+          order_index: number
+          page: string
+          section_name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          layout_type?: string
+          order_index?: number
+          page?: string
+          section_name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          layout_type?: string
+          order_index?: number
+          page?: string
+          section_name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      media_library: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          size: number | null
+          type: string
+          uploaded_by: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          size?: number | null
+          type?: string
+          uploaded_by?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          size?: number | null
+          type?: string
+          uploaded_by?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           addons: Json | null
@@ -311,6 +380,27 @@ export type Database = {
         }
         Relationships: []
       }
+      site_content: {
+        Row: {
+          content: Json
+          id: string
+          section_key: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          id?: string
+          section_key: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          id?: string
+          section_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           id: string
@@ -332,6 +422,33 @@ export type Database = {
           updated_at?: string | null
           updated_by?: string | null
           value?: Json
+        }
+        Relationships: []
+      }
+      social_links: {
+        Row: {
+          display_order: number
+          icon: string | null
+          id: string
+          is_visible: boolean
+          platform: string
+          url: string
+        }
+        Insert: {
+          display_order?: number
+          icon?: string | null
+          id?: string
+          is_visible?: boolean
+          platform: string
+          url: string
+        }
+        Update: {
+          display_order?: number
+          icon?: string | null
+          id?: string
+          is_visible?: boolean
+          platform?: string
+          url?: string
         }
         Relationships: []
       }
@@ -407,6 +524,27 @@ export type Database = {
           rating?: number | null
           role?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      theme_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json
         }
         Relationships: []
       }

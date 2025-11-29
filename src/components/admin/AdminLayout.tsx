@@ -18,12 +18,16 @@ import {
   LogOut,
   ShoppingCart,
   Puzzle,
+  Layers,
+  Link2,
+  Palette,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "moderator"] },
+  { path: "/admin/sections", label: "Section Builder", icon: Layers, roles: ["admin", "moderator"] },
   { path: "/admin/orders", label: "Orders", icon: ShoppingCart, roles: ["admin", "moderator"] },
   { path: "/admin/plans", label: "Plans", icon: Package, roles: ["admin", "moderator"] },
   { path: "/admin/addons", label: "Add-ons", icon: Puzzle, roles: ["admin", "moderator"] },
@@ -31,6 +35,8 @@ const menuItems = [
   { path: "/admin/testimonials", label: "Testimonials", icon: MessageSquare, roles: ["admin", "moderator"] },
   { path: "/admin/stats", label: "Stats", icon: BarChart3, roles: ["admin", "moderator"] },
   { path: "/admin/achievements", label: "Achievements", icon: Award, roles: ["admin", "moderator"] },
+  { path: "/admin/social-links", label: "Social Links", icon: Link2, roles: ["admin", "moderator"] },
+  { path: "/admin/theme", label: "Theme", icon: Palette, roles: ["admin"] },
   { path: "/admin/coupons", label: "Coupons", icon: Ticket, roles: ["admin"] },
   { path: "/admin/settings", label: "Settings", icon: Settings, roles: ["admin"] },
   { path: "/admin/users", label: "Users", icon: Users, roles: ["admin"] },

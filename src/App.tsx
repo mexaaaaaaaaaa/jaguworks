@@ -47,6 +47,9 @@ const AdminAchievements = lazy(() => import("./pages/admin/AdminAchievements"));
 const AdminCoupons = lazy(() => import("./pages/admin/AdminCoupons"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminSectionBuilder = lazy(() => import("./pages/admin/AdminSectionBuilder"));
+const AdminSocialLinks = lazy(() => import("./pages/admin/AdminSocialLinks"));
+const AdminTheme = lazy(() => import("./pages/admin/AdminTheme"));
 
 const queryClient = new QueryClient();
 
@@ -134,6 +137,7 @@ const App = () => {
                   {/* Admin Routes */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />
+                    <Route path="sections" element={<AdminSectionBuilder />} />
                     <Route path="orders" element={<AdminOrders />} />
                     <Route path="plans" element={<AdminPlans />} />
                     <Route path="addons" element={<AdminAddons />} />
@@ -141,6 +145,8 @@ const App = () => {
                     <Route path="testimonials" element={<AdminTestimonials />} />
                     <Route path="stats" element={<AdminStats />} />
                     <Route path="achievements" element={<AdminAchievements />} />
+                    <Route path="social-links" element={<AdminSocialLinks />} />
+                    <Route path="theme" element={<AdminTheme />} />
                     <Route path="coupons" element={<AdminCoupons />} />
                     <Route path="settings" element={<AdminSettings />} />
                     <Route path="users" element={<AdminUsers />} />
