@@ -55,6 +55,11 @@ const AdminHeroEditor = lazy(() => import("./pages/admin/AdminHeroEditor"));
 const AdminAboutEditor = lazy(() => import("./pages/admin/AdminAboutEditor"));
 const AdminSectionVisibility = lazy(() => import("./pages/admin/AdminSectionVisibility"));
 const AdminPinSettings = lazy(() => import("./pages/admin/AdminPinSettings"));
+const AdminAnalytics = lazy(() => import("./pages/admin/AdminAnalytics"));
+const AdminMediaLibrary = lazy(() => import("./pages/admin/AdminMediaLibrary"));
+const AdminBackup = lazy(() => import("./pages/admin/AdminBackup"));
+const AdminTrash = lazy(() => import("./pages/admin/AdminTrash"));
+const AdminNotes = lazy(() => import("./pages/admin/AdminNotes"));
 
 const queryClient = new QueryClient();
 
@@ -157,6 +162,11 @@ const App = () => {
                     <Route path="theme" element={<AdminTheme />} />
                     <Route path="coupons" element={<AdminCoupons />} />
                     <Route path="pin" element={<AdminPinSettings />} />
+                    <Route path="analytics" element={<AdminAnalytics />} />
+                    <Route path="media-library" element={<AdminMediaLibrary />} />
+                    <Route path="backup" element={<AdminBackup />} />
+                    <Route path="trash" element={<AdminTrash />} />
+                    <Route path="notes" element={<AdminNotes />} />
                     <Route path="settings" element={<AdminSettings />} />
                     <Route path="users" element={<AdminUsers />} />
                   </Route>
