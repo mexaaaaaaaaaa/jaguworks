@@ -1,13 +1,42 @@
-import { Code2, Rocket, Sparkles, Zap } from "lucide-react";
+import { Code2, Rocket, Sparkles, Zap, MessageSquare, Star, Heart, Globe, Server, Bot, Trophy, Gamepad2 } from "lucide-react";
+import { useSiteContent } from "@/hooks/useDynamicSections";
+
+interface TimelineItem {
+  year: string;
+  event: string;
+  icon: string;
+}
+
+interface AboutContent {
+  title?: string;
+  subtitle?: string;
+  bio?: string;
+  quote?: string;
+  timeline?: TimelineItem[];
+}
+
+const iconMap: Record<string, any> = {
+  Code2, Rocket, Sparkles, Zap, MessageSquare, Star, Heart, Globe, Server, Bot, Trophy, Gamepad2
+};
+
+const defaultTimeline = [
+  { year: "2020", event: "Started coding", icon: "Code2" },
+  { year: "2022", event: "Built first Minecraft server", icon: "Zap" },
+  { year: "2023", event: "Started Discord bot dev", icon: "Sparkles" },
+  { year: "2024", event: "Built apps & AI bots", icon: "Rocket" },
+  { year: "2025", event: "Launching digital empire", icon: "Sparkles" },
+];
 
 const About = () => {
-  const timeline = [
-    { year: "2020", event: "Started coding", icon: Code2 },
-    { year: "2022", event: "Built first Minecraft server", icon: Zap },
-    { year: "2023", event: "Started Discord bot dev", icon: Sparkles },
-    { year: "2024", event: "Built apps & AI bots", icon: Rocket },
-    { year: "2025", event: "Launching digital empire", icon: Sparkles },
-  ];
+  const { data: aboutContent } = useSiteContent("about");
+  const content = (aboutContent as unknown as AboutContent) || {};
+
+  // Use database values or fallback to defaults
+  const title = content.title || "About Me";
+  const subtitle = content.subtitle || "Who I Am";
+  const bio = content.bio || "Hey, I'm Jagmohan — a developer who builds virtual worlds and digital experiences. From Minecraft servers to Discord systems, and from web apps to AI tools, I create everything that connects technology with creativity.";
+  const quote = content.quote || "Dream it. Build it. Automate it.";
+  const timeline = content.timeline || defaultTimeline;
 
   return (
     <section id="about" className="py-20 px-4 relative overflow-hidden">
@@ -16,10 +45,10 @@ const About = () => {
       <div className="container mx-auto relative z-10">
         <div className="text-center mb-16 animate-slide-in-up">
           <div className="inline-block mb-4">
-            <span className="text-sm font-mono text-primary tracking-widest uppercase">Who I Am</span>
+            <span className="text-sm font-mono text-primary tracking-widest uppercase">{subtitle}</span>
           </div>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 font-display">
-            <span className="gradient-text">About Me</span>
+            <span className="gradient-text">{title}</span>
           </h2>
           <div className="h-1 w-20 bg-gradient-to-r from-primary via-accent to-secondary mx-auto rounded-full mb-4"></div>
           <p className="text-muted-foreground max-w-2xl mx-auto font-mono text-sm">
@@ -32,12 +61,17 @@ const About = () => {
           <div className="animate-fade-in-left">
             <div className="bg-card/50 backdrop-blur-sm border border-primary/20 rounded-2xl p-8 glow-primary hover-lift">
               <p className="text-lg text-foreground/90 leading-relaxed mb-6 animate-fade-in-up stagger-1">
-                Hey, I'm <span className="text-primary font-semibold">Jagmohan</span> — a developer who builds virtual worlds and digital experiences. From Minecraft servers to Discord systems, and from web apps to AI tools, I create everything that connects technology with creativity.
+                {bio.split('Jagmohan').map((part, i) => (
+                  <span key={i}>
+                    {part}
+                    {i === 0 && <span className="text-primary font-semibold">Jagmohan</span>}
+                  </span>
+                ))}
               </p>
               
               <div className="border-l-4 border-primary pl-4 bg-muted/30 p-4 rounded-r-lg animate-fade-in-up stagger-2 hover-glow">
                 <p className="italic text-primary font-medium text-lg">
-                  "Dream it. Build it. Automate it."
+                  "{quote}"
                 </p>
               </div>
             </div>
@@ -47,7 +81,7 @@ const About = () => {
           <div className="animate-fade-in-right">
             <div className="space-y-4">
               {timeline.map((item, index) => {
-                const Icon = item.icon;
+                const Icon = iconMap[item.icon] || Star;
                 return (
                   <div 
                     key={index}

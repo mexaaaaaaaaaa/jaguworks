@@ -50,6 +50,8 @@ const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminSectionBuilder = lazy(() => import("./pages/admin/AdminSectionBuilder"));
 const AdminSocialLinks = lazy(() => import("./pages/admin/AdminSocialLinks"));
 const AdminTheme = lazy(() => import("./pages/admin/AdminTheme"));
+const AdminHeroEditor = lazy(() => import("./pages/admin/AdminHeroEditor"));
+const AdminAboutEditor = lazy(() => import("./pages/admin/AdminAboutEditor"));
 
 const queryClient = new QueryClient();
 
@@ -137,6 +139,8 @@ const App = () => {
                   {/* Admin Routes */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />
+                    <Route path="hero" element={<AdminHeroEditor />} />
+                    <Route path="about" element={<AdminAboutEditor />} />
                     <Route path="sections" element={<AdminSectionBuilder />} />
                     <Route path="orders" element={<AdminOrders />} />
                     <Route path="plans" element={<AdminPlans />} />

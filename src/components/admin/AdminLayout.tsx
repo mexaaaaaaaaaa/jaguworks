@@ -21,12 +21,16 @@ import {
   Layers,
   Link2,
   Palette,
+  Image,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "moderator"] },
+  { path: "/admin/hero", label: "Hero Editor", icon: Image, roles: ["admin", "moderator"] },
+  { path: "/admin/about", label: "About Editor", icon: User, roles: ["admin", "moderator"] },
   { path: "/admin/sections", label: "Section Builder", icon: Layers, roles: ["admin", "moderator"] },
   { path: "/admin/orders", label: "Orders", icon: ShoppingCart, roles: ["admin", "moderator"] },
   { path: "/admin/plans", label: "Plans", icon: Package, roles: ["admin", "moderator"] },
