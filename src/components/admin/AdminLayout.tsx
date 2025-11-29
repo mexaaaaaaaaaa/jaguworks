@@ -49,8 +49,8 @@ export default function AdminLayout() {
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
-        .single();
-      if (error) return null;
+        .maybeSingle();
+      if (error || !data) return null;
       return data?.role;
     },
     enabled: !!user?.id,
