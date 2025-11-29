@@ -53,6 +53,39 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip_address: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       addons: {
         Row: {
           category: string
@@ -77,6 +110,39 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           price?: number
+        }
+        Relationships: []
+      }
+      admin_notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          link: string | null
+          message: string | null
+          title: string
+          type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message?: string | null
+          title: string
+          type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message?: string | null
+          title?: string
+          type?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -209,6 +275,36 @@ export type Database = {
         }
         Relationships: []
       }
+      internal_notes: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          note: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          note: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          note?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       media_library: {
         Row: {
           created_at: string
@@ -308,6 +404,33 @@ export type Database = {
         }
         Relationships: []
       }
+      page_analytics: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: string
+          page_path: string
+          unique_visitors: number | null
+          views: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          id?: string
+          page_path: string
+          unique_visitors?: number | null
+          views?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          page_path?: string
+          unique_visitors?: number | null
+          views?: number | null
+        }
+        Relationships: []
+      }
       plans: {
         Row: {
           category: string
@@ -377,6 +500,39 @@ export type Database = {
           id?: string
           updated_at?: string | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      scheduled_content: {
+        Row: {
+          action: string
+          content_id: string
+          content_type: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          scheduled_for: string
+          status: string | null
+        }
+        Insert: {
+          action: string
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          scheduled_for: string
+          status?: string | null
+        }
+        Update: {
+          action?: string
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          scheduled_for?: string
+          status?: string | null
         }
         Relationships: []
       }
@@ -545,6 +701,36 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: Json
+        }
+        Relationships: []
+      }
+      trash_bin: {
+        Row: {
+          data: Json
+          deleted_at: string | null
+          deleted_by: string | null
+          expires_at: string | null
+          id: string
+          original_id: string
+          original_table: string
+        }
+        Insert: {
+          data: Json
+          deleted_at?: string | null
+          deleted_by?: string | null
+          expires_at?: string | null
+          id?: string
+          original_id: string
+          original_table: string
+        }
+        Update: {
+          data?: Json
+          deleted_at?: string | null
+          deleted_by?: string | null
+          expires_at?: string | null
+          id?: string
+          original_id?: string
+          original_table?: string
         }
         Relationships: []
       }

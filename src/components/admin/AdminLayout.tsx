@@ -25,13 +25,22 @@ import {
   User,
   ToggleRight,
   Lock,
+  LineChart,
+  FolderOpen,
+  Download,
+  Trash2,
+  StickyNote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import AdminPinGate from "./AdminPinGate";
+import CommandPalette from "./CommandPalette";
+import NotificationBell from "./NotificationBell";
+import AdminBreadcrumbs from "./AdminBreadcrumbs";
 
 const menuItems = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "moderator"] },
+  { path: "/admin/analytics", label: "Analytics", icon: LineChart, roles: ["admin", "moderator"] },
   { path: "/admin/visibility", label: "Section Toggle", icon: ToggleRight, roles: ["admin", "moderator"] },
   { path: "/admin/hero", label: "Hero Editor", icon: Image, roles: ["admin", "moderator"] },
   { path: "/admin/about", label: "About Editor", icon: User, roles: ["admin", "moderator"] },
@@ -44,6 +53,10 @@ const menuItems = [
   { path: "/admin/stats", label: "Stats", icon: BarChart3, roles: ["admin", "moderator"] },
   { path: "/admin/achievements", label: "Achievements", icon: Award, roles: ["admin", "moderator"] },
   { path: "/admin/social-links", label: "Social Links", icon: Link2, roles: ["admin", "moderator"] },
+  { path: "/admin/media-library", label: "Media Library", icon: FolderOpen, roles: ["admin", "moderator"] },
+  { path: "/admin/notes", label: "Notes", icon: StickyNote, roles: ["admin", "moderator"] },
+  { path: "/admin/backup", label: "Backup", icon: Download, roles: ["admin"] },
+  { path: "/admin/trash", label: "Trash", icon: Trash2, roles: ["admin"] },
   { path: "/admin/theme", label: "Theme", icon: Palette, roles: ["admin"] },
   { path: "/admin/coupons", label: "Coupons", icon: Ticket, roles: ["admin"] },
   { path: "/admin/pin", label: "PIN Security", icon: Lock, roles: ["admin"] },
@@ -127,10 +140,13 @@ export default function AdminLayout() {
         >
           {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-        <span className="font-bold text-lg">Admin Panel</span>
-        <Button variant="ghost" size="icon" onClick={signOut}>
-          <LogOut size={20} />
-        </Button>
+        <CommandPalette />
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <Button variant="ghost" size="icon" onClick={signOut}>
+            <LogOut size={20} />
+          </Button>
+        </div>
       </div>
 
       {/* Sidebar */}
@@ -198,6 +214,13 @@ export default function AdminLayout() {
       {/* Main Content */}
       <main className="lg:ml-64 pt-16 lg:pt-0 min-h-screen">
         <div className="p-6">
+          <div className="hidden lg:flex items-center justify-between mb-4">
+            <AdminBreadcrumbs />
+            <div className="flex items-center gap-2">
+              <CommandPalette />
+              <NotificationBell />
+            </div>
+          </div>
           <Outlet />
         </div>
       </main>
