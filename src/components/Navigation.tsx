@@ -11,6 +11,7 @@ import ScrollProgress from "./ScrollProgress";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 
 const Navigation = () => {
   const location = useLocation();
@@ -18,6 +19,7 @@ const Navigation = () => {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const { isVisible } = useSectionVisibility();
 
   const handleAuthAction = async () => {
     if (user) {
@@ -31,16 +33,23 @@ const Navigation = () => {
     }
   };
 
-  const navItems = [
-    { path: "/", label: "Home", icon: Home },
-    { path: "/about", label: "About", icon: User },
-    { path: "/projects", label: "Projects", icon: Briefcase },
-    { path: "/skills", label: "Skills", icon: Code },
-    { path: "/blog", label: "Blog", icon: BookOpen },
-    { path: "/achievements", label: "Achievements", icon: Award },
-    { path: "/goals", label: "Goals", icon: Target },
-    { path: "/contact", label: "Contact", icon: Mail },
+  // Base nav items with visibility keys
+  const allNavItems = [
+    { path: "/", label: "Home", icon: Home, visibilityKey: null },
+    { path: "/about", label: "About", icon: User, visibilityKey: "about" as const },
+    { path: "/projects", label: "Projects", icon: Briefcase, visibilityKey: "projects" as const },
+    { path: "/skills", label: "Skills", icon: Code, visibilityKey: "skills" as const },
+    { path: "/blog", label: "Blog", icon: BookOpen, visibilityKey: "blog" as const },
+    { path: "/achievements", label: "Achievements", icon: Award, visibilityKey: "achievements" as const },
+    { path: "/goals", label: "Goals", icon: Target, visibilityKey: "future_goals" as const },
+    { path: "/contact", label: "Contact", icon: Mail, visibilityKey: "contact" as const },
   ];
+
+  // Filter nav items based on visibility
+  const navItems = allNavItems.filter((item) => {
+    if (item.visibilityKey === null) return true;
+    return isVisible(item.visibilityKey);
+  });
 
   return (
     <>

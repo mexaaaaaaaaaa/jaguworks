@@ -29,6 +29,7 @@ import Navigation from "./components/Navigation";
 import PromoNotifications from "./components/PromoNotifications";
 import { useConsoleMessage, useKonamiCode } from "./hooks/useEasterEggs";
 import { toast } from "sonner";
+import VisibilityGuard from "./components/VisibilityGuard";
 
 // Lazy load blog pages
 const Blog = lazy(() => import("./pages/Blog"));
@@ -52,6 +53,8 @@ const AdminSocialLinks = lazy(() => import("./pages/admin/AdminSocialLinks"));
 const AdminTheme = lazy(() => import("./pages/admin/AdminTheme"));
 const AdminHeroEditor = lazy(() => import("./pages/admin/AdminHeroEditor"));
 const AdminAboutEditor = lazy(() => import("./pages/admin/AdminAboutEditor"));
+const AdminSectionVisibility = lazy(() => import("./pages/admin/AdminSectionVisibility"));
+const AdminPinSettings = lazy(() => import("./pages/admin/AdminPinSettings"));
 
 const queryClient = new QueryClient();
 
@@ -117,20 +120,20 @@ const App = () => {
               }>
                 <Routes>
                   <Route path="/" element={<Index />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/projects" element={<FeaturedProjects />} />
-                  <Route path="/skills" element={<SkillsPage />} />
-                  <Route path="/achievements" element={<AchievementsPage />} />
-                  <Route path="/goals" element={<FutureGoalsPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:slug" element={<BlogPost />} />
-                  <Route path="/ai-telegram-bots" element={<TelegramBots />} />
-                  <Route path="/cinematic-reel" element={<CinematicReel />} />
-                  <Route path="/discord-automation" element={<DiscordAutomation />} />
-                  <Route path="/minecraft-plans" element={<MinecraftPlans />} />
-                  <Route path="/minecraft-server" element={<MinecraftServer />} />
-                  <Route path="/discord-plans" element={<DiscordPlans />} />
+                  <Route path="/about" element={<VisibilityGuard section="about"><AboutPage /></VisibilityGuard>} />
+                  <Route path="/projects" element={<VisibilityGuard section="projects"><FeaturedProjects /></VisibilityGuard>} />
+                  <Route path="/skills" element={<VisibilityGuard section="skills"><SkillsPage /></VisibilityGuard>} />
+                  <Route path="/achievements" element={<VisibilityGuard section="achievements"><AchievementsPage /></VisibilityGuard>} />
+                  <Route path="/goals" element={<VisibilityGuard section="future_goals"><FutureGoalsPage /></VisibilityGuard>} />
+                  <Route path="/contact" element={<VisibilityGuard section="contact"><ContactPage /></VisibilityGuard>} />
+                  <Route path="/blog" element={<VisibilityGuard section="blog"><Blog /></VisibilityGuard>} />
+                  <Route path="/blog/:slug" element={<VisibilityGuard section="blog"><BlogPost /></VisibilityGuard>} />
+                  <Route path="/ai-telegram-bots" element={<VisibilityGuard section="telegram_bots"><TelegramBots /></VisibilityGuard>} />
+                  <Route path="/cinematic-reel" element={<VisibilityGuard section="cinematic_reel"><CinematicReel /></VisibilityGuard>} />
+                  <Route path="/discord-automation" element={<VisibilityGuard section="discord_automation"><DiscordAutomation /></VisibilityGuard>} />
+                  <Route path="/minecraft-plans" element={<VisibilityGuard section="minecraft_plans"><MinecraftPlans /></VisibilityGuard>} />
+                  <Route path="/minecraft-server" element={<VisibilityGuard section="minecraft_server"><MinecraftServer /></VisibilityGuard>} />
+                  <Route path="/discord-plans" element={<VisibilityGuard section="discord_plans"><DiscordPlans /></VisibilityGuard>} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
                   <Route path="/payment-details" element={<PaymentDetails />} />
@@ -139,6 +142,7 @@ const App = () => {
                   {/* Admin Routes */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />
+                    <Route path="visibility" element={<AdminSectionVisibility />} />
                     <Route path="hero" element={<AdminHeroEditor />} />
                     <Route path="about" element={<AdminAboutEditor />} />
                     <Route path="sections" element={<AdminSectionBuilder />} />
@@ -152,6 +156,7 @@ const App = () => {
                     <Route path="social-links" element={<AdminSocialLinks />} />
                     <Route path="theme" element={<AdminTheme />} />
                     <Route path="coupons" element={<AdminCoupons />} />
+                    <Route path="pin" element={<AdminPinSettings />} />
                     <Route path="settings" element={<AdminSettings />} />
                     <Route path="users" element={<AdminUsers />} />
                   </Route>
