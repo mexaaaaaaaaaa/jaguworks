@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, User, Briefcase, Award, Target, Mail, Code, Menu, BookOpen, LogIn, LogOut, Phone } from "lucide-react";
+import { Home, User, Briefcase, Award, Target, Mail, Code, Menu, BookOpen, LogIn, LogOut, Phone, Globe, AtSign, Smartphone, Key, Sparkles, Wrench } from "lucide-react";
 import { useState } from "react";
 import {
   Sheet,
@@ -44,6 +44,11 @@ const Navigation = () => {
     { path: "/goals", label: "Goals", icon: Target, visibilityKey: "future_goals" as const },
     { path: "/contact", label: "Contact", icon: Mail, visibilityKey: "contact" as const },
     { path: "/number-tracker", label: "Number Tracker", icon: Phone, visibilityKey: null },
+    { path: "/ip-tracker", label: "IP Tracker", icon: Globe, visibilityKey: null },
+    { path: "/username-checker", label: "Username Checker", icon: AtSign, visibilityKey: null },
+    { path: "/device-info", label: "Device Info", icon: Smartphone, visibilityKey: null },
+    { path: "/password-generator", label: "Password Gen", icon: Key, visibilityKey: null },
+    { path: "/ai-image-generator", label: "AI Image Gen", icon: Sparkles, visibilityKey: null },
   ];
 
   // Filter nav items based on visibility

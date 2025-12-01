@@ -25,6 +25,11 @@ import PaymentDetails from "./pages/PaymentDetails";
 import PaymentReturn from "./pages/PaymentReturn";
 import NotFound from "./pages/NotFound";
 import NumberTracker from "./pages/NumberTracker";
+import IpTracker from "./pages/IpTracker";
+import UsernameChecker from "./pages/UsernameChecker";
+import DeviceInfo from "./pages/DeviceInfo";
+import PasswordGenerator from "./pages/PasswordGenerator";
+import AiImageGenerator from "./pages/AiImageGenerator";
 import Auth from "./pages/Auth";
 import Navigation from "./components/Navigation";
 import PromoNotifications from "./components/PromoNotifications";
@@ -141,6 +146,11 @@ const App = () => {
                   <Route path="/minecraft-server" element={<VisibilityGuard section="minecraft_server"><MinecraftServer /></VisibilityGuard>} />
                   <Route path="/discord-plans" element={<VisibilityGuard section="discord_plans"><DiscordPlans /></VisibilityGuard>} />
                   <Route path="/number-tracker" element={<NumberTracker />} />
+                  <Route path="/ip-tracker" element={<IpTracker />} />
+                  <Route path="/username-checker" element={<UsernameChecker />} />
+                  <Route path="/device-info" element={<DeviceInfo />} />
+                  <Route path="/password-generator" element={<PasswordGenerator />} />
+                  <Route path="/ai-image-generator" element={<AiImageGenerator />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
                   <Route path="/payment-details" element={<PaymentDetails />} />
