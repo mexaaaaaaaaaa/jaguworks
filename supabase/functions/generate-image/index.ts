@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt } = await req.json();
+    const { prompt, image } = await req.json();
     
     if (!prompt) {
       return new Response(
@@ -25,7 +25,31 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log("Generating image with prompt:", prompt);
+    console.log("Processing request with prompt:", prompt.substring(0, 100));
+
+    // Build the message content
+    let messageContent: any;
+    
+    if (image) {
+      // Image editing mode
+      console.log("Image editing mode - processing uploaded image");
+      messageContent = [
+        {
+          type: "text",
+          text: prompt,
+        },
+        {
+          type: "image_url",
+          image_url: {
+            url: image,
+          },
+        },
+      ];
+    } else {
+      // Image generation mode
+      console.log("Image generation mode");
+      messageContent = `Generate a beautiful, high-quality image: ${prompt}`;
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -38,7 +62,7 @@ serve(async (req) => {
         messages: [
           {
             role: "user",
-            content: `Generate a beautiful, high-quality image: ${prompt}`,
+            content: messageContent,
           },
         ],
         modalities: ["image", "text"],
@@ -80,8 +104,8 @@ serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: unknown) {
-    console.error("Error generating image:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to generate image";
+    console.error("Error processing request:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to process request";
     return new Response(
       JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
