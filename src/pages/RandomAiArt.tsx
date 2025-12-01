@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 const RandomAiArt = () => {
   const [currentArt, setCurrentArt] = useState<string | null>(null);
@@ -14,21 +15,21 @@ const RandomAiArt = () => {
   const [liked, setLiked] = useState(false);
 
   const artStyles = [
-    "cyberpunk neon city",
-    "fantasy dragon in crystal cave",
-    "abstract geometric patterns",
-    "surreal floating islands",
-    "steampunk clockwork machine",
-    "underwater ancient ruins",
-    "cosmic galaxy with planets",
-    "mystical forest with glowing mushrooms",
-    "futuristic robot portrait",
-    "japanese cherry blossom garden",
-    "aurora borealis over mountains",
-    "retro synthwave sunset",
-    "biomechanical alien creature",
-    "enchanted castle in clouds",
-    "post-apocalyptic overgrown city",
+    "cyberpunk neon city at night with flying cars",
+    "fantasy dragon in crystal cave with glowing gems",
+    "abstract geometric patterns with vibrant colors",
+    "surreal floating islands in the sky with waterfalls",
+    "steampunk clockwork machine with gears and pipes",
+    "underwater ancient ruins with bioluminescent fish",
+    "cosmic galaxy with colorful planets and nebulas",
+    "mystical forest with glowing mushrooms and fireflies",
+    "futuristic robot portrait with human emotions",
+    "japanese cherry blossom garden in spring",
+    "aurora borealis over snowy mountains",
+    "retro synthwave sunset with palm trees",
+    "biomechanical alien creature in organic spaceship",
+    "enchanted castle floating in clouds",
+    "post-apocalyptic overgrown city with nature reclaiming",
   ];
 
   const generateRandomArt = async () => {
@@ -39,23 +40,21 @@ const RandomAiArt = () => {
     setCurrentPrompt(randomPrompt);
 
     try {
-      // Using placeholder images for demo - in production this would call AI API
-      const placeholderImages = [
-        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800",
-        "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=800",
-        "https://images.unsplash.com/photo-1633218388467-539651dcf81a?w=800",
-        "https://images.unsplash.com/photo-1618172193763-c511deb635ca?w=800",
-        "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=800",
-      ];
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const randomImage = placeholderImages[Math.floor(Math.random() * placeholderImages.length)];
-      setCurrentArt(randomImage);
-      toast.success("New art generated!");
-    } catch (error) {
-      toast.error("Failed to generate art");
+      const { data, error } = await supabase.functions.invoke('generate-image', {
+        body: { prompt: `${randomPrompt}, highly detailed, 4k, masterpiece, beautiful lighting` },
+      });
+
+      if (error) throw error;
+
+      if (data?.image) {
+        setCurrentArt(data.image);
+        toast.success("New art generated!");
+      } else {
+        throw new Error('No image returned');
+      }
+    } catch (error: any) {
+      console.error("Generation error:", error);
+      toast.error(error.message || "Failed to generate art. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -65,14 +64,10 @@ const RandomAiArt = () => {
     if (!currentArt) return;
     
     try {
-      const response = await fetch(currentArt);
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `ai-art-${Date.now()}.jpg`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const link = document.createElement("a");
+      link.href = currentArt;
+      link.download = `ai-art-${Date.now()}.png`;
+      link.click();
       toast.success("Art downloaded!");
     } catch (error) {
       toast.error("Download failed");
@@ -87,13 +82,13 @@ const RandomAiArt = () => {
         await navigator.share({
           title: "AI Generated Art",
           text: `Check out this AI art: "${currentPrompt}"`,
-          url: currentArt,
+          url: window.location.href,
         });
       } catch (error) {
         // User cancelled or error
       }
     } else {
-      await navigator.clipboard.writeText(currentArt);
+      await navigator.clipboard.writeText(window.location.href);
       toast.success("Link copied to clipboard!");
     }
   };
@@ -126,7 +121,7 @@ const RandomAiArt = () => {
           {/* Art Display */}
           <Card className="glass-card mb-8 overflow-hidden">
             <CardContent className="p-0">
-              <div className="relative aspect-square md:aspect-video bg-gradient-to-br from-accent/20 to-background">
+              <div className="relative aspect-square md:aspect-video bg-gradient-to-br from-accent/20 to-background min-h-[300px]">
                 <AnimatePresence mode="wait">
                   {isLoading ? (
                     <motion.div
@@ -137,8 +132,9 @@ const RandomAiArt = () => {
                       className="absolute inset-0 flex flex-col items-center justify-center"
                     >
                       <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
-                      <p className="text-muted-foreground">Creating magic...</p>
-                      <p className="text-sm text-muted-foreground/70 mt-2">"{currentPrompt}"</p>
+                      <p className="text-muted-foreground">Creating magic with AI...</p>
+                      <p className="text-sm text-muted-foreground/70 mt-2 max-w-md text-center px-4">"{currentPrompt}"</p>
+                      <p className="text-xs text-muted-foreground/50 mt-4">This may take 10-30 seconds</p>
                     </motion.div>
                   ) : currentArt ? (
                     <motion.div
@@ -151,7 +147,7 @@ const RandomAiArt = () => {
                       <img
                         src={currentArt}
                         alt="AI Generated Art"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
                         <Badge variant="secondary" className="mb-2">
@@ -255,7 +251,7 @@ const RandomAiArt = () => {
 
           {/* Info */}
           <div className="mt-8 text-center text-sm text-muted-foreground">
-            <p>Art is generated using advanced AI models. Each generation is unique!</p>
+            <p>🎨 Powered by Lovable AI • Each generation is unique!</p>
           </div>
         </motion.div>
       </div>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 const BackgroundRemover = () => {
   const [originalImage, setOriginalImage] = useState<string | null>(null);
@@ -39,20 +40,29 @@ const BackgroundRemover = () => {
 
     // Simulate progress
     const progressInterval = setInterval(() => {
-      setProgress(prev => Math.min(prev + 10, 90));
-    }, 300);
+      setProgress(prev => Math.min(prev + 5, 90));
+    }, 500);
 
     try {
-      // Simulate background removal (in production, this would use @huggingface/transformers)
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      // For demo, we'll just show the original image with a note
-      // In production, you'd use the background removal code from useful-context
-      setProcessedImage(originalImage);
-      setProgress(100);
-      toast.success("Background removed successfully!");
-    } catch (error) {
-      toast.error("Failed to remove background. Please try again.");
+      const { data, error } = await supabase.functions.invoke('generate-image', {
+        body: { 
+          prompt: `Remove the background from this image completely, make the background transparent, keep only the main subject with clean edges`,
+          image: originalImage 
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.image) {
+        setProcessedImage(data.image);
+        setProgress(100);
+        toast.success("Background removed successfully!");
+      } else {
+        throw new Error('Failed to process image');
+      }
+    } catch (error: any) {
+      console.error("Processing error:", error);
+      toast.error(error.message || "Failed to remove background. Please try again.");
     } finally {
       clearInterval(progressInterval);
       setIsProcessing(false);
@@ -149,8 +159,9 @@ const BackgroundRemover = () => {
                   {isProcessing ? (
                     <div className="text-center p-8 bg-background/90 rounded-xl">
                       <Loader2 className="w-16 h-16 mx-auto text-primary animate-spin mb-4" />
-                      <p className="text-muted-foreground mb-4">Removing background...</p>
+                      <p className="text-muted-foreground mb-4">Removing background with AI...</p>
                       <Progress value={progress} className="w-48 mx-auto" />
+                      <p className="text-xs text-muted-foreground mt-2">This may take 10-30 seconds</p>
                     </div>
                   ) : processedImage ? (
                     <img
