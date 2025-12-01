@@ -24,6 +24,7 @@ import CheckoutRedirect from "./pages/CheckoutRedirect";
 import PaymentDetails from "./pages/PaymentDetails";
 import PaymentReturn from "./pages/PaymentReturn";
 import NotFound from "./pages/NotFound";
+import NumberTracker from "./pages/NumberTracker";
 import Auth from "./pages/Auth";
 import Navigation from "./components/Navigation";
 import PromoNotifications from "./components/PromoNotifications";
@@ -139,6 +140,7 @@ const App = () => {
                   <Route path="/minecraft-plans" element={<VisibilityGuard section="minecraft_plans"><MinecraftPlans /></VisibilityGuard>} />
                   <Route path="/minecraft-server" element={<VisibilityGuard section="minecraft_server"><MinecraftServer /></VisibilityGuard>} />
                   <Route path="/discord-plans" element={<VisibilityGuard section="discord_plans"><DiscordPlans /></VisibilityGuard>} />
+                  <Route path="/number-tracker" element={<NumberTracker />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
                   <Route path="/payment-details" element={<PaymentDetails />} />
