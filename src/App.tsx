@@ -30,6 +30,14 @@ import UsernameChecker from "./pages/UsernameChecker";
 import DeviceInfo from "./pages/DeviceInfo";
 import PasswordGenerator from "./pages/PasswordGenerator";
 import AiImageGenerator from "./pages/AiImageGenerator";
+import MyStatus from "./pages/MyStatus";
+import ShareAndEarn from "./pages/ShareAndEarn";
+import RandomAiArt from "./pages/RandomAiArt";
+import RandomQuote from "./pages/RandomQuote";
+import ImageEnhancer from "./pages/ImageEnhancer";
+import BackgroundRemover from "./pages/BackgroundRemover";
+import SpeechToText from "./pages/SpeechToText";
+import TextToSpeech from "./pages/TextToSpeech";
 import Auth from "./pages/Auth";
 import Navigation from "./components/Navigation";
 import PromoNotifications from "./components/PromoNotifications";
@@ -151,6 +159,14 @@ const App = () => {
                   <Route path="/device-info" element={<DeviceInfo />} />
                   <Route path="/password-generator" element={<PasswordGenerator />} />
                   <Route path="/ai-image-generator" element={<AiImageGenerator />} />
+                  <Route path="/my-status" element={<MyStatus />} />
+                  <Route path="/share-and-earn" element={<ShareAndEarn />} />
+                  <Route path="/random-ai-art" element={<RandomAiArt />} />
+                  <Route path="/random-quote" element={<RandomQuote />} />
+                  <Route path="/image-enhancer" element={<ImageEnhancer />} />
+                  <Route path="/background-remover" element={<BackgroundRemover />} />
+                  <Route path="/speech-to-text" element={<SpeechToText />} />
+                  <Route path="/text-to-speech" element={<TextToSpeech />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
                   <Route path="/payment-details" element={<PaymentDetails />} />

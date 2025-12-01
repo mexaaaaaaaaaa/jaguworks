@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, User, Briefcase, Award, Target, Mail, Code, Menu, BookOpen, LogIn, LogOut, Phone, Globe, AtSign, Smartphone, Key, Sparkles, Wrench } from "lucide-react";
+import { Home, User, Briefcase, Award, Target, Mail, Code, Menu, BookOpen, LogIn, LogOut, Phone, Globe, AtSign, Smartphone, Key, Sparkles, Wrench, Share2, Gift, Palette, Quote, Wand2, Eraser, Mic, Volume2 } from "lucide-react";
 import { useState } from "react";
 import {
   Sheet,
@@ -49,6 +49,14 @@ const Navigation = () => {
     { path: "/device-info", label: "Device Info", icon: Smartphone, visibilityKey: null },
     { path: "/password-generator", label: "Password Gen", icon: Key, visibilityKey: null },
     { path: "/ai-image-generator", label: "AI Image Gen", icon: Sparkles, visibilityKey: null },
+    { path: "/my-status", label: "My Status", icon: Share2, visibilityKey: null },
+    { path: "/share-and-earn", label: "Share & Earn", icon: Gift, visibilityKey: null },
+    { path: "/random-ai-art", label: "Random AI Art", icon: Palette, visibilityKey: null },
+    { path: "/random-quote", label: "Random Quote", icon: Quote, visibilityKey: null },
+    { path: "/image-enhancer", label: "Image Enhancer", icon: Wand2, visibilityKey: null },
+    { path: "/background-remover", label: "BG Remover", icon: Eraser, visibilityKey: null },
+    { path: "/speech-to-text", label: "Speech to Text", icon: Mic, visibilityKey: null },
+    { path: "/text-to-speech", label: "Text to Speech", icon: Volume2, visibilityKey: null },
   ];
 
   // Filter nav items based on visibility
