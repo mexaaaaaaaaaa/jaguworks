@@ -68,9 +68,9 @@ const Navigation = () => {
           </Link>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            <div className="flex items-center gap-1">
-              {navItems.map((item) => {
+          <div className="hidden lg:flex items-center gap-4">
+            <div className="flex items-center gap-1 max-w-[600px] overflow-x-auto scrollbar-hide">
+              {navItems.slice(0, 8).map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
                 
@@ -78,7 +78,7 @@ const Navigation = () => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 whitespace-nowrap text-sm ${
                       isActive
                         ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -90,6 +90,41 @@ const Navigation = () => {
                 );
               })}
             </div>
+            {/* Tools Dropdown */}
+            {navItems.length > 8 && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-300 text-sm">
+                    <Wrench className="w-4 h-4" />
+                    <span>Tools</span>
+                  </button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[280px] bg-card/95 backdrop-blur-lg">
+                  <div className="flex flex-col gap-2 mt-8">
+                    <h3 className="text-lg font-semibold mb-2 gradient-text">Tools</h3>
+                    {navItems.slice(8).map((item) => {
+                      const Icon = item.icon;
+                      const isActive = location.pathname === item.path;
+                      
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
+                            isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                          }`}
+                        >
+                          <Icon className="w-5 h-5" />
+                          <span className="text-base font-medium">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            )}
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <Button
@@ -113,7 +148,7 @@ const Navigation = () => {
           </div>
 
           {/* Mobile Navigation - Hamburger Menu */}
-          <div className="md:hidden flex items-center gap-4">
+          <div className="lg:hidden flex items-center gap-4">
             <ThemeToggle />
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
@@ -121,8 +156,8 @@ const Navigation = () => {
                   <Menu className="w-6 h-6" />
                 </button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] bg-card/95 backdrop-blur-lg">
-                <div className="flex flex-col gap-4 mt-8">
+              <SheetContent side="right" className="w-[280px] bg-card/95 backdrop-blur-lg overflow-y-auto">
+                <div className="flex flex-col gap-2 mt-8 pb-8">
                   {navItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = location.pathname === item.path;
@@ -143,7 +178,7 @@ const Navigation = () => {
                       </Link>
                     );
                   })}
-                  <div className="mt-6 pt-6 border-t border-border">
+                  <div className="mt-4 pt-4 border-t border-border">
                     <Button
                       variant="ghost"
                       onClick={handleAuthAction}
