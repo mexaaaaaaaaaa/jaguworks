@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Bot, Gamepad, MessageSquare, User, Code2, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PromoMessage {
   id: number;
@@ -15,6 +17,22 @@ const PromoNotifications = () => {
   const navigate = useNavigate();
   const [currentPromo, setCurrentPromo] = useState<PromoMessage | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  // Check if promo notifications are enabled
+  const { data: promoSetting } = useQuery({
+    queryKey: ["promo-notifications-setting"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "promo_notifications")
+        .single();
+      if (error) return { enabled: true }; // Default to enabled if not found
+      return data?.value as { enabled: boolean };
+    },
+  });
+
+  const isPromoEnabled = promoSetting?.enabled ?? true;
 
   const promoMessages: PromoMessage[] = [
     {
@@ -68,6 +86,8 @@ const PromoNotifications = () => {
   ];
 
   useEffect(() => {
+    if (!isPromoEnabled) return;
+
     let promoIndex = 0;
     
     const showPromo = () => {
@@ -92,7 +112,7 @@ const PromoNotifications = () => {
       clearTimeout(initialTimeout);
       clearInterval(interval);
     };
-  }, []);
+  }, [isPromoEnabled]);
 
   const handleClick = () => {
     if (currentPromo) {
@@ -101,7 +121,8 @@ const PromoNotifications = () => {
     }
   };
 
-  if (!currentPromo || !isVisible) return null;
+  // Don't render anything if disabled or no promo
+  if (!isPromoEnabled || !currentPromo || !isVisible) return null;
 
   const Icon = currentPromo.icon;
 

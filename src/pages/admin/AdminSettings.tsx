@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
-import { Save, Loader2 } from "lucide-react";
+import { Save, Loader2, Bell, BellOff } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
 export default function AdminSettings() {
@@ -20,6 +21,7 @@ export default function AdminSettings() {
     discord: "",
     github: "",
   });
+  const [promoEnabled, setPromoEnabled] = useState(true);
   const queryClient = useQueryClient();
 
   const { data: settings, isLoading } = useQuery({
@@ -35,11 +37,15 @@ export default function AdminSettings() {
     if (settings) {
       const hero = settings.find((s) => s.key === "hero");
       const social = settings.find((s) => s.key === "social_links");
+      const promo = settings.find((s) => s.key === "promo_notifications");
       if (hero?.value) {
         setHeroSettings(hero.value as typeof heroSettings);
       }
       if (social?.value) {
         setSocialLinks(social.value as typeof socialLinks);
+      }
+      if (promo?.value) {
+        setPromoEnabled((promo.value as { enabled: boolean })?.enabled ?? true);
       }
     }
   }, [settings]);
@@ -67,6 +73,24 @@ export default function AdminSettings() {
 
   const saveSocialLinks = () => {
     updateMutation.mutate({ key: "social_links", value: socialLinks });
+  };
+
+  const togglePromoNotifications = async (enabled: boolean) => {
+    setPromoEnabled(enabled);
+    // Check if setting exists first
+    const existing = settings?.find(s => s.key === "promo_notifications");
+    if (existing) {
+      await supabase
+        .from("site_settings")
+        .update({ value: { enabled }, updated_at: new Date().toISOString() })
+        .eq("key", "promo_notifications");
+    } else {
+      await supabase
+        .from("site_settings")
+        .insert({ key: "promo_notifications", value: { enabled } });
+    }
+    queryClient.invalidateQueries({ queryKey: ["siteSettings"] });
+    toast({ title: enabled ? "Promo notifications enabled" : "Promo notifications disabled" });
   };
 
   if (isLoading) {
@@ -173,6 +197,42 @@ export default function AdminSettings() {
             )}
             Save Social Links
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Promo Notifications Toggle */}
+      <Card className="glass-card border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            {promoEnabled ? <Bell className="h-5 w-5 text-primary" /> : <BellOff className="h-5 w-5 text-muted-foreground" />}
+            Promo Notifications
+          </CardTitle>
+          <CardDescription>Toggle promotional popups across the site</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+            <div>
+              <p className="font-medium">Show Promo Notifications</p>
+              <p className="text-sm text-muted-foreground">
+                When enabled, promotional popups will appear on the website
+              </p>
+            </div>
+            <Switch
+              checked={promoEnabled}
+              onCheckedChange={togglePromoNotifications}
+            />
+          </div>
+          <div className="mt-4 p-4 rounded-lg border border-dashed">
+            <p className="text-sm text-muted-foreground">
+              <strong>Current Status:</strong>{" "}
+              <span className={promoEnabled ? "text-green-500" : "text-red-500"}>
+                {promoEnabled ? "Enabled" : "Disabled"}
+              </span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Promos include: Minecraft Plans, Discord Plans, Telegram Bots, Projects, About, Achievements
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
