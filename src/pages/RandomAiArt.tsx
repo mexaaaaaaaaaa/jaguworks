@@ -7,8 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { ScoreGate } from "@/components/ScoreGate";
 
-const RandomAiArt = () => {
+function RandomAiArtContent() {
   const [currentArt, setCurrentArt] = useState<string | null>(null);
   const [currentPrompt, setCurrentPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -94,6 +95,148 @@ const RandomAiArt = () => {
   };
 
   return (
+    <>
+      {/* Art Display */}
+      <Card className="glass-card mb-8 overflow-hidden">
+        <CardContent className="p-0">
+          <div className="relative aspect-square md:aspect-video bg-gradient-to-br from-accent/20 to-background min-h-[300px]">
+            <AnimatePresence mode="wait">
+              {isLoading ? (
+                <motion.div
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 flex flex-col items-center justify-center"
+                >
+                  <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
+                  <p className="text-muted-foreground">Creating magic with AI...</p>
+                  <p className="text-sm text-muted-foreground/70 mt-2 max-w-md text-center px-4">"{currentPrompt}"</p>
+                  <p className="text-xs text-muted-foreground/50 mt-4">This may take 10-30 seconds</p>
+                </motion.div>
+              ) : currentArt ? (
+                <motion.div
+                  key="art"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="relative w-full h-full"
+                >
+                  <img
+                    src={currentArt}
+                    alt="AI Generated Art"
+                    className="w-full h-full object-contain"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                    <Badge variant="secondary" className="mb-2">
+                      <Wand2 className="w-3 h-3 mr-1" />
+                      AI Generated
+                    </Badge>
+                    <p className="text-white text-sm">"{currentPrompt}"</p>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 flex flex-col items-center justify-center"
+                >
+                  <Sparkles className="w-16 h-16 text-muted-foreground/50 mb-4" />
+                  <p className="text-muted-foreground">Click generate to create art</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Actions */}
+      <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+        <Button
+          size="lg"
+          onClick={generateRandomArt}
+          disabled={isLoading}
+          className="min-w-[200px]"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <Shuffle className="w-5 h-5 mr-2" />
+              Generate Random Art
+            </>
+          )}
+        </Button>
+
+        {currentArt && (
+          <>
+            <Button variant="outline" size="lg" onClick={downloadArt}>
+              <Download className="w-5 h-5 mr-2" />
+              Download
+            </Button>
+            <Button variant="outline" size="lg" onClick={shareArt}>
+              <Share2 className="w-5 h-5 mr-2" />
+              Share
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setLiked(!liked)}
+              className={liked ? "text-red-500 border-red-500/50" : ""}
+            >
+              <Heart className={`w-5 h-5 mr-2 ${liked ? "fill-current" : ""}`} />
+              {liked ? "Liked" : "Like"}
+            </Button>
+          </>
+        )}
+      </div>
+
+      {/* Art Styles */}
+      <Card className="glass-card">
+        <CardContent className="p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Palette className="w-5 h-5 text-primary" />
+            Available Art Styles
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {artStyles.map((style, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.03 }}
+              >
+                <Badge
+                  variant="outline"
+                  className="cursor-pointer hover:bg-primary/10 transition-colors capitalize"
+                  onClick={() => {
+                    setCurrentPrompt(style);
+                    toast.info(`Style "${style}" will be used in next generation`);
+                  }}
+                >
+                  {style}
+                </Badge>
+              </motion.div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Info */}
+      <div className="mt-8 text-center text-sm text-muted-foreground">
+        <p>🎨 Powered by Lovable AI • Each generation is unique!</p>
+      </div>
+    </>
+  );
+}
+
+const RandomAiArt = () => {
+  return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12">
         <motion.div
@@ -118,141 +261,10 @@ const RandomAiArt = () => {
             </p>
           </div>
 
-          {/* Art Display */}
-          <Card className="glass-card mb-8 overflow-hidden">
-            <CardContent className="p-0">
-              <div className="relative aspect-square md:aspect-video bg-gradient-to-br from-accent/20 to-background min-h-[300px]">
-                <AnimatePresence mode="wait">
-                  {isLoading ? (
-                    <motion.div
-                      key="loading"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 flex flex-col items-center justify-center"
-                    >
-                      <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
-                      <p className="text-muted-foreground">Creating magic with AI...</p>
-                      <p className="text-sm text-muted-foreground/70 mt-2 max-w-md text-center px-4">"{currentPrompt}"</p>
-                      <p className="text-xs text-muted-foreground/50 mt-4">This may take 10-30 seconds</p>
-                    </motion.div>
-                  ) : currentArt ? (
-                    <motion.div
-                      key="art"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className="relative w-full h-full"
-                    >
-                      <img
-                        src={currentArt}
-                        alt="AI Generated Art"
-                        className="w-full h-full object-contain"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                        <Badge variant="secondary" className="mb-2">
-                          <Wand2 className="w-3 h-3 mr-1" />
-                          AI Generated
-                        </Badge>
-                        <p className="text-white text-sm">"{currentPrompt}"</p>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="empty"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 flex flex-col items-center justify-center"
-                    >
-                      <Sparkles className="w-16 h-16 text-muted-foreground/50 mb-4" />
-                      <p className="text-muted-foreground">Click generate to create art</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
-            <Button
-              size="lg"
-              onClick={generateRandomArt}
-              disabled={isLoading}
-              className="min-w-[200px]"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Shuffle className="w-5 h-5 mr-2" />
-                  Generate Random Art
-                </>
-              )}
-            </Button>
-
-            {currentArt && (
-              <>
-                <Button variant="outline" size="lg" onClick={downloadArt}>
-                  <Download className="w-5 h-5 mr-2" />
-                  Download
-                </Button>
-                <Button variant="outline" size="lg" onClick={shareArt}>
-                  <Share2 className="w-5 h-5 mr-2" />
-                  Share
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => setLiked(!liked)}
-                  className={liked ? "text-red-500 border-red-500/50" : ""}
-                >
-                  <Heart className={`w-5 h-5 mr-2 ${liked ? "fill-current" : ""}`} />
-                  {liked ? "Liked" : "Like"}
-                </Button>
-              </>
-            )}
-          </div>
-
-          {/* Art Styles */}
-          <Card className="glass-card">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Palette className="w-5 h-5 text-primary" />
-                Available Art Styles
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {artStyles.map((style, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.03 }}
-                  >
-                    <Badge
-                      variant="outline"
-                      className="cursor-pointer hover:bg-primary/10 transition-colors capitalize"
-                      onClick={() => {
-                        setCurrentPrompt(style);
-                        toast.info(`Style "${style}" will be used in next generation`);
-                      }}
-                    >
-                      {style}
-                    </Badge>
-                  </motion.div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Info */}
-          <div className="mt-8 text-center text-sm text-muted-foreground">
-            <p>🎨 Powered by Lovable AI • Each generation is unique!</p>
-          </div>
+          {/* Score Gate */}
+          <ScoreGate toolName="Random AI Art">
+            <RandomAiArtContent />
+          </ScoreGate>
         </motion.div>
       </div>
       <Footer />
