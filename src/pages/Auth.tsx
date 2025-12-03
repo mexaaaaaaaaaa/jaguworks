@@ -56,12 +56,6 @@ const Auth = () => {
     },
   });
 
-  // Get referral code from URL
-  const getReferralCode = () => {
-    const urlParams = new URLSearchParams(window.location.hash.split('?')[1] || '');
-    return urlParams.get('ref') || null;
-  };
-
   useEffect(() => {
     // Check if this is a password recovery flow
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -126,7 +120,6 @@ const Auth = () => {
 
   const handleSignup = async (values: SignupFormValues) => {
     setLoading(true);
-    const referralCode = getReferralCode();
 
     try {
       const { error: signUpError } = await supabase.auth.signUp({
@@ -137,7 +130,6 @@ const Auth = () => {
           data: {
             username: values.username,
             full_name: values.fullName,
-            referral_code: referralCode,
           },
         },
       });

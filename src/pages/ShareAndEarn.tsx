@@ -1,304 +1,254 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Copy, Check, Share2, Gift, Users, Coins, MessageCircle, Send, Twitter, Crown, Sparkles } from "lucide-react";
+import { Gift, Copy, Users, Coins, Trophy, Share2, Check, Zap, Star, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { useScore } from "@/hooks/useScore";
-import { useAuth } from "@/hooks/useAuth";
+import Footer from "@/components/Footer";
 
 const ShareAndEarn = () => {
-  const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
-  const { userScore, referrals, getReferralLink, loading } = useScore();
+  const [referralCode] = useState("JAG" + Math.random().toString(36).substring(2, 8).toUpperCase());
   const [copied, setCopied] = useState(false);
 
-  const referralLink = getReferralLink();
+  const referralLink = `${window.location.origin}/#/?ref=${referralCode}`;
 
-  const copyToClipboard = async () => {
-    if (!referralLink) return;
-    
-    try {
-      await navigator.clipboard.writeText(referralLink);
-      setCopied(true);
-      toast.success("Referral link copied!");
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      toast.error("Failed to copy");
-    }
+  const copyToClipboard = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    toast.success("Copied to clipboard!");
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const shareToSocial = (platform: string) => {
-    if (!referralLink) return;
+    const text = encodeURIComponent("Join me on JaguWorks and earn rewards! Use my referral code: " + referralCode);
+    const url = encodeURIComponent(referralLink);
     
-    const message = encodeURIComponent(`🚀 Join JaguWorks and get FREE 50 Score! Use my link: ${referralLink}`);
-    
-    let url = "";
-    switch (platform) {
-      case "whatsapp":
-        url = `https://wa.me/?text=${message}`;
-        break;
-      case "telegram":
-        url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent("🚀 Join JaguWorks and get FREE 50 Score!")}`;
-        break;
-      case "twitter":
-        url = `https://twitter.com/intent/tweet?text=${message}`;
-        break;
+    const urls: Record<string, string> = {
+      whatsapp: `https://wa.me/?text=${text}%20${url}`,
+      telegram: `https://t.me/share/url?url=${url}&text=${text}`,
+      twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+    };
+
+    if (urls[platform]) {
+      window.open(urls[platform], "_blank");
     }
-    
-    if (url) window.open(url, "_blank");
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  const rewards = [
+    { milestone: 5, reward: "Bronze Badge", icon: Star, color: "text-amber-600", unlocked: false },
+    { milestone: 15, reward: "Silver Badge", icon: Trophy, color: "text-gray-400", unlocked: false },
+    { milestone: 30, reward: "Gold Badge", icon: Crown, color: "text-yellow-500", unlocked: false },
+    { milestone: 50, reward: "Premium Access", icon: Zap, color: "text-purple-500", unlocked: false },
+  ];
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="p-8 text-center max-w-md">
-          <Gift className="w-16 h-16 mx-auto mb-4 text-primary" />
-          <h2 className="text-2xl font-bold mb-2">Login Required</h2>
-          <p className="text-muted-foreground mb-6">Please login to access Share & Earn</p>
-          <Button onClick={() => navigate("/auth")} className="w-full">
-            Login / Sign Up
-          </Button>
-        </Card>
-      </div>
-    );
-  }
+  const leaderboard = [
+    { rank: 1, name: "Alex", referrals: 156, badge: "👑" },
+    { rank: 2, name: "Sarah", referrals: 134, badge: "🥈" },
+    { rank: 3, name: "Mike", referrals: 98, badge: "🥉" },
+    { rank: 4, name: "Emma", referrals: 87, badge: "" },
+    { rank: 5, name: "John", referrals: 76, badge: "" },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-green-500/20 via-primary/20 to-purple-500/20 py-8">
-        <div className="container mx-auto px-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-green-500 via-primary to-purple-500 bg-clip-text text-transparent">
+      <div className="container mx-auto px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-5xl mx-auto"
+        >
+          {/* Header */}
+          <div className="text-center mb-12">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center"
+            >
+              <Gift className="w-10 h-10 text-yellow-500" />
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">
               Share & Earn
             </h1>
-            <p className="text-muted-foreground">Invite friends and earn free scores!</p>
-          </motion.div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        {/* Current Score Card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="p-6 mb-8 bg-gradient-to-r from-primary/10 to-purple-500/10 border-primary/30">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Coins className="w-12 h-12 text-primary" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Your Current Score</p>
-                  <p className="text-4xl font-bold text-primary">{userScore?.score || 0}</p>
-                </div>
-              </div>
-              <Button onClick={() => navigate("/my-status")} variant="outline">
-                View Status
-              </Button>
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Referral Link Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="p-6 mb-8">
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Share2 className="w-5 h-5 text-primary" />
-              Your Referral Link
-            </h3>
-            
-            <div className="flex gap-2 mb-4">
-              <Input 
-                value={referralLink || "Loading..."} 
-                readOnly 
-                className="font-mono text-sm"
-              />
-              <Button onClick={copyToClipboard} variant="outline" className="shrink-0">
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </Button>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Button 
-                onClick={() => shareToSocial("whatsapp")} 
-                className="bg-green-600 hover:bg-green-700"
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                WhatsApp
-              </Button>
-              <Button 
-                onClick={() => shareToSocial("telegram")} 
-                className="bg-blue-500 hover:bg-blue-600"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                Telegram
-              </Button>
-              <Button 
-                onClick={() => shareToSocial("twitter")} 
-                className="bg-sky-500 hover:bg-sky-600"
-              >
-                <Twitter className="w-4 h-4 mr-2" />
-                Twitter
-              </Button>
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Your Referral Code */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card className="p-6 mb-8 text-center bg-gradient-to-br from-purple-500/10 to-cyan-500/10">
-            <Crown className="w-12 h-12 mx-auto mb-4 text-purple-500" />
-            <p className="text-sm text-muted-foreground mb-2">Your Unique Code</p>
-            <p className="text-4xl font-bold font-mono tracking-wider text-purple-500">
-              {userScore?.referral_code || "------"}
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Invite friends and earn rewards! The more you share, the more you earn.
             </p>
+          </div>
+
+          {/* Referral Card */}
+          <Card className="glass-card mb-8 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5" />
+            <CardHeader className="relative">
+              <CardTitle className="flex items-center gap-2">
+                <Share2 className="w-5 h-5 text-primary" />
+                Your Referral Link
+              </CardTitle>
+              <CardDescription>
+                Share this link with friends to earn rewards
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="relative space-y-6">
+              {/* Referral Code */}
+              <div className="p-4 rounded-xl bg-accent/30 border border-border">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted-foreground">Your Code</span>
+                  <Button variant="ghost" size="sm" onClick={() => copyToClipboard(referralCode)}>
+                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </Button>
+                </div>
+                <p className="text-2xl font-mono font-bold gradient-text">{referralCode}</p>
+              </div>
+
+              {/* Referral Link */}
+              <div className="flex gap-2">
+                <Input value={referralLink} readOnly className="bg-background/50 font-mono text-sm" />
+                <Button onClick={() => copyToClipboard(referralLink)} variant="outline">
+                  <Copy className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Share Buttons */}
+              <div className="flex flex-wrap gap-3">
+                <Button onClick={() => shareToSocial("whatsapp")} className="bg-green-600 hover:bg-green-700">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  WhatsApp
+                </Button>
+                <Button onClick={() => shareToSocial("telegram")} className="bg-blue-500 hover:bg-blue-600">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Telegram
+                </Button>
+                <Button onClick={() => shareToSocial("twitter")} className="bg-sky-500 hover:bg-sky-600">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Twitter
+                </Button>
+              </div>
+            </CardContent>
           </Card>
-        </motion.div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Card className="p-6 text-center">
-              <Users className="w-8 h-8 mx-auto mb-2 text-primary" />
-              <p className="text-3xl font-bold">{referrals.length}</p>
-              <p className="text-sm text-muted-foreground">Total Referrals</p>
-            </Card>
-          </motion.div>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {[
+              { icon: Users, label: "Total Referrals", value: "0", color: "text-blue-500" },
+              { icon: Coins, label: "Earnings", value: "₹0", color: "text-green-500" },
+              { icon: Trophy, label: "Your Rank", value: "#--", color: "text-yellow-500" },
+              { icon: Zap, label: "Pending", value: "0", color: "text-purple-500" },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className="glass-card">
+                  <CardContent className="pt-6 text-center">
+                    <stat.icon className={`w-8 h-8 mx-auto mb-2 ${stat.color}`} />
+                    <p className="text-2xl font-bold">{stat.value}</p>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Card className="p-6 text-center">
-              <Coins className="w-8 h-8 mx-auto mb-2 text-green-500" />
-              <p className="text-3xl font-bold text-green-500">+{referrals.length * 20}</p>
-              <p className="text-sm text-muted-foreground">Score Earned</p>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="col-span-2 md:col-span-1"
-          >
-            <Card className="p-6 text-center">
-              <Gift className="w-8 h-8 mx-auto mb-2 text-purple-500" />
-              <p className="text-3xl font-bold text-purple-500">+20</p>
-              <p className="text-sm text-muted-foreground">Per Referral</p>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* How It Works */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-        >
-          <Card className="p-6 mb-8">
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              How It Works
-            </h3>
-            
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-primary">1</span>
-                </div>
-                <h4 className="font-semibold mb-2">Share Your Link</h4>
-                <p className="text-sm text-muted-foreground">Copy and share your unique referral link with friends</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-green-500">2</span>
-                </div>
-                <h4 className="font-semibold mb-2">Friend Signs Up</h4>
-                <p className="text-sm text-muted-foreground">When they register using your link, they get 50 Score</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-purple-500">3</span>
-                </div>
-                <h4 className="font-semibold mb-2">You Earn +20</h4>
-                <p className="text-sm text-muted-foreground">You automatically receive 20 Score as a reward!</p>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Referral History */}
-        {referrals.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-          >
-            <Card className="p-6">
-              <h3 className="text-xl font-bold mb-4">Recent Referrals</h3>
-              <div className="space-y-3">
-                {referrals.slice(0, 5).map((ref, index) => (
-                  <div key={ref.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                        <Users className="w-5 h-5 text-primary" />
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Rewards Milestones */}
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Gift className="w-5 h-5 text-primary" />
+                  Reward Milestones
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {rewards.map((reward, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className={`p-4 rounded-xl border ${reward.unlocked ? 'bg-primary/10 border-primary/30' : 'bg-accent/30 border-border'}`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <reward.icon className={`w-6 h-6 ${reward.color}`} />
+                        <div>
+                          <p className="font-medium">{reward.reward}</p>
+                          <p className="text-sm text-muted-foreground">{reward.milestone} referrals</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">User #{index + 1}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(ref.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
+                      {reward.unlocked && <Check className="w-5 h-5 text-green-500" />}
                     </div>
-                    <span className="text-green-500 font-bold">+20</span>
-                  </div>
+                    <Progress value={0} className="h-2" />
+                  </motion.div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Leaderboard */}
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-yellow-500" />
+                  Top Referrers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {leaderboard.map((user, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      className={`flex items-center justify-between p-3 rounded-xl ${
+                        user.rank <= 3 ? 'bg-gradient-to-r from-primary/10 to-accent/10' : 'bg-accent/30'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{user.badge || `#${user.rank}`}</span>
+                        <span className="font-medium">{user.name}</span>
+                      </div>
+                      <span className="text-sm text-muted-foreground">{user.referrals} referrals</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* How it Works */}
+          <Card className="glass-card mt-8">
+            <CardHeader>
+              <CardTitle>How it Works</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-6">
+                {[
+                  { step: 1, title: "Share Your Link", desc: "Copy your unique referral link and share it with friends" },
+                  { step: 2, title: "Friends Join", desc: "When your friends sign up using your link, they get bonuses too" },
+                  { step: 3, title: "Earn Rewards", desc: "Get rewards for every successful referral you make" },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.2 }}
+                    className="text-center"
+                  >
+                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center text-xl font-bold text-primary">
+                      {item.step}
+                    </div>
+                    <h3 className="font-semibold mb-2">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground">{item.desc}</p>
+                  </motion.div>
                 ))}
               </div>
-            </Card>
-          </motion.div>
-        )}
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
+      <Footer />
     </div>
   );
 };

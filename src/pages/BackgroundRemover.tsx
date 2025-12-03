@@ -7,9 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { ScoreGate } from "@/components/ScoreGate";
 
-function BackgroundRemoverContent() {
+const BackgroundRemover = () => {
   const [originalImage, setOriginalImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -39,6 +38,7 @@ function BackgroundRemoverContent() {
     setIsProcessing(true);
     setProgress(0);
 
+    // Simulate progress
     const progressInterval = setInterval(() => {
       setProgress(prev => Math.min(prev + 5, 90));
     }, 500);
@@ -85,173 +85,9 @@ function BackgroundRemoverContent() {
     { icon: Check, text: "High quality output" },
     { icon: Check, text: "Transparent PNG export" },
     { icon: Check, text: "No watermarks" },
-    { icon: Check, text: "Costs 5 Score" },
+    { icon: Check, text: "100% free" },
   ];
 
-  return (
-    <>
-      {/* Main Content */}
-      <div className="grid md:grid-cols-2 gap-8 mb-8">
-        {/* Original Image */}
-        <Card className="glass-card overflow-hidden">
-          <CardHeader>
-            <CardTitle className="text-lg">Original Image</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative aspect-square bg-gradient-to-br from-accent/20 to-background rounded-xl flex items-center justify-center overflow-hidden">
-              {originalImage ? (
-                <img
-                  src={originalImage}
-                  alt="Original"
-                  className="max-w-full max-h-full object-contain"
-                />
-              ) : (
-                <div className="text-center p-8">
-                  <ImageIcon className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
-                  <p className="text-muted-foreground mb-4">Upload an image</p>
-                  <Button onClick={() => fileInputRef.current?.click()}>
-                    <Upload className="w-4 h-4 mr-2" />
-                    Choose Image
-                  </Button>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Processed Image */}
-        <Card className="glass-card overflow-hidden">
-          <CardHeader>
-            <CardTitle className="text-lg">Result</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div 
-              className="relative aspect-square rounded-xl flex items-center justify-center overflow-hidden"
-              style={{
-                backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
-                backgroundSize: '20px 20px',
-                backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
-              }}
-            >
-              {isProcessing ? (
-                <div className="text-center p-8 bg-background/90 rounded-xl">
-                  <Loader2 className="w-16 h-16 mx-auto text-primary animate-spin mb-4" />
-                  <p className="text-muted-foreground mb-4">Removing background with AI...</p>
-                  <Progress value={progress} className="w-48 mx-auto" />
-                  <p className="text-xs text-muted-foreground mt-2">This may take 10-30 seconds</p>
-                </div>
-              ) : processedImage ? (
-                <img
-                  src={processedImage}
-                  alt="Processed"
-                  className="max-w-full max-h-full object-contain"
-                />
-              ) : (
-                <div className="text-center p-8 bg-background/90 rounded-xl">
-                  <Eraser className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
-                  <p className="text-muted-foreground">Result will appear here</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Actions */}
-      <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
-        <Button
-          onClick={() => fileInputRef.current?.click()}
-          variant="outline"
-          size="lg"
-        >
-          <Upload className="w-5 h-5 mr-2" />
-          {originalImage ? "Change Image" : "Upload Image"}
-        </Button>
-        
-        {originalImage && (
-          <Button
-            onClick={removeBackground}
-            disabled={isProcessing}
-            size="lg"
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <Eraser className="w-5 h-5 mr-2" />
-                Remove Background
-              </>
-            )}
-          </Button>
-        )}
-        
-        {processedImage && (
-          <Button onClick={downloadImage} variant="outline" size="lg">
-            <Download className="w-5 h-5 mr-2" />
-            Download PNG
-          </Button>
-        )}
-      </div>
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleImageUpload}
-        className="hidden"
-      />
-
-      {/* Features */}
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle>Features</CardTitle>
-          <CardDescription>
-            Our AI-powered background remover offers these amazing features
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {features.map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="flex items-center gap-2 p-3 rounded-lg bg-accent/30"
-              >
-                <feature.icon className="w-5 h-5 text-green-500" />
-                <span className="text-sm">{feature.text}</span>
-              </motion.div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Tips */}
-      <Card className="glass-card mt-8">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-yellow-500 mt-0.5" />
-            <div>
-              <p className="font-medium mb-1">Tips for best results:</p>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Use high-quality images with clear subjects</li>
-                <li>• Images with simple backgrounds work best</li>
-                <li>• Ensure good lighting and contrast between subject and background</li>
-                <li>• For complex images, results may vary</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </>
-  );
-}
-
-const BackgroundRemover = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12">
@@ -277,10 +113,163 @@ const BackgroundRemover = () => {
             </p>
           </div>
 
-          {/* Score Gate */}
-          <ScoreGate toolName="Background Remover">
-            <BackgroundRemoverContent />
-          </ScoreGate>
+          {/* Main Content */}
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {/* Original Image */}
+            <Card className="glass-card overflow-hidden">
+              <CardHeader>
+                <CardTitle className="text-lg">Original Image</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="relative aspect-square bg-gradient-to-br from-accent/20 to-background rounded-xl flex items-center justify-center overflow-hidden">
+                  {originalImage ? (
+                    <img
+                      src={originalImage}
+                      alt="Original"
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  ) : (
+                    <div className="text-center p-8">
+                      <ImageIcon className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
+                      <p className="text-muted-foreground mb-4">Upload an image</p>
+                      <Button onClick={() => fileInputRef.current?.click()}>
+                        <Upload className="w-4 h-4 mr-2" />
+                        Choose Image
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Processed Image */}
+            <Card className="glass-card overflow-hidden">
+              <CardHeader>
+                <CardTitle className="text-lg">Result</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div 
+                  className="relative aspect-square rounded-xl flex items-center justify-center overflow-hidden"
+                  style={{
+                    backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
+                    backgroundSize: '20px 20px',
+                    backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
+                  }}
+                >
+                  {isProcessing ? (
+                    <div className="text-center p-8 bg-background/90 rounded-xl">
+                      <Loader2 className="w-16 h-16 mx-auto text-primary animate-spin mb-4" />
+                      <p className="text-muted-foreground mb-4">Removing background with AI...</p>
+                      <Progress value={progress} className="w-48 mx-auto" />
+                      <p className="text-xs text-muted-foreground mt-2">This may take 10-30 seconds</p>
+                    </div>
+                  ) : processedImage ? (
+                    <img
+                      src={processedImage}
+                      alt="Processed"
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  ) : (
+                    <div className="text-center p-8 bg-background/90 rounded-xl">
+                      <Eraser className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
+                      <p className="text-muted-foreground">Result will appear here</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              variant="outline"
+              size="lg"
+            >
+              <Upload className="w-5 h-5 mr-2" />
+              {originalImage ? "Change Image" : "Upload Image"}
+            </Button>
+            
+            {originalImage && (
+              <Button
+                onClick={removeBackground}
+                disabled={isProcessing}
+                size="lg"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Eraser className="w-5 h-5 mr-2" />
+                    Remove Background
+                  </>
+                )}
+              </Button>
+            )}
+            
+            {processedImage && (
+              <Button onClick={downloadImage} variant="outline" size="lg">
+                <Download className="w-5 h-5 mr-2" />
+                Download PNG
+              </Button>
+            )}
+          </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+
+          {/* Features */}
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle>Features</CardTitle>
+              <CardDescription>
+                Our AI-powered background remover offers these amazing features
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {features.map((feature, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex items-center gap-2 p-3 rounded-lg bg-accent/30"
+                  >
+                    <feature.icon className="w-5 h-5 text-green-500" />
+                    <span className="text-sm">{feature.text}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Tips */}
+          <Card className="glass-card mt-8">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-yellow-500 mt-0.5" />
+                <div>
+                  <p className="font-medium mb-1">Tips for best results:</p>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Use high-quality images with clear subjects</li>
+                    <li>• Images with simple backgrounds work best</li>
+                    <li>• Ensure good lighting and contrast between subject and background</li>
+                    <li>• For complex images, results may vary</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
       <Footer />
