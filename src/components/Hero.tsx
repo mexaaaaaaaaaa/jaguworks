@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import heroBgDefault from "@/assets/profile-optimized.webp";
-import profileImgDefault from "@/assets/profile-optimized.webp";
+import heroBgDefault from "@/assets/hero-bg-new.jpg";
+import profileImgDefault from "@/assets/profile.jpg";
 import FloatingShapes from "./FloatingShapes";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useAuth } from "@/hooks/useAuth";
@@ -64,7 +64,6 @@ const Hero = () => {
           src={heroBg} 
           alt="Futuristic background" 
           className="w-full h-full object-cover opacity-40"
-          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background"></div>
         <div className="absolute inset-0 grid-background"></div>
