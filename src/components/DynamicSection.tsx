@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import * as LucideIcons from "lucide-react";
 import { LucideIcon } from "lucide-react";
+import DOMPurify from "dompurify";
 
 interface DynamicSectionProps {
   section: {
@@ -295,10 +296,22 @@ function CustomHTMLSection({ content }: { content: Record<string, unknown> }) {
   const html = content.html as string;
   const css = content.css as string;
 
+  // Sanitize HTML to prevent XSS attacks
+  const sanitizedHtml = DOMPurify.sanitize(html || "", {
+    ADD_TAGS: ['style'],
+    ADD_ATTR: ['class', 'style', 'target', 'rel'],
+    ALLOW_DATA_ATTR: true,
+  });
+
+  // Sanitize CSS (basic filtering)
+  const sanitizedCss = css ? DOMPurify.sanitize(`<style>${css}</style>`, {
+    ADD_TAGS: ['style'],
+  }).replace(/<\/?style>/g, '') : '';
+
   return (
     <div>
-      {css && <style>{css}</style>}
-      <div dangerouslySetInnerHTML={{ __html: html || "" }} />
+      {sanitizedCss && <style>{sanitizedCss}</style>}
+      <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
     </div>
   );
 }
