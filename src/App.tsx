@@ -16,6 +16,7 @@ import ContactPage from "./pages/ContactPage";
 import TelegramBots from "./pages/TelegramBots";
 import CinematicReel from "./pages/CinematicReel";
 import DiscordAutomation from "./pages/DiscordAutomation";
+import DiscordBot from "./pages/DiscordBot";
 import MinecraftPlans from "./pages/MinecraftPlans";
 import MinecraftServer from "./pages/MinecraftServer";
 import DiscordPlans from "./pages/DiscordPlans";
@@ -150,6 +151,7 @@ const App = () => {
                   <Route path="/ai-telegram-bots" element={<VisibilityGuard section="telegram_bots"><TelegramBots /></VisibilityGuard>} />
                   <Route path="/cinematic-reel" element={<VisibilityGuard section="cinematic_reel"><CinematicReel /></VisibilityGuard>} />
                   <Route path="/discord-automation" element={<VisibilityGuard section="discord_automation"><DiscordAutomation /></VisibilityGuard>} />
+                  <Route path="/discord-bot" element={<DiscordBot />} />
                   <Route path="/minecraft-plans" element={<VisibilityGuard section="minecraft_plans"><MinecraftPlans /></VisibilityGuard>} />
                   <Route path="/minecraft-server" element={<VisibilityGuard section="minecraft_server"><MinecraftServer /></VisibilityGuard>} />
                   <Route path="/discord-plans" element={<VisibilityGuard section="discord_plans"><DiscordPlans /></VisibilityGuard>} />
