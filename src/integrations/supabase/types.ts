@@ -197,6 +197,30 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          messages: Json | null
+          session_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          messages?: Json | null
+          session_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          messages?: Json | null
+          session_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           code: string
@@ -272,6 +296,54 @@ export type Database = {
           section_name?: string
           slug?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      easter_eggs_discovered: {
+        Row: {
+          discovered_at: string | null
+          egg_name: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          discovered_at?: string | null
+          egg_name: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          discovered_at?: string | null
+          egg_name?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      game_scores: {
+        Row: {
+          game_name: string
+          id: string
+          played_at: string | null
+          player_name: string | null
+          score: number
+          user_id: string | null
+        }
+        Insert: {
+          game_name: string
+          id?: string
+          played_at?: string | null
+          player_name?: string | null
+          score: number
+          user_id?: string | null
+        }
+        Update: {
+          game_name?: string
+          id?: string
+          played_at?: string | null
+          player_name?: string | null
+          score?: number
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -815,6 +887,36 @@ export type Database = {
           total_spent?: number
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      visitor_locations: {
+        Row: {
+          city: string | null
+          country: string | null
+          country_code: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          visited_at: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          country_code?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          visited_at?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          country_code?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          visited_at?: string | null
         }
         Relationships: []
       }
