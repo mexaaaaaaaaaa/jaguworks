@@ -503,6 +503,30 @@ export type Database = {
         }
         Relationships: []
       }
+      referrals: {
+        Row: {
+          created_at: string | null
+          id: string
+          referred_id: string
+          referrer_id: string
+          score_awarded: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          referred_id: string
+          referrer_id: string
+          score_awarded?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+          score_awarded?: number
+        }
+        Relationships: []
+      }
       scheduled_content: {
         Row: {
           action: string
@@ -755,17 +779,61 @@ export type Database = {
         }
         Relationships: []
       }
+      user_scores: {
+        Row: {
+          created_at: string | null
+          id: string
+          referral_code: string
+          referred_by: string | null
+          score: number
+          tools_used: number
+          total_earned: number
+          total_spent: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          referral_code: string
+          referred_by?: string | null
+          score?: number
+          tools_used?: number
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          referral_code?: string
+          referred_by?: string | null
+          score?: number
+          tools_used?: number
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      generate_referral_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      use_tool_score: {
+        Args: { p_tool_name: string; p_user_id: string }
+        Returns: Json
       }
     }
     Enums: {

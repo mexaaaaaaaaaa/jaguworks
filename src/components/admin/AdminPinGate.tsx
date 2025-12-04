@@ -2,18 +2,14 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Lock, AlertCircle } from "lucide-react";
+import { Lock, AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface AdminPinGateProps {
   onSuccess: () => void;
 }
 
-interface PinSettings {
-  pin: string;
-  lockout_until: string | null;
-  failed_attempts: number;
-}
+const PIN_SESSION_KEY = "admin_pin_session_token";
 
 export default function AdminPinGate({ onSuccess }: AdminPinGateProps) {
   const [pin, setPin] = useState("");
@@ -21,41 +17,51 @@ export default function AdminPinGate({ onSuccess }: AdminPinGateProps) {
   const [isLocked, setIsLocked] = useState(false);
   const [lockoutTime, setLockoutTime] = useState<number>(0);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const { toast } = useToast();
 
-  // Check if already verified this session
+  // Check if already verified this session (server-side validation)
   useEffect(() => {
-    const verified = sessionStorage.getItem("admin_pin_verified");
-    if (verified === "true") {
-      onSuccess();
-    }
-  }, [onSuccess]);
+    const validateExistingSession = async () => {
+      const storedToken = localStorage.getItem(PIN_SESSION_KEY);
+      
+      if (!storedToken) {
+        setIsCheckingSession(false);
+        return;
+      }
 
-  // Check lockout status
-  useEffect(() => {
-    const checkLockout = async () => {
-      const { data } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", "admin_pin")
-        .maybeSingle();
-
-      if (data?.value) {
-        const settings = data.value as unknown as PinSettings;
-        if (settings.lockout_until) {
-          const lockoutEnd = new Date(settings.lockout_until).getTime();
-          const now = Date.now();
-          if (lockoutEnd > now) {
-            setIsLocked(true);
-            setLockoutTime(Math.ceil((lockoutEnd - now) / 1000));
-          }
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          localStorage.removeItem(PIN_SESSION_KEY);
+          setIsCheckingSession(false);
+          return;
         }
+
+        // Validate token with server
+        const { data, error } = await supabase.functions.invoke('validate-admin-session', {
+          body: { session_token: storedToken }
+        });
+
+        if (error || !data?.valid) {
+          localStorage.removeItem(PIN_SESSION_KEY);
+          setIsCheckingSession(false);
+          return;
+        }
+
+        // Session is valid
+        onSuccess();
+      } catch (err) {
+        console.error('Session validation error:', err);
+        localStorage.removeItem(PIN_SESSION_KEY);
+        setIsCheckingSession(false);
       }
     };
-    checkLockout();
-  }, []);
 
-  // Countdown timer
+    validateExistingSession();
+  }, [onSuccess]);
+
+  // Countdown timer for lockout
   useEffect(() => {
     if (lockoutTime > 0) {
       const timer = setInterval(() => {
@@ -79,62 +85,33 @@ export default function AdminPinGate({ onSuccess }: AdminPinGateProps) {
     setError("");
 
     try {
-      const { data } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", "admin_pin")
-        .maybeSingle();
+      const { data, error } = await supabase.functions.invoke('verify-admin-pin', {
+        body: { pin }
+      });
 
-      if (!data?.value) {
-        setError("PIN not configured");
+      if (error) {
+        setError("Failed to verify PIN");
+        setPin("");
         return;
       }
 
-      const settings = data.value as unknown as PinSettings;
-
-      if (pin === settings.pin) {
-        // Reset failed attempts on success
-        await supabase
-          .from("site_settings")
-          .update({
-            value: { ...settings, failed_attempts: 0, lockout_until: null },
-          })
-          .eq("key", "admin_pin");
-
-        sessionStorage.setItem("admin_pin_verified", "true");
+      if (data.success) {
+        // Store the session token securely
+        localStorage.setItem(PIN_SESSION_KEY, data.session_token);
         toast({ title: "Access granted", description: "Welcome to admin panel" });
         onSuccess();
       } else {
-        const newAttempts = (settings.failed_attempts || 0) + 1;
-        let newLockout = null;
-
-        if (newAttempts >= 5) {
-          // Lock for 30 minutes
-          newLockout = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+        if (data.is_locked) {
           setIsLocked(true);
-          setLockoutTime(30 * 60);
+          setLockoutTime(data.lockout_remaining || 30 * 60);
         }
-
-        await supabase
-          .from("site_settings")
-          .update({
-            value: {
-              ...settings,
-              failed_attempts: newAttempts,
-              lockout_until: newLockout,
-            },
-          })
-          .eq("key", "admin_pin");
-
-        setError(
-          newAttempts >= 5
-            ? "Too many attempts. Locked for 30 minutes."
-            : `Incorrect PIN. ${5 - newAttempts} attempts remaining.`
-        );
+        setError(data.error || "Incorrect PIN");
         setPin("");
       }
     } catch (err) {
+      console.error('PIN verification error:', err);
       setError("Failed to verify PIN");
+      setPin("");
     } finally {
       setIsVerifying(false);
     }
@@ -145,6 +122,17 @@ export default function AdminPinGate({ onSuccess }: AdminPinGateProps) {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
+
+  if (isCheckingSession) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Validating session...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -190,7 +178,14 @@ export default function AdminPinGate({ onSuccess }: AdminPinGateProps) {
                 className="w-full"
                 disabled={pin.length < 4 || isVerifying}
               >
-                {isVerifying ? "Verifying..." : "Unlock"}
+                {isVerifying ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  "Unlock"
+                )}
               </Button>
             </form>
           )}
