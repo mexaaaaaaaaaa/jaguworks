@@ -54,6 +54,12 @@ import CinematicIntro from "./components/CinematicIntro";
 import VoiceNavigation from "./components/VoiceNavigation";
 import InstallPrompt from "./components/InstallPrompt";
 
+// Lazy load games
+import Games from "./pages/Games";
+import SnakeGame from "./pages/games/SnakeGame";
+import MemoryGame from "./pages/games/MemoryGame";
+import TypingTest from "./pages/games/TypingTest";
+
 // Lazy load blog pages
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
@@ -209,6 +215,11 @@ const App = () => {
                     <Route path="/payment-details" element={<PaymentDetails />} />
                     <Route path="/payment-return" element={<PaymentReturn />} />
                     <Route path="/auth" element={<Auth />} />
+                    {/* Games Routes */}
+                    <Route path="/games" element={<Games />} />
+                    <Route path="/games/snake" element={<SnakeGame />} />
+                    <Route path="/games/memory" element={<MemoryGame />} />
+                    <Route path="/games/typing" element={<TypingTest />} />
                     {/* Admin Routes */}
                     <Route path="/admin" element={<AdminLayout />}>
                       <Route index element={<AdminDashboard />} />
