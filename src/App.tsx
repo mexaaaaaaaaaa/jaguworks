@@ -59,6 +59,9 @@ import Games from "./pages/Games";
 import SnakeGame from "./pages/games/SnakeGame";
 import MemoryGame from "./pages/games/MemoryGame";
 import TypingTest from "./pages/games/TypingTest";
+import PuzzleGame from "./pages/games/PuzzleGame";
+import QuizGame from "./pages/games/QuizGame";
+import FlappyGame from "./pages/games/FlappyGame";
 
 // Lazy load blog pages
 const Blog = lazy(() => import("./pages/Blog"));
@@ -220,6 +223,9 @@ const App = () => {
                     <Route path="/games/snake" element={<SnakeGame />} />
                     <Route path="/games/memory" element={<MemoryGame />} />
                     <Route path="/games/typing" element={<TypingTest />} />
+                    <Route path="/games/puzzle" element={<PuzzleGame />} />
+                    <Route path="/games/quiz" element={<QuizGame />} />
+                    <Route path="/games/flappy" element={<FlappyGame />} />
                     {/* Admin Routes */}
                     <Route path="/admin" element={<AdminLayout />}>
                       <Route index element={<AdminDashboard />} />
