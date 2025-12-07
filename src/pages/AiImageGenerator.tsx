@@ -47,30 +47,7 @@ export default function AiImageGenerator() {
         body: { prompt: fullPrompt },
       });
 
-      if (error) {
-        // Check if error has a message from the response
-        if (error.message?.includes('402') || error.message?.includes('payment')) {
-          toast.error('AI credits exhausted. Please try again later or contact support.');
-          return;
-        }
-        if (error.message?.includes('429') || error.message?.includes('rate')) {
-          toast.error('Too many requests. Please wait a moment and try again.');
-          return;
-        }
-        throw error;
-      }
-
-      // Check if data contains an error message from the edge function
-      if (data?.error) {
-        if (data.error.includes('quota') || data.error.includes('credit')) {
-          toast.error('🚫 AI credits exhausted! The daily limit has been reached. Please try again tomorrow.');
-        } else if (data.error.includes('Rate limit')) {
-          toast.error('⏳ Too many requests! Please wait a few seconds and try again.');
-        } else {
-          toast.error(data.error);
-        }
-        return;
-      }
+      if (error) throw error;
 
       if (data?.image) {
         setGeneratedImage(data.image);
@@ -81,16 +58,7 @@ export default function AiImageGenerator() {
       }
     } catch (err: any) {
       console.error('Generation error:', err);
-      
-      // Handle specific error cases
-      const errorMessage = err?.message || err?.toString() || '';
-      if (errorMessage.includes('402') || errorMessage.includes('quota') || errorMessage.includes('credit')) {
-        toast.error('🚫 AI credits exhausted! Please try again later.');
-      } else if (errorMessage.includes('429') || errorMessage.includes('rate')) {
-        toast.error('⏳ Too many requests! Please wait and try again.');
-      } else {
-        toast.error('Failed to generate image. Please try again.');
-      }
+      toast.error('Failed to generate image. Please try again.');
     } finally {
       setLoading(false);
     }
