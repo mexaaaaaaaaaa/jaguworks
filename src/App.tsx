@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import Index from "./pages/Index";
 import AboutPage from "./pages/About";
@@ -46,6 +46,14 @@ import { useConsoleMessage, useKonamiCode } from "./hooks/useEasterEggs";
 import { toast } from "sonner";
 import VisibilityGuard from "./components/VisibilityGuard";
 
+// New unique features
+import AIChatAssistant from "./components/AIChatAssistant";
+import CommandTerminal from "./components/CommandTerminal";
+import CustomCursor from "./components/CustomCursor";
+import CinematicIntro from "./components/CinematicIntro";
+import VoiceNavigation from "./components/VoiceNavigation";
+import InstallPrompt from "./components/InstallPrompt";
+
 // Lazy load blog pages
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
@@ -79,11 +87,25 @@ const AdminNotes = lazy(() => import("./pages/admin/AdminNotes"));
 const queryClient = new QueryClient();
 
 const App = () => {
+  const [showIntro, setShowIntro] = useState(false);
+  
+  useEffect(() => {
+    // Check if first visit for cinematic intro
+    const hasVisited = localStorage.getItem('hasVisitedBefore');
+    if (!hasVisited) {
+      setShowIntro(true);
+    }
+  }, []);
+
+  const handleIntroComplete = () => {
+    localStorage.setItem('hasVisitedBefore', 'true');
+    setShowIntro(false);
+  };
+
   useConsoleMessage();
 
   // Konami Code Easter Egg
   useKonamiCode(() => {
-    // Create confetti effect
     const colors = ['#ff006e', '#00ff9d', '#00d9ff', '#ff9f1c'];
     for (let i = 0; i < 100; i++) {
       const confetti = document.createElement('div');
@@ -123,92 +145,105 @@ const App = () => {
   });
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <Analytics />
-          <HashRouter>
-            <Navigation />
-            <PromoNotifications />
-            <div className="pt-16">
-              <Suspense fallback={
-                <div className="min-h-screen flex items-center justify-center">
-                  <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full"></div>
-                </div>
-              }>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/about" element={<VisibilityGuard section="about"><AboutPage /></VisibilityGuard>} />
-                  <Route path="/projects" element={<VisibilityGuard section="projects"><FeaturedProjects /></VisibilityGuard>} />
-                  <Route path="/skills" element={<VisibilityGuard section="skills"><SkillsPage /></VisibilityGuard>} />
-                  <Route path="/achievements" element={<VisibilityGuard section="achievements"><AchievementsPage /></VisibilityGuard>} />
-                  <Route path="/goals" element={<VisibilityGuard section="future_goals"><FutureGoalsPage /></VisibilityGuard>} />
-                  <Route path="/contact" element={<VisibilityGuard section="contact"><ContactPage /></VisibilityGuard>} />
-                  <Route path="/blog" element={<VisibilityGuard section="blog"><Blog /></VisibilityGuard>} />
-                  <Route path="/blog/:slug" element={<VisibilityGuard section="blog"><BlogPost /></VisibilityGuard>} />
-                  <Route path="/ai-telegram-bots" element={<VisibilityGuard section="telegram_bots"><TelegramBots /></VisibilityGuard>} />
-                  <Route path="/cinematic-reel" element={<VisibilityGuard section="cinematic_reel"><CinematicReel /></VisibilityGuard>} />
-                  <Route path="/discord-automation" element={<VisibilityGuard section="discord_automation"><DiscordAutomation /></VisibilityGuard>} />
-                  <Route path="/discord-bot" element={<DiscordBot />} />
-                  <Route path="/minecraft-plans" element={<VisibilityGuard section="minecraft_plans"><MinecraftPlans /></VisibilityGuard>} />
-                  <Route path="/minecraft-server" element={<VisibilityGuard section="minecraft_server"><MinecraftServer /></VisibilityGuard>} />
-                  <Route path="/discord-plans" element={<VisibilityGuard section="discord_plans"><DiscordPlans /></VisibilityGuard>} />
-                  <Route path="/number-tracker" element={<NumberTracker />} />
-                  <Route path="/ip-tracker" element={<IpTracker />} />
-                  <Route path="/username-checker" element={<UsernameChecker />} />
-                  <Route path="/device-info" element={<DeviceInfo />} />
-                  <Route path="/password-generator" element={<PasswordGenerator />} />
-                  <Route path="/ai-image-generator" element={<AiImageGenerator />} />
-                  <Route path="/my-status" element={<MyStatus />} />
-                  <Route path="/share-and-earn" element={<ShareAndEarn />} />
-                  <Route path="/random-ai-art" element={<RandomAiArt />} />
-                  <Route path="/random-quote" element={<RandomQuote />} />
-                  <Route path="/image-enhancer" element={<ImageEnhancer />} />
-                  <Route path="/background-remover" element={<BackgroundRemover />} />
-                  <Route path="/speech-to-text" element={<SpeechToText />} />
-                  <Route path="/text-to-speech" element={<TextToSpeech />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
-                  <Route path="/payment-details" element={<PaymentDetails />} />
-                  <Route path="/payment-return" element={<PaymentReturn />} />
-                  <Route path="/auth" element={<Auth />} />
-                  {/* Admin Routes */}
-                  <Route path="/admin" element={<AdminLayout />}>
-                    <Route index element={<AdminDashboard />} />
-                    <Route path="visibility" element={<AdminSectionVisibility />} />
-                    <Route path="hero" element={<AdminHeroEditor />} />
-                    <Route path="about" element={<AdminAboutEditor />} />
-                    <Route path="sections" element={<AdminSectionBuilder />} />
-                    <Route path="orders" element={<AdminOrders />} />
-                    <Route path="plans" element={<AdminPlans />} />
-                    <Route path="addons" element={<AdminAddons />} />
-                    <Route path="blog" element={<AdminBlog />} />
-                    <Route path="testimonials" element={<AdminTestimonials />} />
-                    <Route path="stats" element={<AdminStats />} />
-                    <Route path="achievements" element={<AdminAchievements />} />
-                    <Route path="social-links" element={<AdminSocialLinks />} />
-                    <Route path="theme" element={<AdminTheme />} />
-                    <Route path="coupons" element={<AdminCoupons />} />
-                    <Route path="pin" element={<AdminPinSettings />} />
-                    <Route path="analytics" element={<AdminAnalytics />} />
-                    <Route path="media-library" element={<AdminMediaLibrary />} />
-                    <Route path="backup" element={<AdminBackup />} />
-                    <Route path="trash" element={<AdminTrash />} />
-                    <Route path="notes" element={<AdminNotes />} />
-                    <Route path="settings" element={<AdminSettings />} />
-                    <Route path="users" element={<AdminUsers />} />
-                  </Route>
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </div>
-          </HashRouter>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <>
+      {/* Cinematic Intro for first-time visitors */}
+      {showIntro && <CinematicIntro onComplete={handleIntroComplete} />}
+      
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Analytics />
+            
+            {/* Global unique features */}
+            <CustomCursor />
+            <AIChatAssistant />
+            <CommandTerminal />
+            <VoiceNavigation />
+            <InstallPrompt />
+            
+            <HashRouter>
+              <Navigation />
+              <PromoNotifications />
+              <div className="pt-16">
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center">
+                    <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full"></div>
+                  </div>
+                }>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/about" element={<VisibilityGuard section="about"><AboutPage /></VisibilityGuard>} />
+                    <Route path="/projects" element={<VisibilityGuard section="projects"><FeaturedProjects /></VisibilityGuard>} />
+                    <Route path="/skills" element={<VisibilityGuard section="skills"><SkillsPage /></VisibilityGuard>} />
+                    <Route path="/achievements" element={<VisibilityGuard section="achievements"><AchievementsPage /></VisibilityGuard>} />
+                    <Route path="/goals" element={<VisibilityGuard section="future_goals"><FutureGoalsPage /></VisibilityGuard>} />
+                    <Route path="/contact" element={<VisibilityGuard section="contact"><ContactPage /></VisibilityGuard>} />
+                    <Route path="/blog" element={<VisibilityGuard section="blog"><Blog /></VisibilityGuard>} />
+                    <Route path="/blog/:slug" element={<VisibilityGuard section="blog"><BlogPost /></VisibilityGuard>} />
+                    <Route path="/ai-telegram-bots" element={<VisibilityGuard section="telegram_bots"><TelegramBots /></VisibilityGuard>} />
+                    <Route path="/cinematic-reel" element={<VisibilityGuard section="cinematic_reel"><CinematicReel /></VisibilityGuard>} />
+                    <Route path="/discord-automation" element={<VisibilityGuard section="discord_automation"><DiscordAutomation /></VisibilityGuard>} />
+                    <Route path="/discord-bot" element={<DiscordBot />} />
+                    <Route path="/minecraft-plans" element={<VisibilityGuard section="minecraft_plans"><MinecraftPlans /></VisibilityGuard>} />
+                    <Route path="/minecraft-server" element={<VisibilityGuard section="minecraft_server"><MinecraftServer /></VisibilityGuard>} />
+                    <Route path="/discord-plans" element={<VisibilityGuard section="discord_plans"><DiscordPlans /></VisibilityGuard>} />
+                    <Route path="/number-tracker" element={<NumberTracker />} />
+                    <Route path="/ip-tracker" element={<IpTracker />} />
+                    <Route path="/username-checker" element={<UsernameChecker />} />
+                    <Route path="/device-info" element={<DeviceInfo />} />
+                    <Route path="/password-generator" element={<PasswordGenerator />} />
+                    <Route path="/ai-image-generator" element={<AiImageGenerator />} />
+                    <Route path="/my-status" element={<MyStatus />} />
+                    <Route path="/share-and-earn" element={<ShareAndEarn />} />
+                    <Route path="/random-ai-art" element={<RandomAiArt />} />
+                    <Route path="/random-quote" element={<RandomQuote />} />
+                    <Route path="/image-enhancer" element={<ImageEnhancer />} />
+                    <Route path="/background-remover" element={<BackgroundRemover />} />
+                    <Route path="/speech-to-text" element={<SpeechToText />} />
+                    <Route path="/text-to-speech" element={<TextToSpeech />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
+                    <Route path="/payment-details" element={<PaymentDetails />} />
+                    <Route path="/payment-return" element={<PaymentReturn />} />
+                    <Route path="/auth" element={<Auth />} />
+                    {/* Admin Routes */}
+                    <Route path="/admin" element={<AdminLayout />}>
+                      <Route index element={<AdminDashboard />} />
+                      <Route path="visibility" element={<AdminSectionVisibility />} />
+                      <Route path="hero" element={<AdminHeroEditor />} />
+                      <Route path="about" element={<AdminAboutEditor />} />
+                      <Route path="sections" element={<AdminSectionBuilder />} />
+                      <Route path="orders" element={<AdminOrders />} />
+                      <Route path="plans" element={<AdminPlans />} />
+                      <Route path="addons" element={<AdminAddons />} />
+                      <Route path="blog" element={<AdminBlog />} />
+                      <Route path="testimonials" element={<AdminTestimonials />} />
+                      <Route path="stats" element={<AdminStats />} />
+                      <Route path="achievements" element={<AdminAchievements />} />
+                      <Route path="social-links" element={<AdminSocialLinks />} />
+                      <Route path="theme" element={<AdminTheme />} />
+                      <Route path="coupons" element={<AdminCoupons />} />
+                      <Route path="pin" element={<AdminPinSettings />} />
+                      <Route path="analytics" element={<AdminAnalytics />} />
+                      <Route path="media-library" element={<AdminMediaLibrary />} />
+                      <Route path="backup" element={<AdminBackup />} />
+                      <Route path="trash" element={<AdminTrash />} />
+                      <Route path="notes" element={<AdminNotes />} />
+                      <Route path="settings" element={<AdminSettings />} />
+                      <Route path="users" element={<AdminUsers />} />
+                    </Route>
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </div>
+            </HashRouter>
+          </TooltipProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </>
   );
 };
 
