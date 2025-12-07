@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Gamepad2, Brain, Keyboard, Trophy } from 'lucide-react';
+import { Gamepad2, Brain, Keyboard, Trophy, Puzzle, HelpCircle, Bird } from 'lucide-react';
 import SEO from '@/components/SEO';
 
 const games = [
@@ -27,6 +27,30 @@ const games = [
     icon: Keyboard,
     color: 'from-blue-500 to-cyan-600',
     path: '/games/typing'
+  },
+  {
+    id: 'puzzle',
+    title: 'Sliding Puzzle',
+    description: 'Arrange the numbers in order. A classic brain teaser!',
+    icon: Puzzle,
+    color: 'from-orange-500 to-amber-600',
+    path: '/games/puzzle'
+  },
+  {
+    id: 'quiz',
+    title: 'Quiz Challenge',
+    description: 'Test your knowledge with fun trivia questions!',
+    icon: HelpCircle,
+    color: 'from-indigo-500 to-violet-600',
+    path: '/games/quiz'
+  },
+  {
+    id: 'flappy',
+    title: 'Flappy Bird',
+    description: 'Tap to fly! Avoid pipes and get the highest score!',
+    icon: Bird,
+    color: 'from-yellow-500 to-orange-600',
+    path: '/games/flappy'
   }
 ];
 
