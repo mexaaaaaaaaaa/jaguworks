@@ -156,14 +156,15 @@ const App = () => {
             <Sonner />
             <Analytics />
             
-            {/* Global unique features */}
+            {/* Global unique features - outside router */}
             <CustomCursor />
-            <AIChatAssistant />
-            <CommandTerminal />
-            <VoiceNavigation />
             <InstallPrompt />
             
             <HashRouter>
+              {/* Components that use useNavigate must be inside Router */}
+              <AIChatAssistant />
+              <CommandTerminal />
+              <VoiceNavigation />
               <Navigation />
               <PromoNotifications />
               <div className="pt-16">
