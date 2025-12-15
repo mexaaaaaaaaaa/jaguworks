@@ -17,6 +17,8 @@ import TelegramBots from "./pages/TelegramBots";
 import CinematicReel from "./pages/CinematicReel";
 import DiscordAutomation from "./pages/DiscordAutomation";
 import DiscordBot from "./pages/DiscordBot";
+import DiscordBotPlatform from "./pages/DiscordBotPlatform";
+import GlobalLeaderboard from "./pages/GlobalLeaderboard";
 import MinecraftPlans from "./pages/MinecraftPlans";
 import MinecraftServer from "./pages/MinecraftServer";
 import DiscordPlans from "./pages/DiscordPlans";
@@ -196,6 +198,7 @@ const App = () => {
                     <Route path="/cinematic-reel" element={<VisibilityGuard section="cinematic_reel"><CinematicReel /></VisibilityGuard>} />
                     <Route path="/discord-automation" element={<VisibilityGuard section="discord_automation"><DiscordAutomation /></VisibilityGuard>} />
                     <Route path="/discord-bot" element={<DiscordBot />} />
+                    <Route path="/discord-bot-platform" element={<DiscordBotPlatform />} />
                     <Route path="/minecraft-plans" element={<VisibilityGuard section="minecraft_plans"><MinecraftPlans /></VisibilityGuard>} />
                     <Route path="/minecraft-server" element={<VisibilityGuard section="minecraft_server"><MinecraftServer /></VisibilityGuard>} />
                     <Route path="/discord-plans" element={<VisibilityGuard section="discord_plans"><DiscordPlans /></VisibilityGuard>} />
@@ -220,6 +223,7 @@ const App = () => {
                     <Route path="/auth" element={<Auth />} />
                     {/* Games Routes */}
                     <Route path="/games" element={<Games />} />
+                    <Route path="/games/leaderboard" element={<GlobalLeaderboard />} />
                     <Route path="/games/snake" element={<SnakeGame />} />
                     <Route path="/games/memory" element={<MemoryGame />} />
                     <Route path="/games/typing" element={<TypingTest />} />
