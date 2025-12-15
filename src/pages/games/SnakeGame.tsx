@@ -4,6 +4,8 @@ import { ArrowLeft, Play, Pause, RotateCcw, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
+import Leaderboard from '@/components/Leaderboard';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
 
 const GRID_SIZE = 20;
 const CELL_SIZE = 20;
@@ -22,9 +24,11 @@ const SnakeGame = () => {
   const [highScore, setHighScore] = useState(() => {
     return parseInt(localStorage.getItem('snakeHighScore') || '0');
   });
+  const [scoreSaved, setScoreSaved] = useState(false);
   
   const directionRef = useRef(direction);
   const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
+  const { scores, loading, saveScore, fetchScores } = useLeaderboard('snake');
 
   const generateFood = useCallback((snakeBody: Position[]) => {
     let newFood: Position;
@@ -227,7 +231,21 @@ const SnakeGame = () => {
                   {score >= highScore && score > 0 && (
                     <p className="text-yellow-500 font-bold mb-4">🎉 New High Score!</p>
                   )}
-                  <Button onClick={resetGame} className="gap-2">
+                  {!scoreSaved && score > 0 && (
+                    <Button 
+                      onClick={async () => {
+                        await saveScore(score);
+                        setScoreSaved(true);
+                      }} 
+                      className="gap-2 mb-2"
+                      variant="outline"
+                    >
+                      <Trophy className="w-4 h-4" />
+                      Save to Leaderboard
+                    </Button>
+                  )}
+                  {scoreSaved && <p className="text-green-500 text-sm mb-2">✓ Score saved!</p>}
+                  <Button onClick={() => { resetGame(); setScoreSaved(false); }} className="gap-2">
                     <RotateCcw className="w-4 h-4" />
                     Play Again
                   </Button>
@@ -309,6 +327,16 @@ const SnakeGame = () => {
                 →
               </Button>
             </div>
+          </motion.div>
+
+          {/* Leaderboard */}
+          <motion.div
+            className="mt-8 p-6 bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Leaderboard scores={scores} loading={loading} currentScore={score} scoreLabel="pts" />
           </motion.div>
         </div>
       </div>

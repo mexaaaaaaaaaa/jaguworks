@@ -4,6 +4,8 @@ import { ArrowLeft, RotateCcw, Trophy, Keyboard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
+import Leaderboard from '@/components/Leaderboard';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
 
 const SAMPLE_TEXTS = [
   "The quick brown fox jumps over the lazy dog. This sentence contains every letter of the alphabet.",
@@ -27,6 +29,8 @@ const TypingTest = () => {
   const [bestWpm, setBestWpm] = useState(() => {
     return parseInt(localStorage.getItem('typingBestWpm') || '0');
   });
+  const [scoreSaved, setScoreSaved] = useState(false);
+  const { scores, loading, saveScore } = useLeaderboard('typing');
   
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -250,13 +254,37 @@ const TypingTest = () => {
                     <p className="text-yellow-500 font-bold">🏆 New Personal Best!</p>
                   )}
                 </div>
-                <Button onClick={initializeGame} className="gap-2">
+                {!scoreSaved && (
+                  <Button 
+                    onClick={async () => {
+                      await saveScore(wpm);
+                      setScoreSaved(true);
+                    }} 
+                    className="gap-2 mb-2"
+                    variant="outline"
+                  >
+                    <Trophy className="w-4 h-4" />
+                    Save to Leaderboard
+                  </Button>
+                )}
+                {scoreSaved && <p className="text-green-500 text-sm mb-2">✓ Score saved!</p>}
+                <Button onClick={() => { initializeGame(); setScoreSaved(false); }} className="gap-2">
                   <RotateCcw className="w-4 h-4" />
                   Try Again
                 </Button>
               </motion.div>
             </motion.div>
           )}
+
+          {/* Leaderboard */}
+          <motion.div
+            className="mt-8 p-6 bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Leaderboard scores={scores} loading={loading} currentScore={wpm} scoreLabel="WPM" />
+          </motion.div>
         </div>
       </div>
     </>
