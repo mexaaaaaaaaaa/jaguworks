@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, User, Briefcase, Award, Target, Mail, Code, Menu, BookOpen, LogIn, LogOut, Phone, Globe, AtSign, Smartphone, Key, Sparkles, Wrench, Share2, Gift, Palette, Quote, Wand2, Eraser, Mic, Volume2, Gamepad2, Bot, Trophy } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { useState } from "react";
 import {
   Sheet,
@@ -74,8 +75,9 @@ const Navigation = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-b border-border shadow-lg">
         <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="text-xl md:text-2xl font-bold gradient-text">
-            Jagmohan
+          <Link to="/" className="flex items-center gap-2">
+            <img src={logo} alt="Jaguworks" className="h-8 w-auto" />
+            <span className="text-xl md:text-2xl font-bold gradient-text hidden sm:inline">Jaguworks</span>
           </Link>
           
           {/* Desktop Navigation */}

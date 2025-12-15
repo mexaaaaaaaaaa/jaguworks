@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
 import Leaderboard from '@/components/Leaderboard';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useGameAchievements } from '@/hooks/useGameAchievements';
+import { AchievementNotifications } from '@/components/GameAchievements';
 
 const GRID_SIZE = 20;
 const CELL_SIZE = 20;
@@ -28,7 +30,8 @@ const SnakeGame = () => {
   
   const directionRef = useRef(direction);
   const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
-  const { scores, loading, saveScore, fetchScores } = useLeaderboard('snake');
+  const { scores, loading, saveScore } = useLeaderboard('snake');
+  const { newUnlocks, checkScoreAchievements, incrementGamesPlayed, clearNewUnlocks } = useGameAchievements();
 
   const generateFood = useCallback((snakeBody: Position[]) => {
     let newFood: Position;
@@ -236,6 +239,8 @@ const SnakeGame = () => {
                       onClick={async () => {
                         await saveScore(score);
                         setScoreSaved(true);
+                        checkScoreAchievements(score);
+                        incrementGamesPlayed();
                       }} 
                       className="gap-2 mb-2"
                       variant="outline"
@@ -336,10 +341,12 @@ const SnakeGame = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Leaderboard scores={scores} loading={loading} currentScore={score} scoreLabel="pts" />
+            <Leaderboard scores={scores} loading={loading} currentScore={score} scoreLabel="pts" gameName="Snake" showShare={gameOver && score > 0} />
           </motion.div>
         </div>
       </div>
+      
+      <AchievementNotifications newUnlocks={newUnlocks} onClear={clearNewUnlocks} />
     </>
   );
 };

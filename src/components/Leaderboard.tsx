@@ -1,15 +1,18 @@
 import { motion } from 'framer-motion';
 import { Trophy, Medal, Crown, User } from 'lucide-react';
 import { GameScore } from '@/hooks/useLeaderboard';
+import ShareScore from './ShareScore';
 
 interface LeaderboardProps {
   scores: GameScore[];
   loading: boolean;
   currentScore?: number;
   scoreLabel?: string;
+  gameName?: string;
+  showShare?: boolean;
 }
 
-const Leaderboard = ({ scores, loading, currentScore, scoreLabel = 'Score' }: LeaderboardProps) => {
+const Leaderboard = ({ scores, loading, currentScore, scoreLabel = 'Score', gameName = 'Game', showShare = false }: LeaderboardProps) => {
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
@@ -91,11 +94,19 @@ const Leaderboard = ({ scores, loading, currentScore, scoreLabel = 'Score' }: Le
       ))}
       
       {currentScore !== undefined && (
-        <div className="mt-4 pt-4 border-t border-border/50">
+        <div className="mt-4 pt-4 border-t border-border/50 space-y-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Your current score:</span>
             <span className="font-bold text-primary">{currentScore.toLocaleString()}</span>
           </div>
+          
+          {showShare && (
+            <ShareScore 
+              score={currentScore} 
+              gameName={gameName}
+              isHighScore={scores.length > 0 && currentScore >= scores[0]?.score}
+            />
+          )}
         </div>
       )}
     </div>

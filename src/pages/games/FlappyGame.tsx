@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Leaderboard from '@/components/Leaderboard';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useGameAchievements } from '@/hooks/useGameAchievements';
+import { AchievementNotifications } from '@/components/GameAchievements';
 
 const GRAVITY = 0.5;
 const JUMP_FORCE = -8;

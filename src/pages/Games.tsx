@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Gamepad2, Brain, Keyboard, Trophy, Puzzle, HelpCircle, Bird } from 'lucide-react';
+import { Gamepad2, Brain, Keyboard, Trophy, Puzzle, HelpCircle, Bird, Award } from 'lucide-react';
 import SEO from '@/components/SEO';
+import { GameAchievements, AchievementNotifications } from '@/components/GameAchievements';
+import { useGameAchievements } from '@/hooks/useGameAchievements';
 
 const games = [
   {
@@ -55,6 +57,7 @@ const games = [
 ];
 
 const Games = () => {
+  const { achievements, newUnlocks, clearNewUnlocks, getUnlockedCount, getTotalCount } = useGameAchievements();
   return (
     <>
       <SEO 
@@ -132,7 +135,7 @@ const Games = () => {
 
           {/* Leaderboard CTA */}
           <motion.div
-            className="mt-16 text-center"
+            className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -144,12 +147,32 @@ const Games = () => {
                 <span className="text-muted-foreground">→</span>
               </div>
             </Link>
-            <p className="text-muted-foreground mt-4">
-              🏆 Compete for high scores and climb the leaderboard!
-            </p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full">
+              <Award className="w-4 h-4 text-primary" />
+              <span className="text-sm text-foreground">
+                <span className="font-bold text-primary">{getUnlockedCount()}</span>/{getTotalCount()} Achievements
+              </span>
+            </div>
+          </motion.div>
+          
+          {/* Achievements Section */}
+          <motion.div
+            className="mt-16 p-6 bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <GameAchievements 
+              achievements={achievements} 
+              unlockedCount={getUnlockedCount()} 
+              totalCount={getTotalCount()} 
+            />
           </motion.div>
         </div>
       </div>
+      
+      {/* Achievement Notifications */}
+      <AchievementNotifications newUnlocks={newUnlocks} onClear={clearNewUnlocks} />
     </>
   );
 };

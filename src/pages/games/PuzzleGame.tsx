@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import Leaderboard from '@/components/Leaderboard';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useGameAchievements } from '@/hooks/useGameAchievements';
+import { AchievementNotifications } from '@/components/GameAchievements';
 
 const GRID_SIZE = 3;
 const TILE_COUNT = GRID_SIZE * GRID_SIZE;
@@ -19,6 +21,7 @@ export default function PuzzleGame() {
   const [isWon, setIsWon] = useState(false);
   const [scoreSaved, setScoreSaved] = useState(false);
   const { scores, loading, saveScore } = useLeaderboard('puzzle');
+  const { newUnlocks, checkScoreAchievements, incrementGamesPlayed, clearNewUnlocks } = useGameAchievements();
 
   const initGame = () => {
     let shuffled: number[];
