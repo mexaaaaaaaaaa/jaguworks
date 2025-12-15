@@ -8,6 +8,8 @@ import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import Leaderboard from '@/components/Leaderboard';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useGameAchievements } from '@/hooks/useGameAchievements';
+import { AchievementNotifications } from '@/components/GameAchievements';
 
 interface Question {
   question: string;
@@ -89,6 +91,7 @@ export default function QuizGame() {
   const [answers, setAnswers] = useState<boolean[]>([]);
   const [scoreSaved, setScoreSaved] = useState(false);
   const { scores, loading, saveScore } = useLeaderboard('quiz');
+  const { newUnlocks, checkScoreAchievements, incrementGamesPlayed, unlockSpecialAchievement, clearNewUnlocks } = useGameAchievements();
 
   const resetGame = () => {
     setCurrentQuestion(0);
@@ -288,6 +291,11 @@ export default function QuizGame() {
                       onClick={async () => {
                         await saveScore(score * 10);
                         setScoreSaved(true);
+                        checkScoreAchievements(score * 10);
+                        incrementGamesPlayed();
+                        if (score === QUESTIONS.length) {
+                          unlockSpecialAchievement('quiz_master');
+                        }
                       }} 
                       className="gap-2 mb-2"
                       variant="outline"
@@ -310,12 +318,14 @@ export default function QuizGame() {
 
               {/* Leaderboard */}
               <div className="mt-4 pt-4 border-t border-border/50">
-                <Leaderboard scores={scores} loading={loading} currentScore={score * 10} scoreLabel="pts" />
+                <Leaderboard scores={scores} loading={loading} currentScore={gameOver ? score * 10 : undefined} scoreLabel="pts" gameName="Quiz" showShare={gameOver} />
               </div>
             </CardContent>
           </Card>
         </motion.div>
       </div>
+      
+      <AchievementNotifications newUnlocks={newUnlocks} onClear={clearNewUnlocks} />
     </div>
   );
 }

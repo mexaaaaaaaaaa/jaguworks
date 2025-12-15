@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
 import Leaderboard from '@/components/Leaderboard';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useGameAchievements } from '@/hooks/useGameAchievements';
+import { AchievementNotifications } from '@/components/GameAchievements';
 
 const EMOJIS = ['🎮', '🎯', '🎨', '🎵', '🚀', '💎', '⚡', '🔥'];
 const GRID_SIZE = 16;
@@ -30,7 +32,9 @@ const MemoryGame = () => {
     return parseInt(localStorage.getItem('memoryBestTime') || '0');
   });
   const [scoreSaved, setScoreSaved] = useState(false);
+  const [wrongMoves, setWrongMoves] = useState(0);
   const { scores, loading, saveScore } = useLeaderboard('memory');
+  const { newUnlocks, checkScoreAchievements, incrementGamesPlayed, unlockSpecialAchievement, clearNewUnlocks } = useGameAchievements();
 
   const initializeGame = () => {
     const shuffledEmojis = [...EMOJIS, ...EMOJIS]
@@ -49,6 +53,7 @@ const MemoryGame = () => {
     setStartTime(null);
     setElapsedTime(0);
     setIsLocked(false);
+    setWrongMoves(0);
   };
 
   useEffect(() => {
@@ -111,7 +116,8 @@ const MemoryGame = () => {
         setFlippedCards([]);
         setIsLocked(false);
       } else {
-        // No match
+        // No match - track wrong moves
+        setWrongMoves(prev => prev + 1);
         setTimeout(() => {
           setCards(prev =>
             prev.map(card =>
@@ -254,10 +260,14 @@ const MemoryGame = () => {
                   {!scoreSaved && (
                     <Button 
                       onClick={async () => {
-                        // Score is inverse of time (faster = higher score)
                         const scoreValue = Math.max(1000 - elapsedTime * 10 - moves * 5, 100);
                         await saveScore(scoreValue);
                         setScoreSaved(true);
+                        checkScoreAchievements(scoreValue);
+                        incrementGamesPlayed();
+                        if (wrongMoves === 0) {
+                          unlockSpecialAchievement('perfect_memory');
+                        }
                       }} 
                       className="gap-2 mb-2"
                       variant="outline"
@@ -283,10 +293,12 @@ const MemoryGame = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Leaderboard scores={scores} loading={loading} scoreLabel="pts" />
+            <Leaderboard scores={scores} loading={loading} scoreLabel="pts" gameName="Memory" showShare={gameComplete} currentScore={gameComplete ? Math.max(1000 - elapsedTime * 10 - moves * 5, 100) : undefined} />
           </motion.div>
         </div>
       </div>
+      
+      <AchievementNotifications newUnlocks={newUnlocks} onClear={clearNewUnlocks} />
     </>
   );
 };

@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import SEO from '@/components/SEO';
 import Leaderboard from '@/components/Leaderboard';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useGameAchievements } from '@/hooks/useGameAchievements';
+import { AchievementNotifications } from '@/components/GameAchievements';
 
 const SAMPLE_TEXTS = [
   "The quick brown fox jumps over the lazy dog. This sentence contains every letter of the alphabet.",
@@ -31,6 +33,7 @@ const TypingTest = () => {
   });
   const [scoreSaved, setScoreSaved] = useState(false);
   const { scores, loading, saveScore } = useLeaderboard('typing');
+  const { newUnlocks, checkScoreAchievements, incrementGamesPlayed, unlockSpecialAchievement, clearNewUnlocks } = useGameAchievements();
   
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -259,6 +262,11 @@ const TypingTest = () => {
                     onClick={async () => {
                       await saveScore(wpm);
                       setScoreSaved(true);
+                      checkScoreAchievements(wpm);
+                      incrementGamesPlayed();
+                      if (wpm >= 100) {
+                        unlockSpecialAchievement('speed_demon');
+                      }
                     }} 
                     className="gap-2 mb-2"
                     variant="outline"
@@ -283,10 +291,12 @@ const TypingTest = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Leaderboard scores={scores} loading={loading} currentScore={wpm} scoreLabel="WPM" />
+            <Leaderboard scores={scores} loading={loading} currentScore={wpm} scoreLabel="WPM" gameName="Typing Test" showShare={isComplete} />
           </motion.div>
         </div>
       </div>
+      
+      <AchievementNotifications newUnlocks={newUnlocks} onClear={clearNewUnlocks} />
     </>
   );
 };
