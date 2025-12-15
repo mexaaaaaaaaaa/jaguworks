@@ -4,6 +4,8 @@ import { ArrowLeft, RotateCcw, Trophy, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Leaderboard from '@/components/Leaderboard';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
 
 const GRAVITY = 0.5;
 const JUMP_FORCE = -8;
@@ -30,7 +32,9 @@ export default function FlappyGame() {
     return saved ? parseInt(saved) : 0;
   });
   const [gameState, setGameState] = useState<'ready' | 'playing' | 'gameover'>('ready');
+  const [scoreSaved, setScoreSaved] = useState(false);
   const gameRef = useRef<HTMLDivElement>(null);
+  const { scores, loading, saveScore } = useLeaderboard('flappy');
 
   const jump = useCallback(() => {
     if (gameState === 'ready') {
@@ -47,6 +51,7 @@ export default function FlappyGame() {
     setPipes([]);
     setScore(0);
     setGameState('ready');
+    setScoreSaved(false);
   };
 
   // Handle keyboard and touch input
@@ -283,8 +288,23 @@ export default function FlappyGame() {
                       <p className="text-white text-2xl font-bold mb-2">Game Over!</p>
                       <p className="text-yellow-400 text-xl mb-4">Score: {score}</p>
                       {score === highScore && score > 0 && (
-                        <p className="text-green-400 text-sm mb-4">🎉 New High Score!</p>
+                        <p className="text-green-400 text-sm mb-2">🎉 New High Score!</p>
                       )}
+                      {!scoreSaved && score > 0 && (
+                        <Button 
+                          onClick={async () => {
+                            await saveScore(score);
+                            setScoreSaved(true);
+                          }} 
+                          className="gap-2 mb-2"
+                          variant="outline"
+                          size="sm"
+                        >
+                          <Trophy className="w-4 h-4" />
+                          Save Score
+                        </Button>
+                      )}
+                      {scoreSaved && <p className="text-green-400 text-sm mb-2">✓ Score saved!</p>}
                     </motion.div>
                   </div>
                 )}
@@ -306,6 +326,11 @@ export default function FlappyGame() {
               <p className="text-center text-xs text-muted-foreground">
                 💡 Tip: Don't hit the pipes or the ground!
               </p>
+
+              {/* Leaderboard */}
+              <div className="mt-4 pt-4 border-t border-border/50">
+                <Leaderboard scores={scores} loading={loading} currentScore={score} scoreLabel="pts" />
+              </div>
             </CardContent>
           </Card>
         </motion.div>

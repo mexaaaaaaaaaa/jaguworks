@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import Leaderboard from '@/components/Leaderboard';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
 
 const GRID_SIZE = 3;
 const TILE_COUNT = GRID_SIZE * GRID_SIZE;
@@ -15,6 +17,8 @@ export default function PuzzleGame() {
   const [time, setTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isWon, setIsWon] = useState(false);
+  const [scoreSaved, setScoreSaved] = useState(false);
+  const { scores, loading, saveScore } = useLeaderboard('puzzle');
 
   const initGame = () => {
     let shuffled: number[];
@@ -165,21 +169,42 @@ export default function PuzzleGame() {
                   className="text-center p-4 bg-green-500/20 rounded-xl border border-green-500/30"
                 >
                   <p className="text-xl font-bold text-green-400">🎉 Congratulations!</p>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground mb-4">
                     Solved in {moves} moves • {formatTime(time)}
                   </p>
+                  {!scoreSaved && (
+                    <Button 
+                      onClick={async () => {
+                        const scoreValue = Math.max(1000 - time * 5 - moves * 10, 100);
+                        await saveScore(scoreValue);
+                        setScoreSaved(true);
+                      }} 
+                      className="gap-2"
+                      variant="outline"
+                      size="sm"
+                    >
+                      <Trophy className="w-4 h-4" />
+                      Save Score
+                    </Button>
+                  )}
+                  {scoreSaved && <p className="text-green-400 text-sm">✓ Score saved!</p>}
                 </motion.div>
               )}
 
               {/* Controls */}
               <div className="flex justify-center">
                 <Button 
-                  onClick={initGame}
+                  onClick={() => { initGame(); setScoreSaved(false); }}
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
                   New Game
                 </Button>
+              </div>
+
+              {/* Leaderboard */}
+              <div className="mt-4 pt-4 border-t border-border/50">
+                <Leaderboard scores={scores} loading={loading} scoreLabel="pts" />
               </div>
             </CardContent>
           </Card>

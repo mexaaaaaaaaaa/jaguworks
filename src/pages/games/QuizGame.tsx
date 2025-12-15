@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+import Leaderboard from '@/components/Leaderboard';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
 
 interface Question {
   question: string;
@@ -85,6 +87,8 @@ export default function QuizGame() {
   const [timeLeft, setTimeLeft] = useState(15);
   const [gameOver, setGameOver] = useState(false);
   const [answers, setAnswers] = useState<boolean[]>([]);
+  const [scoreSaved, setScoreSaved] = useState(false);
+  const { scores, loading, saveScore } = useLeaderboard('quiz');
 
   const resetGame = () => {
     setCurrentQuestion(0);
@@ -94,6 +98,7 @@ export default function QuizGame() {
     setTimeLeft(15);
     setGameOver(false);
     setAnswers([]);
+    setScoreSaved(false);
   };
 
   useEffect(() => {
@@ -278,6 +283,21 @@ export default function QuizGame() {
                     ))}
                   </div>
 
+                  {!scoreSaved && (
+                    <Button 
+                      onClick={async () => {
+                        await saveScore(score * 10);
+                        setScoreSaved(true);
+                      }} 
+                      className="gap-2 mb-2"
+                      variant="outline"
+                    >
+                      <Trophy className="w-4 h-4" />
+                      Save to Leaderboard
+                    </Button>
+                  )}
+                  {scoreSaved && <p className="text-green-500 text-sm mb-2">✓ Score saved!</p>}
+
                   <Button 
                     onClick={resetGame}
                     className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
@@ -287,6 +307,11 @@ export default function QuizGame() {
                   </Button>
                 </motion.div>
               )}
+
+              {/* Leaderboard */}
+              <div className="mt-4 pt-4 border-t border-border/50">
+                <Leaderboard scores={scores} loading={loading} currentScore={score * 10} scoreLabel="pts" />
+              </div>
             </CardContent>
           </Card>
         </motion.div>
