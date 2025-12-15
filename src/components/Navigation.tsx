@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, User, Briefcase, Award, Target, Mail, Code, Menu, BookOpen, LogIn, LogOut, Phone, Globe, AtSign, Smartphone, Key, Sparkles, Wrench, Share2, Gift, Palette, Quote, Wand2, Eraser, Mic, Volume2, Gamepad2 } from "lucide-react";
+import { Home, User, Briefcase, Award, Target, Mail, Code, Menu, BookOpen, LogIn, LogOut, Phone, Globe, AtSign, Smartphone, Key, Sparkles, Wrench, Share2, Gift, Palette, Quote, Wand2, Eraser, Mic, Volume2, Gamepad2, Bot, Trophy } from "lucide-react";
 import { useState } from "react";
 import {
   Sheet,
@@ -44,6 +44,8 @@ const Navigation = () => {
     { path: "/goals", label: "Goals", icon: Target, visibilityKey: "future_goals" as const },
     { path: "/contact", label: "Contact", icon: Mail, visibilityKey: "contact" as const },
     { path: "/games", label: "Games", icon: Gamepad2, visibilityKey: null },
+    { path: "/games/leaderboard", label: "Leaderboard", icon: Trophy, visibilityKey: null },
+    { path: "/discord-bot-platform", label: "Bot Platform", icon: Bot, visibilityKey: null },
     { path: "/number-tracker", label: "Number Tracker", icon: Phone, visibilityKey: null },
     { path: "/ip-tracker", label: "IP Tracker", icon: Globe, visibilityKey: null },
     { path: "/username-checker", label: "Username Checker", icon: AtSign, visibilityKey: null },

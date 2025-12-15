@@ -130,14 +130,21 @@ const Games = () => {
             ))}
           </div>
 
-          {/* Leaderboard teaser */}
+          {/* Leaderboard CTA */}
           <motion.div
             className="mt-16 text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <p className="text-muted-foreground">
+            <Link to="/games/leaderboard">
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 rounded-full hover:from-yellow-500/30 hover:to-amber-500/30 transition-all cursor-pointer">
+                <Trophy className="w-5 h-5 text-yellow-500" />
+                <span className="text-foreground font-medium">View Global Leaderboard</span>
+                <span className="text-muted-foreground">→</span>
+              </div>
+            </Link>
+            <p className="text-muted-foreground mt-4">
               🏆 Compete for high scores and climb the leaderboard!
             </p>
           </motion.div>
