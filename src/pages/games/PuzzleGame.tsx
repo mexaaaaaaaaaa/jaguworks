@@ -175,22 +175,24 @@ export default function PuzzleGame() {
                   <p className="text-muted-foreground mb-4">
                     Solved in {moves} moves • {formatTime(time)}
                   </p>
-                  {!scoreSaved && (
-                    <Button 
-                      onClick={async () => {
-                        const scoreValue = Math.max(1000 - time * 5 - moves * 10, 100);
-                        await saveScore(scoreValue);
-                        setScoreSaved(true);
-                      }} 
-                      className="gap-2"
-                      variant="outline"
-                      size="sm"
-                    >
-                      <Trophy className="w-4 h-4" />
-                      Save Score
-                    </Button>
-                  )}
-                  {scoreSaved && <p className="text-green-400 text-sm">✓ Score saved!</p>}
+                   {!scoreSaved && (
+                     <Button 
+                       onClick={async () => {
+                         const scoreValue = Math.max(1000 - time * 5 - moves * 10, 100);
+                         await saveScore(scoreValue);
+                         setScoreSaved(true);
+                         checkScoreAchievements(scoreValue);
+                         incrementGamesPlayed();
+                       }} 
+                       className="gap-2"
+                       variant="outline"
+                       size="sm"
+                     >
+                       <Trophy className="w-4 h-4" />
+                       Save Score
+                     </Button>
+                   )}
+                   {scoreSaved && <p className="text-green-400 text-sm">✓ Score saved!</p>}
                 </motion.div>
               )}
 
@@ -205,14 +207,23 @@ export default function PuzzleGame() {
                 </Button>
               </div>
 
-              {/* Leaderboard */}
-              <div className="mt-4 pt-4 border-t border-border/50">
-                <Leaderboard scores={scores} loading={loading} scoreLabel="pts" />
-              </div>
+               {/* Leaderboard */}
+               <div className="mt-4 pt-4 border-t border-border/50">
+                 <Leaderboard
+                   scores={scores}
+                   loading={loading}
+                   currentScore={isWon ? Math.max(1000 - time * 5 - moves * 10, 100) : undefined}
+                   scoreLabel="pts"
+                   gameName="Puzzle"
+                   showShare={isWon}
+                 />
+               </div>
             </CardContent>
           </Card>
         </motion.div>
       </div>
+
+      <AchievementNotifications newUnlocks={newUnlocks} onClear={clearNewUnlocks} />
     </div>
   );
 }

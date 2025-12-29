@@ -37,6 +37,7 @@ export default function FlappyGame() {
   const [scoreSaved, setScoreSaved] = useState(false);
   const gameRef = useRef<HTMLDivElement>(null);
   const { scores, loading, saveScore } = useLeaderboard('flappy');
+  const { newUnlocks, checkScoreAchievements, incrementGamesPlayed, clearNewUnlocks } = useGameAchievements();
 
   const jump = useCallback(() => {
     if (gameState === 'ready') {
@@ -292,20 +293,22 @@ export default function FlappyGame() {
                       {score === highScore && score > 0 && (
                         <p className="text-green-400 text-sm mb-2">🎉 New High Score!</p>
                       )}
-                      {!scoreSaved && score > 0 && (
-                        <Button 
-                          onClick={async () => {
-                            await saveScore(score);
-                            setScoreSaved(true);
-                          }} 
-                          className="gap-2 mb-2"
-                          variant="outline"
-                          size="sm"
-                        >
-                          <Trophy className="w-4 h-4" />
-                          Save Score
-                        </Button>
-                      )}
+                       {!scoreSaved && score > 0 && (
+                         <Button 
+                           onClick={async () => {
+                             await saveScore(score);
+                             setScoreSaved(true);
+                             checkScoreAchievements(score);
+                             incrementGamesPlayed();
+                           }} 
+                           className="gap-2 mb-2"
+                           variant="outline"
+                           size="sm"
+                         >
+                           <Trophy className="w-4 h-4" />
+                           Save Score
+                         </Button>
+                       )}
                       {scoreSaved && <p className="text-green-400 text-sm mb-2">✓ Score saved!</p>}
                     </motion.div>
                   </div>
@@ -329,14 +332,23 @@ export default function FlappyGame() {
                 💡 Tip: Don't hit the pipes or the ground!
               </p>
 
-              {/* Leaderboard */}
-              <div className="mt-4 pt-4 border-t border-border/50">
-                <Leaderboard scores={scores} loading={loading} currentScore={score} scoreLabel="pts" />
-              </div>
+               {/* Leaderboard */}
+               <div className="mt-4 pt-4 border-t border-border/50">
+                 <Leaderboard
+                   scores={scores}
+                   loading={loading}
+                   currentScore={score}
+                   scoreLabel="pts"
+                   gameName="Flappy Bird"
+                   showShare={gameState === 'gameover' && score > 0}
+                 />
+               </div>
             </CardContent>
           </Card>
         </motion.div>
       </div>
+
+      <AchievementNotifications newUnlocks={newUnlocks} onClear={clearNewUnlocks} />
     </div>
   );
 }

@@ -126,7 +126,7 @@ const Auth = () => {
         email: values.email,
         password: values.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/#/`,
+          emailRedirectTo: `${window.location.origin}/#/auth`,
           data: {
             username: values.username,
             full_name: values.fullName,
@@ -174,7 +174,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: `${window.location.origin}/#/`,
         },
       });
 
@@ -201,37 +201,12 @@ const Auth = () => {
     }
   };
 
-  const handleDiscordLogin = async () => {
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "discord",
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
-
-      if (error) {
-        let errorMessage = error.message;
-        if (error.message.includes("provider is not enabled") || error.message.includes("not configured")) {
-          errorMessage = "Discord login is not configured yet. Please use email & password for now.";
-        }
-        
-        toast({
-          title: "Discord login unavailable",
-          description: errorMessage,
-          variant: "destructive",
-        });
-        setLoading(false);
-      }
-    } catch (error: any) {
-      toast({
-        title: "Discord login failed",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
-      setLoading(false);
-    }
+  const handleDiscordLogin = () => {
+    toast({
+      title: "Discord login unavailable",
+      description: "Discord login isn't available right now. Please use Email/Password (or Google if enabled).",
+      variant: "destructive",
+    });
   };
 
   const handleForgotPassword = async () => {
@@ -248,7 +223,7 @@ const Auth = () => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `https://jaguworks.online/auth`,
+        redirectTo: `${window.location.origin}/#/auth`,
       });
 
       if (error) {
