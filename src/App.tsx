@@ -94,6 +94,7 @@ const AdminMediaLibrary = lazy(() => import("./pages/admin/AdminMediaLibrary"));
 const AdminBackup = lazy(() => import("./pages/admin/AdminBackup"));
 const AdminTrash = lazy(() => import("./pages/admin/AdminTrash"));
 const AdminNotes = lazy(() => import("./pages/admin/AdminNotes"));
+const AdminFaceSettings = lazy(() => import("./pages/admin/AdminFaceSettings"));
 
 const queryClient = new QueryClient();
 
@@ -248,6 +249,7 @@ const App = () => {
                       <Route path="theme" element={<AdminTheme />} />
                       <Route path="coupons" element={<AdminCoupons />} />
                       <Route path="pin" element={<AdminPinSettings />} />
+                      <Route path="face" element={<AdminFaceSettings />} />
                       <Route path="analytics" element={<AdminAnalytics />} />
                       <Route path="media-library" element={<AdminMediaLibrary />} />
                       <Route path="backup" element={<AdminBackup />} />
