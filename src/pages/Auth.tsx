@@ -66,6 +66,21 @@ const Auth = () => {
       return;
     }
 
+    // Check for OAuth error in URL (e.g., after failed Google login)
+    const errorDescription = hashParams.get('error_description');
+    const error = hashParams.get('error');
+    if (error || errorDescription) {
+      const errorMsg = errorDescription || error || "Authentication failed";
+      toast({
+        title: "Login failed",
+        description: decodeURIComponent(errorMsg.replace(/\+/g, ' ')),
+        variant: "destructive",
+      });
+      // Clean up the URL
+      window.history.replaceState(null, '', window.location.pathname + '#/auth');
+      return;
+    }
+
     if (user && !isRecoveryMode) {
       toast({
         title: "You're already logged in",
@@ -122,7 +137,7 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
@@ -135,7 +150,7 @@ const Auth = () => {
       });
 
       if (signUpError) {
-        let errorMessage = "An error occurred during signup.";
+        let errorMessage = signUpError.message;
         
         if (signUpError.message.includes("User already registered")) {
           errorMessage = "This email is already registered. Please login instead.";
@@ -151,16 +166,24 @@ const Auth = () => {
         return;
       }
 
-      toast({
-        title: "Account created successfully! 🎉",
-        description: "You can now login with your credentials.",
-      });
-      
-      setTimeout(() => navigate("/"), 1500);
+      // If auto-confirm is enabled, user gets a session immediately
+      if (data?.session) {
+        toast({
+          title: "Account created & logged in! 🎉",
+          description: "Welcome to JaguWorks!",
+        });
+        setTimeout(() => navigate("/"), 1000);
+      } else {
+        // Email confirmation required
+        toast({
+          title: "Account created! 📧",
+          description: "Please check your email to verify your account before logging in.",
+        });
+      }
     } catch (error: any) {
       toast({
         title: "Signup failed",
-        description: "An unexpected error occurred. Please try again.",
+        description: error?.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -174,7 +197,11 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/#/`,
+          redirectTo: `${window.location.origin}/#/auth`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
 
@@ -182,6 +209,8 @@ const Auth = () => {
         let errorMessage = error.message;
         if (error.message.includes("provider is not enabled") || error.message.includes("not configured")) {
           errorMessage = "Google login is not configured yet. Please use email & password for now.";
+        } else if (error.message.includes("invalid_client")) {
+          errorMessage = "Google OAuth configuration error. Please contact support.";
         }
         
         toast({
@@ -194,7 +223,7 @@ const Auth = () => {
     } catch (error: any) {
       toast({
         title: "Google login failed",
-        description: "An unexpected error occurred. Please try again.",
+        description: error?.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
       setLoading(false);
