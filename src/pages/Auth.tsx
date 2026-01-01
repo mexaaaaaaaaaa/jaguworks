@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -56,39 +56,86 @@ const Auth = () => {
     },
   });
 
+  const oauthHandledRef = useRef(false);
+
   useEffect(() => {
-    // Check if this is a password recovery flow
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get('type');
-    
-    if (type === 'recovery') {
+    // Run once: handle OAuth callback params / recovery mode safely with HashRouter
+    if (oauthHandledRef.current) return;
+    oauthHandledRef.current = true;
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const rawHash = window.location.hash?.startsWith("#")
+      ? window.location.hash.slice(1)
+      : window.location.hash;
+
+    const hashQueryParams = (() => {
+      if (!rawHash) return new URLSearchParams();
+
+      // HashRouter format: "/auth?x=y" -> parse only the query part after "?"
+      if (rawHash.includes("?")) {
+        return new URLSearchParams(rawHash.split("?").slice(1).join("?"));
+      }
+
+      // Non-router hash format: "error=...&error_description=..."
+      if (!rawHash.startsWith("/")) {
+        return new URLSearchParams(rawHash);
+      }
+
+      return new URLSearchParams();
+    })();
+
+    const getParam = (key: string) => hashQueryParams.get(key) ?? searchParams.get(key);
+
+    const type = getParam("type");
+    if (type === "recovery") {
       setIsRecoveryMode(true);
       return;
     }
 
-    // Check for OAuth error in URL (e.g., after failed Google login)
-    const errorDescription = hashParams.get('error_description');
-    const error = hashParams.get('error');
+    const error = getParam("error");
+    const errorDescription = getParam("error_description");
     if (error || errorDescription) {
-      const errorMsg = errorDescription || error || "Authentication failed";
+      const msg = decodeURIComponent(
+        (errorDescription || error || "Authentication failed").replace(/\+/g, " ")
+      );
+
       toast({
         title: "Login failed",
-        description: decodeURIComponent(errorMsg.replace(/\+/g, ' ')),
+        description: msg,
         variant: "destructive",
       });
-      // Clean up the URL
-      window.history.replaceState(null, '', window.location.pathname + '#/auth');
+
+      // Clean URL to keep HashRouter stable
+      window.history.replaceState(null, "", `${window.location.pathname}#/auth`);
       return;
     }
 
+    const code = getParam("code");
+    if (code) {
+      setLoading(true);
+      supabase.auth
+        .exchangeCodeForSession(code)
+        .then(({ error }) => {
+          if (error) {
+            toast({
+              title: "Login failed",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+          window.history.replaceState(null, "", `${window.location.pathname}#/auth`);
+        });
+    }
+  }, [toast]);
+
+  useEffect(() => {
     if (user && !isRecoveryMode) {
-      toast({
-        title: "You're already logged in",
-        description: "Redirecting to homepage...",
-      });
       navigate("/");
     }
-  }, [user, navigate, toast, isRecoveryMode]);
+  }, [user, isRecoveryMode, navigate]);
 
   const handleLogin = async (values: LoginFormValues) => {
     setLoading(true);
