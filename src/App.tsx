@@ -44,6 +44,7 @@ import TextToSpeech from "./pages/TextToSpeech";
 import Auth from "./pages/Auth";
 import Navigation from "./components/Navigation";
 import PromoNotifications from "./components/PromoNotifications";
+import OAuthRedirectGuard from "./components/OAuthRedirectGuard";
 import { useConsoleMessage, useKonamiCode } from "./hooks/useEasterEggs";
 import { toast } from "sonner";
 import VisibilityGuard from "./components/VisibilityGuard";
@@ -173,6 +174,7 @@ const App = () => {
             <InstallPrompt />
             
             <HashRouter>
+              <OAuthRedirectGuard />
               {/* Components that use useNavigate must be inside Router */}
               <AIChatAssistant />
               <CommandTerminal />
