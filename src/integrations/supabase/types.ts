@@ -320,6 +320,27 @@ export type Database = {
         }
         Relationships: []
       }
+      game_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       game_scores: {
         Row: {
           game_name: string
@@ -827,6 +848,27 @@ export type Database = {
           id?: string
           original_id?: string
           original_table?: string
+        }
+        Relationships: []
+      }
+      user_game_stats: {
+        Row: {
+          games_played: number
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          games_played?: number
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          games_played?: number
+          id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

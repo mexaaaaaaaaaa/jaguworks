@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface GameAchievement {
   id: string;
@@ -32,49 +33,94 @@ const ACHIEVEMENTS: Omit<GameAchievement, 'isUnlocked' | 'unlockedAt'>[] = [
   { id: 'quiz_master', name: 'Quiz Master', description: 'Get all questions correct in Quiz', icon: '📚', category: 'special', requirement: 100, color: 'from-emerald-500/20 to-teal-500/20' },
 ];
 
-const STORAGE_KEY = 'jaguworks_game_achievements';
-
 export const useGameAchievements = () => {
   const { user } = useAuth();
   const [achievements, setAchievements] = useState<GameAchievement[]>([]);
   const [newUnlocks, setNewUnlocks] = useState<GameAchievement[]>([]);
+  const [gamesPlayed, setGamesPlayed] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load achievements from localStorage
+  // Load achievements from Supabase for logged-in users, localStorage for guests
   useEffect(() => {
-    const storageKey = user ? `${STORAGE_KEY}_${user.id}` : STORAGE_KEY;
-    const stored = localStorage.getItem(storageKey);
-    const unlockedIds: Record<string, string> = stored ? JSON.parse(stored) : {};
+    const loadAchievements = async () => {
+      setIsLoading(true);
+      
+      if (user) {
+        // Fetch from Supabase
+        const { data: unlockedAchievements } = await supabase
+          .from('game_achievements')
+          .select('achievement_id, unlocked_at')
+          .eq('user_id', user.id);
+        
+        const { data: statsData } = await supabase
+          .from('user_game_stats')
+          .select('games_played')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        const unlockedMap: Record<string, string> = {};
+        unlockedAchievements?.forEach(a => {
+          unlockedMap[a.achievement_id] = a.unlocked_at;
+        });
+        
+        const loadedAchievements = ACHIEVEMENTS.map(a => ({
+          ...a,
+          isUnlocked: !!unlockedMap[a.id],
+          unlockedAt: unlockedMap[a.id],
+        }));
+        
+        setAchievements(loadedAchievements);
+        setGamesPlayed(statsData?.games_played || 0);
+      } else {
+        // Fallback to localStorage for guests
+        const stored = localStorage.getItem('jaguworks_game_achievements');
+        const unlockedIds: Record<string, string> = stored ? JSON.parse(stored) : {};
+        
+        const loadedAchievements = ACHIEVEMENTS.map(a => ({
+          ...a,
+          isUnlocked: !!unlockedIds[a.id],
+          unlockedAt: unlockedIds[a.id],
+        }));
+        
+        setAchievements(loadedAchievements);
+        setGamesPlayed(parseInt(localStorage.getItem('jaguworks_games_played') || '0', 10));
+      }
+      
+      setIsLoading(false);
+    };
     
-    const loadedAchievements = ACHIEVEMENTS.map(a => ({
-      ...a,
-      isUnlocked: !!unlockedIds[a.id],
-      unlockedAt: unlockedIds[a.id],
-    }));
-    
-    setAchievements(loadedAchievements);
+    loadAchievements();
   }, [user]);
 
-  // Save achievements to localStorage
-  const saveAchievements = useCallback((updated: GameAchievement[]) => {
-    const storageKey = user ? `${STORAGE_KEY}_${user.id}` : STORAGE_KEY;
-    const unlockedIds: Record<string, string> = {};
-    updated.forEach(a => {
-      if (a.isUnlocked && a.unlockedAt) {
-        unlockedIds[a.id] = a.unlockedAt;
-      }
-    });
-    localStorage.setItem(storageKey, JSON.stringify(unlockedIds));
+  // Save achievement to Supabase or localStorage
+  const saveAchievement = useCallback(async (achievementId: string, unlockedAt: string) => {
+    if (user) {
+      await supabase
+        .from('game_achievements')
+        .upsert({
+          user_id: user.id,
+          achievement_id: achievementId,
+          unlocked_at: unlockedAt,
+        }, { onConflict: 'user_id,achievement_id' });
+    } else {
+      // Fallback to localStorage
+      const stored = localStorage.getItem('jaguworks_game_achievements');
+      const unlockedIds: Record<string, string> = stored ? JSON.parse(stored) : {};
+      unlockedIds[achievementId] = unlockedAt;
+      localStorage.setItem('jaguworks_game_achievements', JSON.stringify(unlockedIds));
+    }
   }, [user]);
 
   // Check and unlock achievements based on score
-  const checkScoreAchievements = useCallback((score: number) => {
+  const checkScoreAchievements = useCallback(async (score: number) => {
     const newlyUnlocked: GameAchievement[] = [];
+    const now = new Date().toISOString();
     
     const updated = achievements.map(a => {
       if (a.isUnlocked) return a;
       
       if (a.category === 'score' && score >= a.requirement) {
-        const unlocked = { ...a, isUnlocked: true, unlockedAt: new Date().toISOString() };
+        const unlocked = { ...a, isUnlocked: true, unlockedAt: now };
         newlyUnlocked.push(unlocked);
         return unlocked;
       }
@@ -84,42 +130,60 @@ export const useGameAchievements = () => {
     
     if (newlyUnlocked.length > 0) {
       setAchievements(updated);
-      saveAchievements(updated);
       setNewUnlocks(prev => [...prev, ...newlyUnlocked]);
+      
+      // Save each new achievement
+      for (const achievement of newlyUnlocked) {
+        await saveAchievement(achievement.id, achievement.unlockedAt!);
+      }
     }
     
     return newlyUnlocked;
-  }, [achievements, saveAchievements]);
+  }, [achievements, saveAchievement]);
 
   // Check special achievements
-  const unlockSpecialAchievement = useCallback((achievementId: string) => {
+  const unlockSpecialAchievement = useCallback(async (achievementId: string) => {
     const achievement = achievements.find(a => a.id === achievementId);
     if (!achievement || achievement.isUnlocked) return null;
     
-    const unlocked = { ...achievement, isUnlocked: true, unlockedAt: new Date().toISOString() };
+    const now = new Date().toISOString();
+    const unlocked = { ...achievement, isUnlocked: true, unlockedAt: now };
     const updated = achievements.map(a => a.id === achievementId ? unlocked : a);
     
     setAchievements(updated);
-    saveAchievements(updated);
     setNewUnlocks(prev => [...prev, unlocked]);
     
+    await saveAchievement(achievementId, now);
+    
     return unlocked;
-  }, [achievements, saveAchievements]);
+  }, [achievements, saveAchievement]);
 
   // Increment games played and check achievements
-  const incrementGamesPlayed = useCallback(() => {
-    const storageKey = user ? `jaguworks_games_played_${user.id}` : 'jaguworks_games_played';
-    const current = parseInt(localStorage.getItem(storageKey) || '0', 10);
-    const newCount = current + 1;
-    localStorage.setItem(storageKey, newCount.toString());
+  const incrementGamesPlayed = useCallback(async () => {
+    const newCount = gamesPlayed + 1;
+    setGamesPlayed(newCount);
+    
+    if (user) {
+      // Upsert to Supabase
+      await supabase
+        .from('user_game_stats')
+        .upsert({
+          user_id: user.id,
+          games_played: newCount,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
+    } else {
+      localStorage.setItem('jaguworks_games_played', newCount.toString());
+    }
     
     const newlyUnlocked: GameAchievement[] = [];
+    const now = new Date().toISOString();
     
     const updated = achievements.map(a => {
       if (a.isUnlocked) return a;
       
       if (a.category === 'games' && newCount >= a.requirement) {
-        const unlocked = { ...a, isUnlocked: true, unlockedAt: new Date().toISOString() };
+        const unlocked = { ...a, isUnlocked: true, unlockedAt: now };
         newlyUnlocked.push(unlocked);
         return unlocked;
       }
@@ -129,12 +193,15 @@ export const useGameAchievements = () => {
     
     if (newlyUnlocked.length > 0) {
       setAchievements(updated);
-      saveAchievements(updated);
       setNewUnlocks(prev => [...prev, ...newlyUnlocked]);
+      
+      for (const achievement of newlyUnlocked) {
+        await saveAchievement(achievement.id, achievement.unlockedAt!);
+      }
     }
     
     return newCount;
-  }, [achievements, saveAchievements, user]);
+  }, [achievements, gamesPlayed, saveAchievement, user]);
 
   // Clear new unlocks notification
   const clearNewUnlocks = useCallback(() => {
@@ -147,6 +214,8 @@ export const useGameAchievements = () => {
   return {
     achievements,
     newUnlocks,
+    isLoading,
+    gamesPlayed,
     checkScoreAchievements,
     unlockSpecialAchievement,
     incrementGamesPlayed,
