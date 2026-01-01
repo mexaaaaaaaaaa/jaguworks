@@ -113,6 +113,33 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_face_data: {
+        Row: {
+          face_descriptor: Json
+          id: string
+          is_enabled: boolean | null
+          last_verified_at: string | null
+          registered_at: string | null
+          user_id: string
+        }
+        Insert: {
+          face_descriptor: Json
+          id?: string
+          is_enabled?: boolean | null
+          last_verified_at?: string | null
+          registered_at?: string | null
+          user_id: string
+        }
+        Update: {
+          face_descriptor?: Json
+          id?: string
+          is_enabled?: boolean | null
+          last_verified_at?: string | null
+          registered_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_notifications: {
         Row: {
           created_at: string | null

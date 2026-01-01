@@ -30,10 +30,12 @@ import {
   Download,
   Trash2,
   StickyNote,
+  ScanFace,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import AdminPinGate from "./AdminPinGate";
+import FaceVerificationGate from "./FaceVerificationGate";
 import CommandPalette from "./CommandPalette";
 import NotificationBell from "./NotificationBell";
 import AdminBreadcrumbs from "./AdminBreadcrumbs";
@@ -60,6 +62,7 @@ const menuItems = [
   { path: "/admin/theme", label: "Theme", icon: Palette, roles: ["admin"] },
   { path: "/admin/coupons", label: "Coupons", icon: Ticket, roles: ["admin"] },
   { path: "/admin/pin", label: "PIN Security", icon: Lock, roles: ["admin"] },
+  { path: "/admin/face", label: "Face Verification", icon: ScanFace, roles: ["admin"] },
   { path: "/admin/settings", label: "Settings", icon: Settings, roles: ["admin"] },
   { path: "/admin/users", label: "Users", icon: Users, roles: ["admin"] },
 ];
@@ -69,12 +72,17 @@ export default function AdminLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pinVerified, setPinVerified] = useState(false);
+  const [faceVerified, setFaceVerified] = useState(false);
 
   // Check if already verified this session
   useEffect(() => {
-    const verified = sessionStorage.getItem("admin_pin_verified");
-    if (verified === "true") {
+    const pinV = sessionStorage.getItem("admin_pin_verified");
+    const faceV = sessionStorage.getItem("admin_face_verified");
+    if (pinV === "true") {
       setPinVerified(true);
+    }
+    if (faceV === "true") {
+      setFaceVerified(true);
     }
   }, []);
 
@@ -124,6 +132,22 @@ export default function AdminLayout() {
   // Show PIN gate if not verified
   if (!pinVerified) {
     return <AdminPinGate onSuccess={() => setPinVerified(true)} />;
+  }
+
+  // Show Face verification gate after PIN
+  if (!faceVerified && user?.id) {
+    return (
+      <FaceVerificationGate 
+        userId={user.id} 
+        onFallbackToPIN={() => {
+          // Already PIN verified, just skip face
+          sessionStorage.setItem("admin_face_verified", "true");
+          setFaceVerified(true);
+        }}
+      >
+        <div /> {/* This won't render, gate handles it */}
+      </FaceVerificationGate>
+    );
   }
 
   const filteredMenuItems = menuItems.filter((item) =>
