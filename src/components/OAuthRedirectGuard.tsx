@@ -21,6 +21,12 @@ const OAuthRedirectGuard = () => {
   useLayoutEffect(() => {
     const rawHash = window.location.hash || "";
 
+    // Fix common typo route from mis-redirects: `#/autl` -> `#/auth`
+    if (rawHash.startsWith("#/autl")) {
+      window.location.hash = rawHash.replace(/^#\/autl/, "/auth").slice(1);
+      return;
+    }
+
     // Some providers/configs may redirect to `/auth` without a hash.
     // Normalize to HashRouter so the `/auth` route is reachable.
     if (window.location.pathname.endsWith("/auth") && (!rawHash || rawHash === "#")) {

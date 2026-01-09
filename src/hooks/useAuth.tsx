@@ -18,9 +18,19 @@ export const useAuth = () => {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        // If the stored refresh token is invalid, clear local auth state.
+        // (Prevents getting stuck in refresh_token_not_found loops.)
+        setSession(null);
+        setUser(null);
+        supabase.auth.signOut().catch(() => {
+          // ignore
+        });
+      } else {
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
       setLoading(false);
     });
 

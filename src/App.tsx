@@ -223,6 +223,7 @@ const App = () => {
                     <Route path="/checkout-redirect" element={<CheckoutRedirect />} />
                     <Route path="/payment-details" element={<PaymentDetails />} />
                     <Route path="/payment-return" element={<PaymentReturn />} />
+                    <Route path="/autl" element={<Auth />} />
                     <Route path="/auth" element={<Auth />} />
                     {/* Games Routes */}
                     <Route path="/games" element={<Games />} />
