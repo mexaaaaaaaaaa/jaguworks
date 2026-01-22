@@ -96,6 +96,7 @@ const AdminBackup = lazy(() => import("./pages/admin/AdminBackup"));
 const AdminTrash = lazy(() => import("./pages/admin/AdminTrash"));
 const AdminNotes = lazy(() => import("./pages/admin/AdminNotes"));
 const AdminFaceSettings = lazy(() => import("./pages/admin/AdminFaceSettings"));
+const AdminAds = lazy(() => import("./pages/admin/AdminAds"));
 
 const queryClient = new QueryClient();
 
@@ -241,6 +242,7 @@ const App = () => {
                       <Route path="hero" element={<AdminHeroEditor />} />
                       <Route path="about" element={<AdminAboutEditor />} />
                       <Route path="sections" element={<AdminSectionBuilder />} />
+                      <Route path="ads" element={<AdminAds />} />
                       <Route path="orders" element={<AdminOrders />} />
                       <Route path="plans" element={<AdminPlans />} />
                       <Route path="addons" element={<AdminAddons />} />
