@@ -31,6 +31,7 @@ import {
   Trash2,
   StickyNote,
   ScanFace,
+  Megaphone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,7 @@ import AdminBreadcrumbs from "./AdminBreadcrumbs";
 const menuItems = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "moderator"] },
   { path: "/admin/analytics", label: "Analytics", icon: LineChart, roles: ["admin", "moderator"] },
+  { path: "/admin/ads", label: "Ads", icon: Megaphone, roles: ["admin"] },
   { path: "/admin/visibility", label: "Section Toggle", icon: ToggleRight, roles: ["admin", "moderator"] },
   { path: "/admin/hero", label: "Hero Editor", icon: Image, roles: ["admin", "moderator"] },
   { path: "/admin/about", label: "About Editor", icon: User, roles: ["admin", "moderator"] },

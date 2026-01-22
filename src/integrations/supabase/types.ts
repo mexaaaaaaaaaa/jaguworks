@@ -86,6 +86,70 @@ export type Database = {
         }
         Relationships: []
       }
+      ad_clicks: {
+        Row: {
+          ad_id: string
+          clicked_at: string
+          id: string
+          page_url: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          ad_id: string
+          clicked_at?: string
+          id?: string
+          page_url?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          ad_id?: string
+          clicked_at?: string
+          id?: string
+          page_url?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_clicks_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "ads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_impressions: {
+        Row: {
+          ad_id: string
+          id: string
+          page_url: string | null
+          user_agent: string | null
+          viewed_at: string
+        }
+        Insert: {
+          ad_id: string
+          id?: string
+          page_url?: string | null
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          ad_id?: string
+          id?: string
+          page_url?: string | null
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_impressions_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "ads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       addons: {
         Row: {
           category: string
@@ -170,6 +234,69 @@ export type Database = {
           title?: string
           type?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      ads: {
+        Row: {
+          ad_type: string
+          adsense_slot: string | null
+          click_url: string | null
+          clicks: number
+          created_at: string
+          end_date: string | null
+          html_content: string | null
+          id: string
+          image_url: string | null
+          impressions: number
+          is_active: boolean
+          placement: string
+          priority: number
+          size: string | null
+          start_date: string | null
+          target_pages: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ad_type?: string
+          adsense_slot?: string | null
+          click_url?: string | null
+          clicks?: number
+          created_at?: string
+          end_date?: string | null
+          html_content?: string | null
+          id?: string
+          image_url?: string | null
+          impressions?: number
+          is_active?: boolean
+          placement?: string
+          priority?: number
+          size?: string | null
+          start_date?: string | null
+          target_pages?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ad_type?: string
+          adsense_slot?: string | null
+          click_url?: string | null
+          clicks?: number
+          created_at?: string
+          end_date?: string | null
+          html_content?: string | null
+          id?: string
+          image_url?: string | null
+          impressions?: number
+          is_active?: boolean
+          placement?: string
+          priority?: number
+          size?: string | null
+          start_date?: string | null
+          target_pages?: string[] | null
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }

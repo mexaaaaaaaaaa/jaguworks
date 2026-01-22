@@ -6,6 +6,7 @@ import PageTransition from "@/components/PageTransition";
 import BackToTop from "@/components/BackToTop";
 import SEO from "@/components/SEO";
 import DynamicSectionsRenderer from "@/components/DynamicSectionsRenderer";
+import { AdSlot, PopupAd, StickyMobileAd, AdBlockerMessage } from "@/components/ads";
 
 const Index = () => {
   const structuredData = {
@@ -34,11 +35,23 @@ const Index = () => {
       />
       <div className="min-h-screen bg-background text-foreground">
         <Hero />
+        {/* Ad slot after hero */}
+        <AdSlot placement="between-sections" page="home" className="container mx-auto" />
         <DynamicSectionsRenderer page="home" />
+        {/* Ad slot before stats */}
+        <AdSlot placement="between-sections" page="home" className="container mx-auto" />
         <StatsCounter />
         <Testimonials />
+        {/* Ad slot before footer */}
+        <AdSlot placement="footer" page="home" className="container mx-auto" />
         <Footer />
         <BackToTop />
+        {/* Popup ad (shows once per session after 15 seconds) */}
+        <PopupAd delay={15} page="home" />
+        {/* Mobile sticky ad */}
+        <StickyMobileAd page="home" />
+        {/* Ad blocker detection message */}
+        <AdBlockerMessage />
       </div>
     </PageTransition>
   );
