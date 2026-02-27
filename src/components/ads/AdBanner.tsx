@@ -116,8 +116,11 @@ export const AdBanner = ({ ad, className, showCloseButton, onClose }: AdBannerPr
           className="w-full h-full object-cover"
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-primary/20 to-accent/20">
-          <span className="text-sm text-muted-foreground">Ad Space</span>
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 animate-pulse">
+          <div className="text-center px-3">
+            <span className="text-xs font-semibold text-primary">🔥 {ad.title || 'Special Offer'}</span>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Click to explore →</p>
+          </div>
         </div>
       )}
 
